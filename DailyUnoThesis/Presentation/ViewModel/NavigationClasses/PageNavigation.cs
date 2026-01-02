@@ -1,0 +1,117 @@
+using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Timer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
+{
+   public partial class PageNavigation : Base
+{
+    private INavigator _navigator;
+
+        [ObservableProperty]
+        private string? name;
+
+        private static PageNavigation instance;
+        public static PageNavigation GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new PageNavigation();              
+            }
+            return instance;
+        }
+        public PageNavigation Navigation;
+        private TaskPages TaskPages;
+        public TaskListPage TaskListPage;
+        //public Pomodoro PomodoroPage;
+        public PanelTimer TimerPage;
+
+        public async void GetClass()
+        {
+            if (instance != null)
+            {
+                Navigation = this;
+                TaskPages = new TaskPages();
+                TaskListPage = new TaskListPage();
+                CurPageCategory = TaskListPage;
+                //PomodoroPage = new Pomodoro();
+                TimerPage = new PanelTimer();   
+
+                CurPage = TaskPages;
+            }
+        }
+
+        private Page curPage { get; set; }
+        public Page CurPage
+        {
+            get => curPage;
+            set
+            {
+                curPage = value;
+                Signal();
+            }
+        }
+
+        private Page curPageCategory { get; set; }
+        public Page CurPageCategory
+        {
+            get => curPageCategory;
+            set
+            {
+                curPageCategory = value;
+                Signal();
+            }
+        }
+
+
+        private RelayCommand openTaskListPage;
+        public RelayCommand OpenTaskListPage
+        {
+            get
+            {
+                return openTaskListPage ?? new RelayCommand(async () =>
+                {
+                    CurPage = TaskPages;
+                }
+
+                );
+
+            }
+
+        }
+
+
+
+        private RelayCommand openPomodoroPage;
+        public RelayCommand OpenPomodoroPage
+        {
+            get
+            {
+                return openPomodoroPage ?? new RelayCommand(async () =>
+                {
+                    CurPage = TimerPage;
+                }
+                );
+
+            }
+
+        }
+
+        public PageNavigation()
+        {
+            
+        }
+        public string? Title { get; }
+
+        public ICommand GoToSecond { get; }
+
+        private async Task GoToSecondView()
+        {
+            await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
+        }
+    }
+}

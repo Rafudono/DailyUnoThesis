@@ -1,0 +1,131 @@
+﻿<Page x:Class="DailyUnoThesis.Presentation.View.Timer.RegularTimer"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="using:DailyUnoThesis.Presentation.View.Timer"
+      xmlns:controle ="using:DailyUnoThesis.Presentation.ViewModel.TimerPagesControle"
+      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+      mc:Ignorable="d" 
+       DataContext="DynamicResource Control"
+      d:DesignHeight="450" d:DesignWidth="800">
+    <Page.Resources>
+        <controle:RegularTimerControle x:Key="Control"/>
+    </Page.Resources>
+
+    <Grid Background="DarkTurquoise">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="Plum"  Width="300" Height="150" RadiusX="15" RadiusY="15" Margin="10" />
+            <TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" 
+ Text="{Binding CountupTimer.RemainingTime}" 
+FontSize="60" TextAlignment="Center"/>
+            <!--<TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" 
+ Text="00:00:00" 
+FontSize="60" TextAlignment="Center"/>-->
+            <StackPanel Margin="10 0" Grid.Row="1" Orientation="Horizontal">
+                <Button Width="60" Height="25" Margin="5 5" Content="start" Command="{Binding StartCountupTimer}"/>
+                <Button Width="100" Height="25" Margin="5 5" Content="pause/continue" Command="{Binding StopCountupTimer}"/>
+                <Button Width="60" Height="25" Margin="5 5"  Content="restart"/>
+            </StackPanel>
+            <Grid Grid.Row="2">
+                <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding NullItemTreeViewItem}"/>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                           
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBox Text="{Binding Mission.Title}" MinWidth="250" Tag="Введите название" Style="{StaticResource TextBoxStyle}" Height="25" FontSize="18"/>
+                    <TextBox Text="{Binding Mission.Description}" MinWidth="250" Tag="Введите описание" Style="{StaticResource FullTextBoxStyle}" MinHeight="30" MaxHeight="50" TextWrapping="Wrap" FontSize="15"/>
+                </StackPanel>
+                
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                          
+                        </Style>
+                    </StackPanel.Style>
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedMission.Title}"  FontSize="23"  Margin="10 3 0 3"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="15" Margin="5 0">
+                              <Run Text="#"/>
+                              <Run Text="{Binding SelectedMission.EndDate}"/>
+                             
+                            </TextBlock>
+                            <TextBlock FontSize="15" Margin="5 0">
+<Run Text="#"/>
+<Run Name="TitleCategory" Text="{Binding SelectedMission.Category.Title}"/>
+                                
+                            </TextBlock>
+
+                        </StackPanel>
+                      
+                        <Line  StrokeThickness="1" Stroke="Black" X1="0" X2="250" Y1="0" Y2="0"  HorizontalAlignment="Right"/>
+
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <!--<TreeView x:Name="tree" Grid.Column="1" ItemsSource="{Binding Missions}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectedItemTreeViewItem}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            --><!-- Создаем шаблон для отображения элемента --><!--
+            <TreeView.ItemTemplate >
+                <HierarchicalDataTemplate ItemsSource="{Binding InverseIdUpMissionNavigation}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Title}" FontSize="20"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock >
+                                <Run Text="#"/>
+                                <Run Text="{Binding EndDate, StringFormat=dd-MM-yyyy}"/>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EndDate}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Margin="5 0">
+  <Run Text=" #"/>
+  <Run Name="TitleCategory" Text="{Binding Category.Title}"/>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <Line  StrokeThickness="1" Stroke="Black" X1="0" X2="250" Y1="0" Y2="0"  HorizontalAlignment="Right"/>
+
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>-->
+
+        <!--<ListBox Grid.Column="1">
+            
+        </ListBox>-->
+        
+    </Grid>
+</Page>

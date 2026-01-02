@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--#region Gradient Color-->
+    <LinearGradientBrush x:Key="cs_Background" StartPoint="0,0" EndPoint="0,5">
+        <GradientStop Color="#8B008B" Offset="0.0"/>
+        <GradientStop Color="#FFF5ECEB" Offset="0.5"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="cs_PopurBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FF2F84AC" Offset="0.0"/>
+        <GradientStop Color="#8A2BE2" Offset="1.2"/>
+    </LinearGradientBrush>
+    <!--#endregion-->
+
+
+    <!--#region Solid Color-->
+    <SolidColorBrush x:Key="cs_BackgroundLayer" Color="#7B68EE" Opacity="0.2"/>
+
+    <SolidColorBrush x:Key="cs_BorderBrush" Color="#FF97CFDA"/>
+
+    <SolidColorBrush x:Key="cs_Clouds" Color="#FFF5ECEB"/>
+
+    <SolidColorBrush x:Key="cs_Watermark" Color="#FFF5ECEB"/>
+
+    <SolidColorBrush x:Key="cs_PinkSoft" Color="#7B68EE"/>
+
+    <SolidColorBrush x:Key="cs_TextColor" Color="#FF333333"/>
+
+
+    <!--#endregion-->
+    
+</ResourceDictionary>

@@ -1,0 +1,132 @@
+﻿<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <!-- Display name -->
+    <ApplicationTitle>DailyUnoThesis</ApplicationTitle>
+    <!-- App Identifier -->
+    <ApplicationId>com.clowns.DailyUnoThesis</ApplicationId>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Package Publisher -->
+    <ApplicationPublisher>Raf</ApplicationPublisher>
+    <!-- Package Description -->
+    <Description>DailyUnoThesis powered by Uno Platform.</Description>
+
+    <!--
+      UnoFeatures are used to quickly add and manage features enabled for your app.
+      https://aka.platform.uno/singleproject-features
+    -->
+    <UnoFeatures>
+      Material;
+      Dsp;
+      Hosting;
+      Toolkit;
+      Logging;
+      Mvvm;
+      Configuration;
+      HttpKiota;
+      Serialization;
+      Localization;
+      Navigation;
+      ThemeService;
+      SkiaRenderer;
+    </UnoFeatures>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Platforms\Desktop\ViewModel\**" />
+    <EmbeddedResource Remove="Platforms\Desktop\ViewModel\**" />
+    <None Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Dictionary\FullTextBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Dictionary\TextBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Dictionary\ColorStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_IgnorePlatformFiles Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Platforms\Desktop\ViewModel\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MvvmLightLibs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Timer\RegularTimer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Calendar\TableCalendar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Timer\PanelTimer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskOverdueListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskPages.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Timer\Pomodoro.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskCompleteListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskListPageCategory.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskTodayListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\TaskListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+</Project>
