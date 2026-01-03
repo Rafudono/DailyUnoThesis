@@ -38,7 +38,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
                 TaskPages = new TaskPages();
                 TaskListPage = new TaskListPage();
                 CurPageCategory = TaskListPage;
-                //PomodoroPage = new Pomodoro();
+                PomodoroPage = new Pomodoro();
                 TimerPage = new PanelTimer();   
 
                 CurPage = TaskPages;
@@ -67,6 +67,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             }
         }
 
+        public Pomodoro PomodoroPage { get; private set; }
 
         private RelayCommand openTaskListPage;
         public RelayCommand OpenTaskListPage

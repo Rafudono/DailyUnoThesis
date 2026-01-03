@@ -13,12 +13,13 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskTodayListPage : Page
     {
+        public TaskTodayControle ViewModel { get; } = new();
         public TaskTodayListPage()
         {
             this.InitializeComponent();
-            //var en = DataContext as TaskTodayControle;
-            //en.SetDispatcher(Dispatcher);
-            //en?.SetControl(this);
+            DataContext = this.ViewModel;
+            ViewModel.SetDispatcher(Dispatcher);
+            ViewModel?.SetControl(this);
         }
     }
 }

@@ -14,13 +14,13 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskListPageCategory : Page
     {
+        public TaskCategotyControle ViewModel { get; } = new();
         public TaskListPageCategory()
         {
-            InitializeComponent();
-            //var en = DataContext as TaskCategotyControle;
-            //en.SetDispatcher(Dispatcher);
-            //en?.SetControl(this);
-            //en?.FillData();
+            this.InitializeComponent();
+            ViewModel.SetDispatcher(Dispatcher);
+            ViewModel?.SetControl(this);
+            ViewModel?.FillData();
         }
 
         public void GetIdCategory(int id)

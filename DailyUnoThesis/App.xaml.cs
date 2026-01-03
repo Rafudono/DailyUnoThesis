@@ -1,3 +1,6 @@
+using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using Uno.Resizetizer;
 
 namespace DailyUnoThesis;
@@ -92,7 +95,10 @@ public partial class App : Application
     {
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
-            new ViewMap<MainPage, MainViewModel>(),
+            new ViewMap<MainPage, PageNavigation>(),
+            new ViewMap<TaskCompleteListPage, TaskCompleteControle>(),
+            new ViewMap<TaskOverdueListPage, OverdueTaskControle>(),
+            new ViewMap<TaskTodayListPage, TaskTodayControle>(),
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
         );
 
@@ -100,8 +106,11 @@ public partial class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested:
                 [
-                    new ("Main", View: views.FindByViewModel<MainViewModel>(), IsDefault:true),
+                    new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true),
                     new ("Second", View: views.FindByViewModel<SecondViewModel>()),
+                     new ("Complete", View: views.FindByViewModel<TaskCompleteControle>()),
+                new ("Overdue", View: views.FindByViewModel<OverdueTaskControle>()),
+                new ("Today", View: views.FindByViewModel<TaskTodayControle>())
                 ]
             )
         );

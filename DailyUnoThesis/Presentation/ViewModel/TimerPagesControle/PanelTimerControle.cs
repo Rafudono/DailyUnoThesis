@@ -79,7 +79,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
 
         public async Task GetPomodoroPage()
         {
-              this.dispatcher.TryRunAsync(CoreDispatcherPriority.Normal, async () =>
+              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageTimer = PomodoroPage;
                 
@@ -88,7 +88,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         }
         public async Task GetRegularTimerPage()
         {
-              this.dispatcher.TryRunAsync(CoreDispatcherPriority.Normal, async () =>
+              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageTimer = RegularTimerPage;
 

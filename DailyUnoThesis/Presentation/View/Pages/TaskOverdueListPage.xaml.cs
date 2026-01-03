@@ -13,14 +13,13 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskOverdueListPage : Page
     {
+        public OverdueTaskControle ViewModel { get; } = new OverdueTaskControle();
         public TaskOverdueListPage()
         {
-            InitializeComponent();
-            var en=DataContext as OverdueTaskControle;
-            en?.SetControl(this);
-            en?.SetDispatcher(Dispatcher);
-            en?.GetOverdue();
-
+            this.InitializeComponent();
+            DataContext = ViewModel;
+            ViewModel.SetDispatcher(Dispatcher);
+            ViewModel?.SetControl(this);
         }
     }
 }

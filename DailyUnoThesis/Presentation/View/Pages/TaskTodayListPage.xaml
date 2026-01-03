@@ -7,8 +7,8 @@
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls">
 
     <Page.Resources>
-        <!--<control:TaskTodayControle x:Key="Control"/>
-        <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>-->
+        <control:TaskTodayControle x:Key="Control"/>
+        <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
         
         <DataTemplate x:Key="MissionTemplate" x:DataType="mod:Mission">
             <Grid Margin="{Binding LevelUp, Converter={StaticResource LevelMarginConverter}}">

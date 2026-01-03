@@ -21,7 +21,7 @@ namespace DailyUnoThesis.Presentation.View.Timer
         {
             InitializeComponent();
             var en = DataContext as PomodoroTimerControle;
-            en.SetDispatcher(Dispatcher);
+        //    en.SetDispatcher(Dispatcher);
             en?.SetControl(this);
             //TextHour = "00";
             //TextMin = "00";
