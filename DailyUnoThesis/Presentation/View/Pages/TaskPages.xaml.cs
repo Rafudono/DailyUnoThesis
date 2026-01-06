@@ -17,18 +17,18 @@ namespace DailyUnoThesis.Presentation.View.Pages
     {
         PageNavigation Navigation;
         TaskPages pass;
+        public TaskPageControle ViewModel { get; } = new();
         string test {  get; set; }  
         public TaskPages()
         {
             this.InitializeComponent();
-            //Navigation = pageNavigation;
             pass = this;
-            DataContext = TaskPageControle.GetInstance();   
-            var en = DataContext as TaskPageControle;
-            en.SetDispatcher(Dispatcher);
-            en?.SetControl(pass);
-            en.GetLists();
-            Task.Run(async () => { await GetTaskCatPage(en); });
+            //DataContext = TaskPageControle.GetInstance();   
+            DataContext = ViewModel;
+            ViewModel.SetDispatcher(Dispatcher);
+            ViewModel?.SetControl(pass);
+            ViewModel.GetLists();
+            Task.Run(async () => { await GetTaskCatPage(ViewModel); });
         }
 
         private async Task GetTaskCatPage(TaskPageControle? en)

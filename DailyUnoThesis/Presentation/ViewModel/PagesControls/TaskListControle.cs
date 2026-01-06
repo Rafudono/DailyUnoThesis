@@ -271,7 +271,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             Task = new() { LevelUp = 1};
 
             List<Mission> missions = new List<Mission>();
-            missions = await APIHost.GetInstance().GetMissions();
+         //   missions = await APIHost.GetInstance().GetMissions();
             //GetCategories();
             await UpdateLists(mission, missions);
           

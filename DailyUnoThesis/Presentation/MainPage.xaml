@@ -15,7 +15,7 @@
                     <ColumnDefinition/>
 
                 </Grid.ColumnDefinitions>
-                <Frame Background="AliceBlue" Grid.Column="1" IsNavigationStackEnabled="False" Content="{Binding CurPage}"/>
+                <ContentPresenter Background="AliceBlue" Grid.Column="1" Content="{Binding CurPage}"/>
                 <Grid Grid.Column="0"  Background="Red">
 
                     <StackPanel Margin="0 10 0 0">

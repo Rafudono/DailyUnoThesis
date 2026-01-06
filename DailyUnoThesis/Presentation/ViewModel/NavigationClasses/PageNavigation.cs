@@ -40,11 +40,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
                 CurPageCategory = TaskListPage;
                 PomodoroPage = new Pomodoro();
                 TimerPage = new PanelTimer();   
-
                 CurPage = TaskPages;
             }
         }
-
         private Page curPage { get; set; }
         public Page CurPage
         {
