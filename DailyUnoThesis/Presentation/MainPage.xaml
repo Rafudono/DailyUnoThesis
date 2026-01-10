@@ -2,50 +2,51 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:DailyUnoThesis.Presentation"
+       xmlns:pages="using:DailyUnoThesis.Presentation.View.Pages"
+       xmlns:cal="using:DailyUnoThesis.Presentation.View.Calendar"
+      xmlns:controlepage="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
       xmlns:um="using:Uno.Material"
       NavigationCacheMode="Required"
       Background="{ThemeResource BackgroundBrush}">
-  <ScrollViewer IsTabStop="True">
-    <Grid utu:SafeArea.Insets="VisibleBounds">
-            <Grid  Background="PaleVioletRed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="40" Width="0.034*"></ColumnDefinition>
-                    <ColumnDefinition/>
+    <!--<Page.Resources>
+        <DataTemplate x:Key="TasksTemplate" x:DataType="controlepage:TaskPageControle">
+            <pages:TaskPages />
+        </DataTemplate>
+        --><!--<DataTemplate x:Key="CalendarTemplate" TargetType="local:CalendarViewModel">
+            <local:CalendarPage />
+        </DataTemplate>--><!--
+    </Page.Resources>-->
 
-                </Grid.ColumnDefinitions>
-                <ContentPresenter Background="AliceBlue" Grid.Column="1" Content="{Binding CurPage}"/>
-                <Grid Grid.Column="0"  Background="Red">
+    
+    <ScrollViewer IsTabStop="True">
+        <Grid  uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
 
-                    <StackPanel Margin="0 10 0 0">
+            <Grid Background="LightSeaGreen">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.1" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <NavigationView IsBackButtonVisible="Collapsed" OpenPaneLength="200" IsPaneOpen="False" uen:Region.Attached="true"
+                    Grid.Row="1" IsSettingsVisible="False">
+                    <NavigationView.MenuItems>
+                        <!-- Tag должен совпадать с именами в маршрутах -->
+                        <NavigationViewItem Icon="List" Content="Задачи"
+                                uen:Region.Name="TaskPage" />
+                        <NavigationViewItem Icon="Calendar" Content="Календарь"
+                uen:Region.Name="PanelCalendar" />
+                        <NavigationViewItem Icon="Clock" Content="Таймеры"
+                uen:Region.Name="PanelTimers" />
 
-
-                        <Button Height="30" Width="30"  Margin="0 10 0 0" Command="{Binding OpenTaskListPage}"/>
-                        <Button Height="30" Width="30"  Margin="0 10 0 0"/>
-                        <Button Height="30" Width="30"  Margin="0 10 0 0" Command="{Binding OpenPomodoroPage}"/>
-                    </StackPanel>
-
-                </Grid>
-
+                    </NavigationView.MenuItems>
+                    <Grid uen:Region.Attached="True"
+              uen:Region.Navigator="Visibility"
+              Grid.Row="1">
+                    </Grid>
+                </NavigationView>
             </Grid>
-            <!--<Grid >
-        <Grid.ColumnDefinitions>
 
-
-            <ColumnDefinition MinWidth="40"  Width="0.035*" />
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Background="Aqua" Opacity="0.3">
-            
-        </Grid>
-        -->
-            <!--<Grid Background="Red" Grid.Column="1">
-       
-   </Grid>-->
-            <!--
-    </Grid>-->
-       
         </Grid>
   </ScrollViewer>
 </Page>

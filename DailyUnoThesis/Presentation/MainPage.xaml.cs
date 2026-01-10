@@ -24,7 +24,15 @@ public sealed partial class MainPage : Page
         }
         catch (Exception ex)
         {
-
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Внимание",
+                Content = ex,
+                CloseButtonText = "Ок",
+                // В WinUI/Uno обязательно нужно указывать XamlRoot
+                XamlRoot = this.XamlRoot
+            };
+            ContentDialogResult result = await dialog.ShowAsync();
         }
     }
 }

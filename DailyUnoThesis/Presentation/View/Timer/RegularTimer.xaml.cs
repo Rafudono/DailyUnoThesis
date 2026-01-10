@@ -14,13 +14,14 @@ namespace DailyUnoThesis.Presentation.View.Timer
     /// </summary>
     public partial class RegularTimer : Page
     {
+        public RegularTimerControle ViewModel { get; } = new RegularTimerControle();
         public RegularTimer()
         {
             InitializeComponent();
             var en = DataContext as RegularTimerControle;
-            en.SetDispatcher(Dispatcher);
-            en?.SetControl(this);
-           
+            //en.SetDispatcher(Dispatcher);
+            //en?.SetControl(this);
+
 
         }
     }

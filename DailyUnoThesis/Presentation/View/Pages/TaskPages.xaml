@@ -4,20 +4,59 @@
     xmlns:local="using:DailyUnoThesis.Presentation.View.Pages"
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
-    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses">
+    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
+       xmlns:uen="using:Uno.Extensions.Navigation.UI"
+ xmlns:utu="using:Uno.Toolkit.UI"
+ xmlns:um="using:Uno.Material"
+ NavigationCacheMode="Required">
+    
 
     <Page.Resources>
         <con:ScrollHeightConventer x:Key="heightOffsetConverter" />
     </Page.Resources>
 
-    <Grid Background="PaleVioletRed">
-        <Grid.ColumnDefinitions>
+    <Grid Background="BlueViolet">
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.6*" />
             <ColumnDefinition Width="1.8*" />
             <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>-->
 
-        <Grid Background="BlueViolet">
+
+        <ScrollViewer IsTabStop="True">
+            <Grid  uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
+                <Grid Background="BlueViolet">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.1" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <NavigationView OpenPaneLength="170"  IsBackButtonVisible="Collapsed" uen:Region.Attached="true"
+                  Grid.Row="1" IsSettingsVisible="False">
+                        <NavigationView.MenuItems>
+                            <!-- Tag должен совпадать с именами в маршрутах -->
+                            <NavigationViewItem Icon="List" Content="Все задания"
+                              uen:Region.Name="TaskList" />
+                            <NavigationViewItem Icon="List" Content="На сегодня"
+              uen:Region.Name="Today" />
+                            <NavigationViewItem Icon="List" Content="Выполненные"
+              uen:Region.Name="Complete" />
+                            <NavigationViewItem Icon="List" Content="Просроченные"
+uen:Region.Name="Overdue" />
+                            <NavigationViewItemSeparator/>
+                            <NavigationViewItemHeader Content="Категории" />
+                        </NavigationView.MenuItems>
+                        <Grid uen:Region.Attached="True"
+            uen:Region.Navigator="Visibility"
+            Grid.Row="1">
+                        </Grid>
+                    </NavigationView>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+
+
+
+        <!--<Grid Background="BlueViolet">
             <ScrollViewer>
                 <StackPanel Margin="10">
                     <Button Height="30" Margin="0,5,0,0" Content="Все задания" Command="{Binding OpenAllList}" />
@@ -64,15 +103,15 @@
                     <Button Height="30" Margin="0,5,0,0" Content="Все задания" />
                 </StackPanel>
             </ScrollViewer>
-        </Grid>
+        </Grid>-->
 
-        <Frame Background="AliceBlue"
+        <!--<Frame Background="AliceBlue"
                Grid.Column="1"
                Grid.ColumnSpan="2"
                Visibility="Collapsed"
-               Content="{Binding CurPageCategory}" />
+               Content="{Binding CurPageCategory}" />-->
 
-        <Grid x:Name="CatBanner" Visibility="{Binding IsCatBannerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Grid x:Name="CatBanner" Visibility="Collapsed">
             <Grid Background="Gray" Opacity="0.6" Tapped="CloseCatBanner" />
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
                 <Grid>
@@ -83,7 +122,7 @@
                             Margin="20"
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Right"
-                            Height="30" Width="100"
+                            Height="30" Width="150"
                             Command="{Binding CreateCat}" />
                 </Grid>
             </Border>

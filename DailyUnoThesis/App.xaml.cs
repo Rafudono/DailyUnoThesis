@@ -1,8 +1,10 @@
-using System.ComponentModel;
+using DailyUnoThesis.Presentation.View.Calendar;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
-using Uno.Resizetizer;
+using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
 
 namespace DailyUnoThesis;
 public partial class App : Application
@@ -69,8 +71,8 @@ public partial class App : Application
                 .UseHttp((context, services) =>
                 {
 #if DEBUG
-                // DelegatingHandler will be automatically injected
-                services.AddTransient<DelegatingHandler, DebugHttpHandler>();
+                    // DelegatingHandler will be automatically injected
+                    services.AddTransient<DelegatingHandler, DebugHttpHandler>();
 #endif
 
                 })
@@ -81,7 +83,7 @@ public partial class App : Application
                 })
                 .UseNavigation(RegisterRoutes)
             );
-       
+
         MainWindow = builder.Window;
 
 #if DEBUG
@@ -97,24 +99,47 @@ public partial class App : Application
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, PageNavigation>(),
+            new ViewMap<TaskPages, TaskPageControle>(),
             new ViewMap<TaskCompleteListPage, TaskCompleteControle>(),
             new ViewMap<TaskListPage, TaskListControle>(),
             new ViewMap<TaskOverdueListPage, OverdueTaskControle>(),
             new ViewMap<TaskTodayListPage, TaskTodayControle>(),
+
+            new ViewMap<PanelTimer, PanelTimerControle>(),
+            new ViewMap<Pomodoro, PomodoroTimerControle>(),
+            new ViewMap<RegularTimer, RegularTimerControle>(),
+
+            new ViewMap<TableCalendar, TableCalendarControle>(),
+
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
         );
 
         routes.Register(
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
-                Nested:
-                [
-                    new ("Main", View: views.FindByViewModel<PageNavigation>()),
-                    new ("Second", View: views.FindByViewModel<SecondViewModel>()),
-                     new ("Complete", View: views.FindByViewModel<TaskCompleteControle>()),
-                     new ("TaskList", View: views.FindByViewModel<TaskListControle>(), IsDefault:true),
-                new ("Overdue", View: views.FindByViewModel<OverdueTaskControle>()),
-                new ("Today", View: views.FindByViewModel<TaskTodayControle>())
-                ]
+                Nested: new RouteMap[]
+                {
+                     new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true,
+                     Nested: new RouteMap[] // Просто используем массив
+                     {
+                         new("TaskPage", View: views.FindByViewModel<TaskPageControle>(), IsDefault:true,
+                         Nested: new RouteMap[]
+                         {
+                              new ("Second", View: views.FindByViewModel<SecondViewModel>()),
+                              new ("Complete", View: views.FindByViewModel<TaskCompleteControle>()),
+                              new ("TaskList", View: views.FindByViewModel<TaskListControle>(), IsDefault:true),
+                              new ("Overdue", View: views.FindByViewModel<OverdueTaskControle>()),
+                              new ("Today", View: views.FindByViewModel<TaskTodayControle>())
+                         }),
+                         new("PanelTimers", View: views.FindByViewModel<PanelTimerControle>(), 
+                         Nested: new RouteMap[]
+                         {
+                              new ("PomodoroTimer", View: views.FindByViewModel<PomodoroTimerControle>(), IsDefault:true),
+                              new ("RegularTimers", View: views.FindByViewModel<RegularTimerControle>()),
+                         }),
+                         new("PanelCalendar", View: views.FindByViewModel<TableCalendarControle>()),
+                     }),
+
+                }
             )
         );
     }

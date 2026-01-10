@@ -17,6 +17,7 @@ namespace DailyUnoThesis.Presentation.View.Timer
         //public string TextHour {  get; set; }
         //public string TextMin { get; set; }
         //public string TextSec { get; set; }
+        public PomodoroTimerControle ViewModel { get; } = new PomodoroTimerControle();
         public Pomodoro()
         {
             InitializeComponent();

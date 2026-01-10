@@ -5,6 +5,7 @@
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls">
+    
 
     <Page.Resources>
         <!--<con:LevelMarginConverter x:Key="LevelMarginConverter" />
@@ -88,7 +89,7 @@
             </ScrollViewer>
         </Grid>
 
-        <Grid x:Name="CatBanner" Visibility="{Binding IsCatBannerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+        <!--<Grid x:Name="CatBanner" Visibility="{Binding IsCatBannerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid Background="Gray" Opacity="0.6" />
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
                 <Grid>
@@ -101,6 +102,6 @@
                             Height="30" Width="100" />
                 </Grid>
             </Border>
-        </Grid>
+        </Grid>-->
     </Grid>
 </Page>

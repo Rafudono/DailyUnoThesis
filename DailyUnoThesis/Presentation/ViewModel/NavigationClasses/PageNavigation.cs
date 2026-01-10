@@ -6,111 +6,110 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
-{
-   public partial class PageNavigation : Base
-{
-    private INavigator _navigator;
+namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
-        [ObservableProperty]
-        private string? name;
+public partial class PageNavigation : Base
+{
+private INavigator _navigator;
 
-        private static PageNavigation instance;
-        public static PageNavigation GetInstance()
+    [ObservableProperty]
+    private string? name;
+
+    private static PageNavigation instance;
+    public static PageNavigation GetInstance()
+    {
+        if (instance == null)
         {
-            if (instance == null)
-            {
-                instance = new PageNavigation();              
-            }
-            return instance;
+            instance = new PageNavigation();              
         }
-        public PageNavigation Navigation;
-        private TaskPages TaskPages;
-        public TaskListPage TaskListPage;
-        //public Pomodoro PomodoroPage;
-        public PanelTimer TimerPage;
+        return instance;
+    }
+    public PageNavigation Navigation;
+    private TaskPages TaskPages;
+    public TaskListPage TaskListPage;
+    //public Pomodoro PomodoroPage;
+    public PanelTimer TimerPage;
 
-        public async void GetClass()
+    public async void GetClass()
+    {
+        if (instance != null)
         {
-            if (instance != null)
+            Navigation = this;
+            TaskPages = new TaskPages();
+            TaskListPage = new TaskListPage();
+            CurPageCategory = TaskListPage;
+            PomodoroPage = new Pomodoro();
+            TimerPage = new PanelTimer();   
+            CurPage = TaskPages;
+        }
+    }
+    private Page curPage { get; set; }
+    public Page CurPage
+    {
+        get => curPage;
+        set
+        {
+            curPage = value;
+            Signal();
+        }
+    }
+
+    private Page curPageCategory { get; set; }
+    public Page CurPageCategory
+    {
+        get => curPageCategory;
+        set
+        {
+            curPageCategory = value;
+            Signal();
+        }
+    }
+
+    public Pomodoro PomodoroPage { get; private set; }
+
+    private RelayCommand openTaskListPage;
+    public RelayCommand OpenTaskListPage
+    {
+        get
+        {
+            return openTaskListPage ?? new RelayCommand(async () =>
             {
-                Navigation = this;
-                TaskPages = new TaskPages();
-                TaskListPage = new TaskListPage();
-                CurPageCategory = TaskListPage;
-                PomodoroPage = new Pomodoro();
-                TimerPage = new PanelTimer();   
                 CurPage = TaskPages;
             }
+
+            );
+
         }
-        private Page curPage { get; set; }
-        public Page CurPage
+
+    }
+
+
+
+    private RelayCommand openPomodoroPage;
+    public RelayCommand OpenPomodoroPage
+    {
+        get
         {
-            get => curPage;
-            set
+            return openPomodoroPage ?? new RelayCommand(async () =>
             {
-                curPage = value;
-                Signal();
+                CurPage = TimerPage;
             }
-        }
-
-        private Page curPageCategory { get; set; }
-        public Page CurPageCategory
-        {
-            get => curPageCategory;
-            set
-            {
-                curPageCategory = value;
-                Signal();
-            }
-        }
-
-        public Pomodoro PomodoroPage { get; private set; }
-
-        private RelayCommand openTaskListPage;
-        public RelayCommand OpenTaskListPage
-        {
-            get
-            {
-                return openTaskListPage ?? new RelayCommand(async () =>
-                {
-                    CurPage = TaskPages;
-                }
-
-                );
-
-            }
+            );
 
         }
 
+    }
 
+    public PageNavigation()
+    {
+        
+    }
+    public string? Title { get; }
 
-        private RelayCommand openPomodoroPage;
-        public RelayCommand OpenPomodoroPage
-        {
-            get
-            {
-                return openPomodoroPage ?? new RelayCommand(async () =>
-                {
-                    CurPage = TimerPage;
-                }
-                );
+    public ICommand GoToSecond { get; }
 
-            }
-
-        }
-
-        public PageNavigation()
-        {
-            
-        }
-        public string? Title { get; }
-
-        public ICommand GoToSecond { get; }
-
-        private async Task GoToSecondView()
-        {
-            await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
-        }
+    private async Task GoToSecondView()
+    {
+        await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
     }
 }

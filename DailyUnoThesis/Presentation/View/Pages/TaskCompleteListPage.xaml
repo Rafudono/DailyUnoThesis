@@ -107,7 +107,7 @@ Fill="Blue" Margin="5"/>
         </Grid>
 
 
-        <Grid x:Name="CatBanner" Visibility="Collapsed" >
+        <!--<Grid x:Name="CatBanner" Visibility="Collapsed" >
             <Grid Background="Gray" Opacity="0.6">
             </Grid>
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
@@ -121,7 +121,7 @@ Fill="Blue" Margin="5"/>
             </Border>
 
 
-        </Grid>
+        </Grid>-->
 
     </Grid>
 </Page>
