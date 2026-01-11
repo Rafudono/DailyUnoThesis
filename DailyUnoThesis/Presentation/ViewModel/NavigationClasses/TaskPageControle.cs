@@ -190,14 +190,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         }
 
 
-        public void GetLists()
+        public async void GetLists()
         {
             TaskListPageToday = new();
             TaskListPageComplete = new();
             SelectedCategory = new();
             TaskOverdueListPage = new();
             TaskListPageCategory = new();
-            GetCaterogy();
+            await GetCaterogy();
         }
       
 
@@ -215,7 +215,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListTodayPage()
         {
-           this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+           await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskListPageToday;
                 //await TaskListPageToday.GetTodayPage();
@@ -226,7 +226,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListCompletePage()
         {
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskListPageComplete;
                 //await TaskListPageComplete.GetCompletePage();
@@ -236,7 +236,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListOverduePage()
         {
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskOverdueListPage;
                 //await TaskListPageComplete.GetCompletePage();
@@ -248,7 +248,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         public async Task GetListCategotyPage()
         {
 
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskListPageCategory;
                 TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
@@ -262,7 +262,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             Category category = new Category() { Title = CategoryTitle };
             await APIHost.GetInstance().CreateCategory(category);
             await GetCaterogy();
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 TaskPages.CloseCatBannerClass();
             });
@@ -273,7 +273,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         {
             Categories = await APIHost.GetInstance().GetCategories();
             Categories = new List<Category>(Categories);
-            this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 var en = TaskListPageCategory.DataContext as TaskListControle;
                 en?.GetCategories();

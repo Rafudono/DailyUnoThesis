@@ -30,8 +30,7 @@
 
                 <ListBox ItemsSource="{Binding Missions}"
                          SelectedItem="{Binding Task}"
-                         Height="600"
-                         ItemTemplate="{StaticResource MissionTemplate}" />
+                         Height="600"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Column="1">
