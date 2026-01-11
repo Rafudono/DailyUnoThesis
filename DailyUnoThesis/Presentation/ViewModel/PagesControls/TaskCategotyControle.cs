@@ -282,18 +282,21 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
 
             Missions = new();
-            foreach (Mission mis in missions)
+            if (missions != null)
             {
-
-                if (mis.IdUpMission == null)
+                foreach (Mission mis in missions)
                 {
-                    mis.LevelUp = 1;
-                    Missions.Add(mis);
-                    foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
+
+                    if (mis.IdUpMission == null)
                     {
-                        downMis.LevelUp = 2;
-                        Missions.Add(downMis);
-                        Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
+                        mis.LevelUp = 1;
+                        Missions.Add(mis);
+                        foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
+                        {
+                            downMis.LevelUp = 2;
+                            Missions.Add(downMis);
+                            Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
+                        }
                     }
                 }
                 //else

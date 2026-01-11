@@ -204,7 +204,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         public async Task GetListPage()
         {
            
-            this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+           await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
                 await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();

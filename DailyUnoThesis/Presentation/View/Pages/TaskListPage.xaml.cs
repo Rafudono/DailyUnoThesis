@@ -55,15 +55,15 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //{
         //    try
         //    {
-        //      await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //        {
-        //            var en = DataContext as TaskListControle;
-        //             await en.GetToday();
-        //        });
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.GetToday();
+        //          });
         //    }
         //    catch (Exception ex)
         //    {
-        //      var dialog = new ContentDialog{Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };  await dialog.ShowAsync();
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
         //    }
         //}
 
@@ -71,15 +71,15 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //{
         //    try
         //    {
-        //      await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //        {
-        //            var en = DataContext as TaskListControle;
-        //            await en.GetComplete();
-        //        });
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.GetComplete();
+        //          });
         //    }
         //    catch (Exception ex)
         //    {
-        //      var dialog = new ContentDialog{Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };  await dialog.ShowAsync();
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
         //    }
         //}
 

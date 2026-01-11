@@ -12,7 +12,6 @@ public partial class PageNavigation : Base
 {
 private INavigator _navigator;
 
-    [ObservableProperty]
     private string? name;
 
     private static PageNavigation instance;
@@ -108,8 +107,8 @@ private INavigator _navigator;
 
     public ICommand GoToSecond { get; }
 
-    private async Task GoToSecondView()
-    {
-        await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
-    }
+    //private async Task GoToSecondView()
+    //{
+    //    await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
+    //}
 }

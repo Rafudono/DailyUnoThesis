@@ -4,10 +4,12 @@
     xmlns:local="using:DailyUnoThesis.Presentation.View.Pages"
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
-    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls">
+    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls"
+    DataContext="{StaticResource Control}">
 
     <Page.Resources>
-       
+        <control:TaskListControle x:Key="Control"/>
+        <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
     </Page.Resources>
 
     <Grid Background="CadetBlue">

@@ -18,6 +18,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
         public TaskListPageCategory()
         {
             this.InitializeComponent();
+            DataContext = ViewModel;
             ViewModel.SetDispatcher(Dispatcher);
             ViewModel?.SetControl(this);
             ViewModel?.FillData();
