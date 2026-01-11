@@ -15,22 +15,23 @@ using Windows.UI.Popups;
 //using System.Windows.Navigation;
 //using System.Windows.Shapes;
 
-namespace DailyUnoThesis.Presentation.View.Pages;
-
-/// <summary>
-/// Логика взаимодействия для TaskListPage.xaml
-/// </summary>
-public partial class TaskListPage : Page
+namespace DailyUnoThesis.Presentation.View.Pages
 {
-    public TaskListControle ViewModel { get; } = new();
-    TaskListPage pass;
-    public TaskListPage()
+    /// <summary>
+    /// Логика взаимодействия для TaskListPage.xaml
+    /// </summary>
+    public partial class TaskListPage : Page
     {
-        this.InitializeComponent();
-        pass = this;
-        DataContext = ViewModel;
-        ViewModel.SetDispatcher(Dispatcher);
-        ViewModel?.SetControl(this);
+        //public TaskListControle ViewModel { get; } = new();
+        TaskListPage pass;
+        public TaskListPage()
+        {
+            this.InitializeComponent();
+            pass = this;
+            //DataContext = ViewModel;
+            //var en = DataContext as TaskListControle;
+            //en.SetDispatcher(Dispatcher);
+            //en?.SetControl(this);
 
     }
 

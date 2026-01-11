@@ -11,7 +11,7 @@ xmlns:con="clr-namespace:DailyUnoThesis.Models.Conventers"
       DataContext="{Binding Control}"
       d:DesignHeight="450" d:DesignWidth="800">
 
-    <Page.Resources>
+    <!--<Page.Resources>
         <control:TaskCompleteControle x:Key="Control"/>
         <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
         <DataTemplate x:Key="x" x:DataType="mod:Mission" >
@@ -39,7 +39,7 @@ Fill="Blue" Margin="5"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
-    </Page.Resources>
+    </Page.Resources>-->
 
     <Grid Background="CadetBlue">
         <Grid.ColumnDefinitions>

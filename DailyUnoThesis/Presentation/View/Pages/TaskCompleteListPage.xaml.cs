@@ -22,12 +22,12 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskCompleteListPage : Page
     {
-        public TaskCompleteControle ViewModel { get; } = new();
+        //public TaskCompleteControle ViewModel { get; } = new();
 
         public TaskCompleteListPage()
         {
             this.InitializeComponent();
-            DataContext = ViewModel; 
+            //DataContext = ViewModel; 
         }
     }
 }

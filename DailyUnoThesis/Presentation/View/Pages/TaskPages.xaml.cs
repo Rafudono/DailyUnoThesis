@@ -28,7 +28,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             ViewModel.SetDispatcher(Dispatcher);
             ViewModel?.SetControl(pass);
             ViewModel.GetLists();
-            Task.Run(async () => { await GetTaskCatPage(ViewModel); });
+            //Task.Run(async () => { await GetTaskCatPage(ViewModel); });
         }
 
         private async Task GetTaskCatPage(TaskPageControle? en)
