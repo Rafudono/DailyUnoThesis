@@ -101,7 +101,7 @@ namespace DailyUnoThesis.Models
         public async Task<List<Mission>> GetMissions()
         {
 
-            var res = await client.GetAsync($"Missions");
+            var res = await client.GetAsync($"Missions?id={1}");
             if (res.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 string Error = await res.Content.ReadAsStringAsync();
@@ -109,6 +109,8 @@ namespace DailyUnoThesis.Models
                 {
                     Content = $"не удалось получить миссии \t  {Error} "
                 };
+                var dialog = new ContentDialog { Title = "Ошибка", Content = Error, CloseButtonText = "Закрыть" };
+                await dialog.ShowAsync();
             }
             else
                 Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);

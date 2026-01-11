@@ -5,12 +5,26 @@
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls"
-    DataContext="{StaticResource Control}">
-
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uen="using:Uno.Extensions.Navigation.UI"
+xmlns:utu="using:Uno.Toolkit.UI"
+xmlns:um="using:Uno.Material"
+NavigationCacheMode="Required"
+       mc:Ignorable="d"
+ Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <!--DataContext="{StaticResource Control}"-->
     <Page.Resources>
+        <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
+        <con:StringFormatConverter x:Key="StringFormatConverter" />
+    </Page.Resources>
+    <!--<Page.Resources>
         <control:TaskListControle x:Key="Control"/>
         <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
-    </Page.Resources>
+    </Page.Resources>-->
+    <Page.DataContext>
+        <control:TaskListControle/>
+ </Page.DataContext>
 
     <Grid Background="CadetBlue">
         <Grid.ColumnDefinitions>
@@ -20,7 +34,7 @@
 
         <Grid Grid.Column="0" Background="BlanchedAlmond">
             <StackPanel Margin="10">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Height="150">
                     <TextBlock Text="папки" />
                     <ComboBox Width="Auto"
                               DisplayMemberPath="Title"
@@ -28,10 +42,65 @@
                               ItemsSource="{Binding Categories}" />
                 </StackPanel>
 
-                <ListBox ItemsSource="{Binding Missions}"
-                         SelectedItem="{Binding Task}"
+                <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
+Height="600">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Spacing="2">
+                                --><!-- item itself --><!--
+                                <TextBlock Text="{Binding Title}" />
+
+                                --><!-- parent DataContext.SomeText --><!--
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>-->
+
+                <ListView ItemsSource="{Binding Missions}"
+                         SelectedItem="{Binding Task, Mode=TwoWay}"  SelectionMode="Single"
                          Height="600"
-                         ItemTemplate="{StaticResource MissionTemplate}" />
+                          >
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="mod:Mission">
+                            <Grid Margin="{x:Bind LevelUp, Converter={StaticResource LevelToMarginConverter}}">
+                                <StackPanel Orientation="Horizontal" Padding="5">
+
+                                     Левый индикатор 
+                                    <Ellipse Width="20" Height="20" 
+                             Fill="Blue" 
+                             VerticalAlignment="Center" 
+                             Margin="5"/>
+
+                                    <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
+                                         Заголовок 
+                                        <TextBlock Text="{Binding Title}" 
+                                   FontSize="20" 
+                                   FontWeight="Medium"/>
+
+                                         Нижняя строка: Дата и Категория 
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                             Форматирование даты в x:Bind делается через метод или простой Binding 
+                                            <TextBlock Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd-MM-yyyy}'}" 
+                                       Foreground="Gray" />
+
+                                            <TextBlock Foreground="Gray">
+                                <Run Text="#"/>
+                                <Run Text="{Binding Category.Title}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                         Разделитель (вместо Line лучше Rectangle) 
+                                        <Rectangle Height="1" 
+                                   Fill="Black" 
+                                   Opacity="0.2" 
+                                   Margin="0,8,0,0" 
+                                   HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
         </Grid>
         <Grid Grid.Column="1">

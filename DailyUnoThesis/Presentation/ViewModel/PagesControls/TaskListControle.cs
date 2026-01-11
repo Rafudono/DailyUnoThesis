@@ -15,8 +15,10 @@ using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
-    public class TaskListControle: Base
+    public partial class TaskListControle: Base
     {
+        public int[] Items { get; } = new[] { 1, 2, 3 };
+        public string SomeText { get; } = "Lorem Ipsum";
         private CoreDispatcher dispatcher { get; set; }
         //public PageNavigation Navigation;
         private TaskListPage TaskPages;
@@ -64,8 +66,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 Signal();
             }
         }
-
-        private List<Mission> missions { get; set; }
+        //[ObservableProperty]
+        private List<Mission> missions {get; set;}   
 
         private Mission task { get; set; }
 
@@ -74,7 +76,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             get => task; set
             {
                 task = value;
-                FindId();  
+                FindId();
                 Signal();
                 ChangeCategory();
             }
@@ -227,7 +229,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             GetCategories();
 
             SelectedCategory = new();
-            //FillData();
+            FillData();
         }
 
         private async void CreateAndEditNewTask()

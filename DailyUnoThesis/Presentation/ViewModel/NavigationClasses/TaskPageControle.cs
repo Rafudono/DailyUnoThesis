@@ -300,7 +300,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             if (this.dispatcher == null)
             {
                 this.dispatcher = dispatcher;
-                GetListPage();
+                //GetListPage();
             }
 
         }

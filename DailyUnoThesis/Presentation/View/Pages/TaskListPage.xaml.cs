@@ -22,15 +22,16 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskListPage : Page
     {
-        public TaskListControle ViewModel { get; } = new();
+        //public TaskListControle ViewModel { get; } = new();
         TaskListPage pass;
         public TaskListPage()
         {
             this.InitializeComponent();
             pass = this;
-            DataContext = ViewModel;
-            ViewModel.SetDispatcher(Dispatcher);
-            ViewModel?.SetControl(this);
+            //DataContext = ViewModel;
+            //var en = DataContext as TaskListControle;
+            //en.SetDispatcher(Dispatcher);
+            //en?.SetControl(this);
 
         }
 
