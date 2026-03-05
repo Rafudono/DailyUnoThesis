@@ -9,6 +9,9 @@ public partial class Category
     public string Title { get; set; } = null!;
 
     public int IdBigBoss { get; set; }
+    public int? IdUpCategory { get; set; }
+    public virtual Category? IdUpCategoryNavigation { get; set; }
+    public virtual ICollection<Category> InverseIdUpCategoryNavigation { get; set; } = new List<Category>();
 
     public virtual ICollection<Mission>? Missions { get; set; } = new List<Mission>();
 

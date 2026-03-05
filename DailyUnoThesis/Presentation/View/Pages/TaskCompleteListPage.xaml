@@ -7,10 +7,23 @@
       xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
 xmlns:con="clr-namespace:DailyUnoThesis.Models.Conventers"
    xmlns:control="clr-namespace:DailyUnoThesis.Presentation.ViewModel.PagesControls" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:uen="using:Uno.Extensions.Navigation.UI"
+xmlns:utu="using:Uno.Toolkit.UI"
+xmlns:um="using:Uno.Material"
+NavigationCacheMode="Required"
       mc:Ignorable="d" 
-      DataContext="{Binding Control}"
       d:DesignHeight="450" d:DesignWidth="800">
-
+    <Page.Resources>
+        <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
+        <con:StringFormatConverter x:Key="StringFormatConverter" />
+        <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter"/>
+        <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+    </Page.Resources>
+    <Page.DataContext>
+        <control:TaskCompleteControle/>
+    </Page.DataContext>
     <!--<Page.Resources>
         <control:TaskCompleteControle x:Key="Control"/>
         <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
@@ -54,21 +67,62 @@ Fill="Blue" Margin="5"/>
 
                 </StackPanel>
 
-                <ListBox ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}" Height="600">
+               
+                <TreeView ItemsSource="{Binding Missions}" 
+          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}">
+                    <TreeView.ItemTemplate>
+                        <DataTemplate x:DataType="mod:Mission">
+                            <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" >
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal" Padding="5">
+                                        <Ellipse Width="20" Height="20" Fill="Blue" VerticalAlignment="Center" Margin="5"/>
+                                        <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
 
-                </ListBox>
+                                            <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
 
+                                                <TextBlock>
+                                                    <Run Text="#"/>
+                                                    <Run Text="{Binding Category.Title}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </TreeViewItem>
+
+                        </DataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
 
             </StackPanel>
 
         </Grid>
-        <Grid Grid.Column="1">
-            <ScrollViewer Height="{Binding ElementName=mainPage, Path=ActualHeight, Converter={StaticResource heightOffsetConverter}}">
-                <StackPanel Margin="10">
-                    <TextBlock Text="{Binding Task.Title}" MinWidth="300"  Height="30" FontSize="20"/>
 
-                    <TextBlock Text="{Binding Task.Description}" MinWidth="300"  Height="50" TextWrapping="Wrap" FontSize="15"/>
-                    <ListBox Background="Transparent" ItemsSource="{Binding Subtasks}" MinHeight="40">
+
+        <Grid Grid.Column="1">
+            <ScrollViewer>
+                <StackPanel Margin="10">
+                    <TextBlock Text="{Binding Task.Title, Mode=TwoWay}" MinWidth="300"  Height="30" FontSize="20"/>
+
+                    <TextBlock Text="{Binding Task.Description, Mode=TwoWay}" MinWidth="300"  Height="50" TextWrapping="Wrap" FontSize="15"/>
+
+                    <ListView Margin="0 10 0 0" Background="Transparent"
+    ItemsSource="{Binding Subtasks, Mode=TwoWay}"
+    MinHeight="10"
+    Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="mod:Mission">
+                                <TextBlock Width="300" Height="30" Margin="0,0,0,3" Padding="3"
+                Text="{Binding Title, Mode=TwoWay}" 
+                FontSize="16" FontWeight="Bold" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <!--<ListBox Background="Transparent" ItemsSource="{Binding Subtasks}" MinHeight="40">
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -85,17 +139,14 @@ Fill="Blue" Margin="5"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
 
-                    </ListBox>
-                    <Button x:Name="AddSubTask" Content="добавить подзадачу +" Command="{Binding CreateSubtask}">
-                       
-                    </Button>
+                    </ListBox>-->
                     <Ellipse Width="30" HorizontalAlignment="Left"
 Height="30"
 Fill="Blue" Margin="5"/>
                     <StackPanel Orientation="Horizontal">
-                        <DatePicker IsEnabled="False"/>
+                        <TextBlock />
                         <TextBlock Text="---" Margin="10 0 10 0 "/>
-                        <DatePicker IsEnabled="False" SelectedDate="{Binding Task.EndDate}"/>
+                        <TextBlock  Text="{Binding Task.EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
                     </StackPanel>
                    
                     <TextBlock Height="30" Text="{Binding Task.Category}" >

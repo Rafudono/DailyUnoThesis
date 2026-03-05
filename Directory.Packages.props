@@ -9,5 +9,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="MvvmLightLibs" Version="5.4.1.1" />
+    <PackageVersion Include="Uno.Extensions.Reactive" Version="7.0.17" />
+    <PackageVersion Include="Uno.Microsoft.Xaml.Behaviors.Interactivity" Version="3.0.3" />
+    <PackageVersion Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" Version="3.0.3" />
   </ItemGroup>
 </Project>

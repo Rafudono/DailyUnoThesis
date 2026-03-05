@@ -1,5 +1,3 @@
-using DailyUnoThesis.Models;
-using DailyUnoThesis.Models.MainClasses;
 //using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
@@ -7,14 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models;
+using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using Windows.UI.Core;
 //using System.Windows.Threading;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
     public class TaskCompleteControle : Base
     {
-        private Dispatcher dispatcher;
+        private CoreDispatcher dispatcher;
         //public PageNavigation Navigation;
         private TaskCompleteListPage TaskPages;
         private string TypePage;
@@ -276,7 +277,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
-        internal void SetDispatcher(Dispatcher dispatcher)
+        internal void SetDispatcher(CoreDispatcher dispatcher)
         {
             this.dispatcher = dispatcher;
         }
