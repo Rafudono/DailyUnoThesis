@@ -35,7 +35,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             en?.SetControl(this);
             //this.DataContextChanged += OnDataContextChanged;
 
-    }
+        }
 
 
 
@@ -43,7 +43,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //{
 
 
-            
+
         //    if (args.NewValue is TaskListControle viewModel)
         //    {
         //        // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
@@ -66,15 +66,15 @@ namespace DailyUnoThesis.Presentation.View.Pages
         {
             try
             {
-              await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    var en = DataContext as TaskListControle;
-                    await en.FillData();
-                });
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                  {
+                      var en = DataContext as TaskListControle;
+                      await en.FillData();
+                  });
             }
             catch (Exception ex)
             {
-                var dialog = new ContentDialog{Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };  
+                var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };
                 await dialog.ShowAsync();
             }
         }
@@ -101,19 +101,20 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //    }
         //}
 
-    //public async Task GetCompletePage()
-    //{
-    //    try
-    //    {
-    //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-    //          {
-    //              var en = DataContext as TaskListControle;
-    //              await en.GetComplete();
-    //          });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
-    //    }
-    //}
+        //public async Task GetCompletePage()
+        //{
+        //    try
+        //    {
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.GetComplete();
+        //          });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
+        //    }
+        //}
+    }
 }
