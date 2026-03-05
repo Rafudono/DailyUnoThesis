@@ -33,54 +33,55 @@ namespace DailyUnoThesis.Presentation.View.Pages
             //en.SetDispatcher(Dispatcher);
             //en?.SetControl(this);
 
-    }
+        }
 
-    public async Task GetTaskCatPage()
-    {
-        try
+        public async Task GetTaskCatPage()
         {
-          await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+            try
             {
-                var en = DataContext as TaskListControle;
-                await en.FillData();
-                int c = en.Missions.Count;
-            });
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                  {
+                      var en = DataContext as TaskListControle;
+                      await en.FillData();
+                      int c = en.Missions.Count;
+                  });
+            }
+            catch (Exception ex)
+            {
+                var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };
+                await dialog.ShowAsync();
+            }
         }
-        catch (Exception ex)
-        {
-            var dialog = new ContentDialog{Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };  
-            await dialog.ShowAsync();
-        }
-    }
-    //public async Task GetTodayPage()
-    //{
-    //    try
-    //    {
-    //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-    //          {
-    //              var en = DataContext as TaskListControle;
-    //              await en.GetToday();
-    //          });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
-    //    }
-    //}
+        //public async Task GetTodayPage()
+        //{
+        //    try
+        //    {
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.GetToday();
+        //          });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
+        //    }
+        //}
 
-    //public async Task GetCompletePage()
-    //{
-    //    try
-    //    {
-    //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-    //          {
-    //              var en = DataContext as TaskListControle;
-    //              await en.GetComplete();
-    //          });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
-    //    }
-    //}
+        //public async Task GetCompletePage()
+        //{
+        //    try
+        //    {
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.GetComplete();
+        //          });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
+        //    }
+        //}
+    }
 }
