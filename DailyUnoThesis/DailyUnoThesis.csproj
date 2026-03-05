@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MvvmLightLibs" />
+    <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Presentation\View\Timer\RegularTimer.xaml">
@@ -130,6 +131,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Presentation\View\Calendar\BlankPage1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\BlankPage1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\SelectedAndNewTask.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

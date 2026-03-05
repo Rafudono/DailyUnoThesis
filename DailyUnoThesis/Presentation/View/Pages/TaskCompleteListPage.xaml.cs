@@ -28,6 +28,9 @@ namespace DailyUnoThesis.Presentation.View.Pages
         {
             this.InitializeComponent();
             //DataContext = ViewModel; 
+            var en = DataContext as TaskCompleteControle;
+            en?.SetDispatcher(Dispatcher);
+            en?.SetControl(this);
         }
     }
 }

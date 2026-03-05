@@ -5,8 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
+using Uno.Extensions.Specialized;
+using Uno.Toolkit.UI;
 using Windows.UI.Core;
 namespace DailyUnoThesis.Presentation.View.Pages
 {
@@ -15,21 +18,67 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskPages : Page
     {
+        public Frame framePage;
+        public Frame framePageTask;
+        public ListView BaseList;
+        public ListView CategoriesList;
         PageNavigation Navigation;
         TaskPages pass;
-        public TaskPageControle ViewModel { get; } = new();
+        public Grid GridStatic;
+        double acpanel;
+        
+        //public TaskPageControle ViewModel { get; } = new();
         string test {  get; set; }  
         public TaskPages()
         {
             this.InitializeComponent();
             pass = this;
-            //DataContext = TaskPageControle.GetInstance();   
-            DataContext = ViewModel;
-            ViewModel.SetDispatcher(Dispatcher);
-            ViewModel?.SetControl(pass);
-            ViewModel.GetLists();
+            framePage = ContentFrame;
+            GridStatic = TaskContentGrid;
+            framePageTask = ContentFrameTask;
+            acpanel = FilterSplitView.ActualWidth;
+            //BaseList = BaseListView;
+            //CategoriesList = CategoriesListView;
+
+            //DataContext = ViewModel;
+
+            //var en = DataContext as TaskPageControle;
+            //en.SetDispatcher(Dispatcher);
+            //en?.SetControl(this);
+            //en?.BuildMenu();
+            //en?.GetLists();
+            //DataContext = ViewModel;
+            //ViewModel.SetDispatcher(Dispatcher);
+            //ViewModel?.SetControl(pass);
+            //ViewModel.GetLists();
             //Task.Run(async () => { await GetTaskCatPage(ViewModel); });
+            this.DataContextChanged += OnDataContextChanged;
         }
+
+        private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+
+
+            // Проверяем, что DataContext — это наша ViewModel
+            if (args.NewValue is TaskPageControle viewModel)
+            {
+                // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
+                viewModel.SetDispatcher(this.Dispatcher);
+
+                // Передаем саму View
+                viewModel.SetControl(this);
+                viewModel.GetCaterogy();
+                //BaseList.SelectedItem = BaseList.IndexOf(1);
+                //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                //{
+                // await viewModel.BuildMenu();
+                //BaseListView.SelectedItem = viewModel.ListNavigations[0];
+                ;
+                //});
+            }
+        }
+
+
 
         private async Task GetTaskCatPage(TaskPageControle? en)
         {
@@ -56,6 +105,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
         public void CloseCatBannerClass()
         {
              //CatBanner.Visibility = Visibility.Collapsed;         
+             
         }
 
 
@@ -75,5 +125,99 @@ namespace DailyUnoThesis.Presentation.View.Pages
         {
 
         }
+
+        private async void SelectorBar_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            INavigator _navigator = null;
+            var en =DataContext as TaskPageControle;
+            if ( en is TaskPageControle viewModel)
+            {
+                
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    _navigator = en._navigator;
+                });
+            }
+
+
+            var selectedItem = sender.SelectedItem;
+            // Предположим, в Tag у вас лежит объект Category или ваш NavMenuItem
+            if (selectedItem is NavMenuItem navItem )
+            {
+                if (navItem.Data is Category)
+                {
+                    await _navigator.NavigateRouteAsync(this, "ContentRegion/CategoryTasks", data: navItem.Data);
+                }
+                else
+                {
+                    await _navigator.NavigateRouteAsync(this, $"ContentRegion/{navItem.Route}");
+                }
+                // Явно вызываем навигатор и передаем данные (selectedCategory)
+                // 'this' указывает, что навигация должна быть ВНУТРИ текущего региона (контентной области)
+                
+            }
+
+        }
+
+        private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
+        {
+            if (GridStatic.Visibility == Visibility.Visible)
+            {
+                return;
+            }
+            await Task.Delay(100);
+            CategoriesRepeater.SelectedItem = null;
+            framePage.Visibility = Visibility.Collapsed;
+            GridStatic.Visibility = Visibility.Visible;
+
+
+        }
+        public void CollapsedStaticTabBar()
+        {
+
+            //StaticTabBar.SelectedIndex = -1;
+            //StaticTabBar.SelectedItem = null;
+            //StaticTabBar.SelectedIndex = -1;
+            //StaticTabBar.UpdateLayout();
+            foreach (var item in StaticTabBar.Items.OfType<TabBarItem>())
+            {
+                item.IsSelected = false;
+            }
+            StaticTabBar.SelectedIndex = -1;
+            StaticTabBar.SelectedItem = null;
+        }
+
+        //private void OpenFilters_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //FilterSplitView.Visibility = Visibility.Visible;
+        //    FilterSplitView.IsPaneOpen = true;
+        //    double sw = FilterSplitView.ActualWidth;
+        //    //double cg = TaskContentGrid.ActualWidth;
+        //    //TaskContentGrid.Width = cg - sw;
+        //}
+
+        //private void CloseFilters_Click(object sender, RoutedEventArgs e)
+        //{
+        //    FilterSplitView.IsPaneOpen = false;
+        //    //FilterSplitView.Visibility = Visibility.Collapsed;
+        //    //double sw = FilterSplitView.OpenPaneLength;
+        //    //double cg = TaskContentGrid.ActualWidth;
+        //    //TaskContentGrid.Width = cg + sw;
+        //}
+
+        //private void GoHome_Click(object sender, RoutedEventArgs e)
+        //{
+        //    ContentFrame.Navigate(typeof(TaskListPage));
+        //}
+
+        //private void GoToday_Click(object sender, RoutedEventArgs e)
+        //{
+        //    ContentFrame.Navigate(typeof(TaskTodayListPage));
+        //}
     }
 }

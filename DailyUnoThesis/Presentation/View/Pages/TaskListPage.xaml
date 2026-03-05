@@ -12,11 +12,38 @@ xmlns:utu="using:Uno.Toolkit.UI"
 xmlns:um="using:Uno.Material"
 NavigationCacheMode="Required"
        mc:Ignorable="d"
+      x:Name="MyPageRoot"
  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <!--DataContext="{StaticResource Control}"-->
     <Page.Resources>
         <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
         <con:StringFormatConverter x:Key="StringFormatConverter" />
+        <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter"/>
+        <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+
+
+        <Style TargetType="Grid" x:Key="OldPaper">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush 
+            Center="0.5,0.6" 
+            RadiusX="1" RadiusY="0.9" 
+            GradientOrigin="0.5,0.6">
+
+                        <!-- Первый цвет: занимает 60% площади (Offset 0.6) -->
+                        <GradientStop Color="#f2eff5" Offset="0.02" />
+
+                        <!-- Второй цвет: плавный переход -->
+                        <GradientStop Color="White" Offset="0.88" />
+
+                        <!-- Третий цвет: темная кайма на самом краю -->
+                        <GradientStop Color="#dfbba9" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <!--<Page.Resources>
         <control:TaskListControle x:Key="Control"/>
@@ -26,37 +53,180 @@ NavigationCacheMode="Required"
         <control:TaskListControle/>
  </Page.DataContext>
 
-    <Grid Background="CadetBlue">
+    <Grid Background="#fafaf9">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="0.6*" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Background="BlanchedAlmond">
-            <StackPanel Margin="10">
-                <StackPanel Orientation="Horizontal" Height="150">
-                    <TextBlock Text="папки" />
-                    <ComboBox Width="Auto"
+        <Grid Grid.Column="0" Background="#f5f8ff">
+            <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
+                <StackPanel Margin="10">
+                    <StackPanel Orientation="Horizontal" Height="150">
+                        <TextBlock Text="папки" />
+                        <ComboBox Width="Auto"
                               DisplayMemberPath="Title"
                               SelectedItem="{Binding SelectedFilterCategory}"
                               ItemsSource="{Binding Categories}" />
-                </StackPanel>
+                    </StackPanel>
 
-                <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
+                    <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
 Height="600">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Spacing="2">
-                                --><!-- item itself --><!--
+                                -->
+                    <!-- item itself -->
+                    <!--
                                 <TextBlock Text="{Binding Title}" />
 
-                                --><!-- parent DataContext.SomeText --><!--
+                                -->
+                    <!-- parent DataContext.SomeText -->
+                    <!--
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>-->
 
-                <ListView ItemsSource="{Binding Missions}"
+
+
+                    <TreeView ItemsSource="{Binding Missions}" 
+          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}">
+                        <!--<TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="True"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>-->
+                        <TreeView.ItemTemplate>
+                            <DataTemplate x:DataType="mod:Mission">
+                                <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" >
+                                    <Border CornerRadius="15" BorderBrush="Black" BorderThickness="1" Margin="3">
+                                        <Grid Background="#ffffff" Width="Auto" MinWidth="300" MaxWidth="700">
+                                            <StackPanel Orientation="Horizontal" Padding="5">
+
+                                                
+                                                <!--<Ellipse Width="20" Height="20" Fill="Blue" VerticalAlignment="Center" Margin="5"/>-->
+                                                <ToggleButton CommandParameter="{Binding}" IsChecked="{Binding IsComplete, Mode=TwoWay}"
+                                                     Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}"
+                                                    Background="Transparent"
+                                                    Padding="0" MinWidth="0" MinHeight="0">
+                                                    <ToggleButton.Template>
+                                                        <ControlTemplate TargetType="ToggleButton">
+                                                            <Grid x:Name="RootGrid" Background="Transparent">
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroup x:Name="CheckStates">
+                                                                        <!-- Анимация возврата к ПУСТОМУ кругу -->
+                                                                        <VisualState x:Name="Unchecked">
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" 
+                                                                                 Storyboard.TargetProperty="Opacity" 
+                                                                                 To="0" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
+                                                                                 Storyboard.TargetProperty="ScaleX" 
+                                                                                 To="0.4" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
+                                                                                 Storyboard.TargetProperty="ScaleY" 
+                                                                                 To="0.4" Duration="0:0:0.2"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>
+                                                                        <!--<VisualState x:Name="Checked">
+                                                                            <VisualState.StateTriggers>
+                                                                                --><!-- Триггер: если IsComplete == True, активируй это состояние --><!--
+                                                                                <StateTrigger IsActive="{Binding IsComplete}" />
+                                                                            </VisualState.StateTriggers>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>-->
+
+                                                                        <!-- Анимация ЗАПОЛНЕНИЯ круга -->
+                                                                        <VisualState x:Name="Checked">
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" 
+                                                                                 Storyboard.TargetProperty="Opacity" 
+                                                                                 To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
+                                                                                 Storyboard.TargetProperty="ScaleX" 
+                                                                                 To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
+                                                                                 Storyboard.TargetProperty="ScaleY" 
+                                                                                 To="1" Duration="0:0:0.2"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>
+
+                                                                        <!-- Чтобы не ждать ухода курсора, дублируем состояния -->
+                                                                        <VisualState x:Name="CheckedPointerOver">
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>
+
+                                                                        <VisualState x:Name="UncheckedPointerOver">
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="0.4" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="0.4" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>
+
+                                                                        <!--<VisualState x:Name="CheckedPressed">
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
+                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
+                                                                            </Storyboard>
+                                                                        </VisualState>-->
+                                                                    </VisualStateGroup>
+                                                                </VisualStateManager.VisualStateGroups>
+
+                                                                <!-- Контур круга -->
+                                                                <Ellipse Width="22" Height="22" 
+                                                                 Stroke="{ThemeResource SystemControlHighlightAccentBrush}" 
+                                                                 StrokeThickness="2"/>
+
+                                                                <!-- Заливка (изначально прозрачная и маленькая) -->
+                                                                <Ellipse x:Name="FillCircle" 
+                                                                     Width="22" Height="22" 
+                                                                     Fill="{ThemeResource SystemControlHighlightAccentBrush}" 
+                                                                     Opacity="0"
+                                                                     RenderTransformOrigin="0.5,0.5">
+                                                                    <Ellipse.RenderTransform>
+                                                                        <ScaleTransform x:Name="FillScale" ScaleX="0.4" ScaleY="0.4"/>
+                                                                    </Ellipse.RenderTransform>
+                                                                </Ellipse>
+                                                            </Grid>
+                                                        </ControlTemplate>
+                                                    </ToggleButton.Template>
+                                                </ToggleButton>
+                                                
+                                                <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
+
+                                                    <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                                        <TextBlock Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+
+                                                        <TextBlock>
+                                                    <Run Text="#"/>
+                                                    <Run Text="{Binding Category.Title}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </TreeViewItem>
+
+                            </DataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+
+
+                    <!--<ListView ItemsSource="{Binding Missions}"
                          SelectedItem="{Binding Task, Mode=TwoWay}"  SelectionMode="Single"
                          Height="600"
                           >
@@ -100,69 +270,90 @@ Height="600">
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Column="1">
-            <ScrollViewer>
-                <StackPanel Margin="10">
-                    <Button Content="новый"
-                            HorizontalAlignment="Right"
-                            Command="{Binding NewTask}" />
-
-                    <TextBox Text="{Binding Task.Title}"
-                             MinWidth="300"
-                             PlaceholderText="Введите название"
-                             Height="30" FontSize="20" />
-
-                    <TextBox Text="{Binding Task.Description}"
-                             MinWidth="300"
-                             PlaceholderText="Введите описание"
-                             Height="50" TextWrapping="Wrap" FontSize="15" />
-
-                    <ListBox Background="Transparent"
-                             ItemsSource="{Binding Subtasks}"
-                             MinHeight="40"
-                             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="mod:Mission">
-                                <TextBox Width="300" Height="30" Margin="0,0,0,3" Padding="3"
-                                         Text="{Binding Title}"
-                                         PlaceholderText="Новая подзадача"
-                                         FontSize="16" FontWeight="Bold" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <Button Content="добавить подзадачу +"
-                            Command="{Binding CreateSubtask}"
-                            Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
-
-                    <Ellipse Width="30" Height="30" Fill="Blue" Margin="5" HorizontalAlignment="Left" />
-
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker IsEnabled="False" />
-                        <TextBlock Text="---" Margin="10,0,10,0" />
-                        <DatePicker SelectedDate="{Binding Task.EndDate}" />
-                    </StackPanel>
-                    <TextBlock Text="список папок" />
-
-                    <Grid>
-                        <TextBlock Text="{Binding SelectedCategory.Title}"
-                                   FontSize="20"
-                                   Visibility="{Binding SelectedCategory.Id, Converter={StaticResource ZeroCategoryVisibilityConverter}}" />
-
-                        <ComboBox FontSize="20" Height="30"
-                                  DisplayMemberPath="Title"
-                                  SelectedItem="{Binding SelectedCategory}"
-                                  ItemsSource="{Binding Categories}"
-                                  Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelEquals1VisibilityConverter}}" />
-                    </Grid>
-
-                    <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+                </ListView>-->
                 </StackPanel>
             </ScrollViewer>
         </Grid>
+        <Border Grid.Column="1"  BorderThickness="1,0,0,0" CornerRadius="8 0 0 8" BorderBrush="#311a11">
+            <Grid Grid.Column="1" Background="#ecf1ff">
+                <!--<Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <RadialGradientBrush Center="0.5,0.1" RadiusX="1" RadiusY="0.9" GradientOrigin="0.5,0.1">
+                                    --><!-- Первый цвет: занимает 60% площади (Offset 0.6) --><!--
+                                    <GradientStop Color="#f2eff5" Offset="0.02" />
+                                    --><!-- Второй цвет: плавный переход --><!--
+                                    <GradientStop Color="#f2eff5" Offset="0.88" />
+                                    --><!-- Третий цвет: темная кайма на самом краю --><!--
+                                    <GradientStop Color="#dfbba9" Offset="1.0" />
+                                </RadialGradientBrush>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Grid.Style>-->
+                <ScrollViewer>
+                    <StackPanel Margin="10">
+                        <Button Content="новый"
+                            HorizontalAlignment="Right"
+                            Command="{Binding NewTask}" />
+
+                        <TextBox Text="{Binding Task.Title, Mode=TwoWay}"
+                             MinWidth="150"
+                             PlaceholderText="Введите название"
+                             Height="30" FontSize="20" />
+
+                        <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
+                             MinWidth="150"
+                             PlaceholderText="Введите описание"
+                             Height="50" TextWrapping="Wrap" FontSize="15" />
+
+                        <ListView Margin="0 10 0 0" Background="Transparent"
+                             ItemsSource="{Binding Subtasks, Mode=TwoWay}"
+                             MinHeight="10"
+                             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="mod:Mission">
+                                    <TextBox Width="300" Height="30" Margin="0,0,0,3" Padding="3"
+                                         Text="{Binding Title, Mode=TwoWay}"
+                                         PlaceholderText="Новая подзадача"
+                                         FontSize="16" FontWeight="Bold" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <Button Content="добавить подзадачу +"
+                            Command="{Binding CreateSubtask}"
+                            Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
+
+                        <Ellipse Width="30" Height="30" Fill="Blue" Margin="5" HorizontalAlignment="Left" />
+
+                        <StackPanel Orientation="Horizontal">
+                            <CalendarDatePicker Height="50" Width="130" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.StartDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
+                    Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
+                            <TextBlock Text="---" Margin="10,0,10,0" />
+                            <CalendarDatePicker Height="50" Width="130" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.EndDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
+                                            Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
+                        </StackPanel>
+                        <TextBlock Text="список папок" />
+
+                        <Grid>
+                            <TextBlock Text="{Binding SelectedCategory.Title}"
+                                   FontSize="20"
+                                   Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelTextBoxVisibilityConverter}, ConverterParameter={Binding SelectedCategory.Id}}" />
+
+                            <ComboBox FontSize="20" Height="30"
+                                  DisplayMemberPath="Title"
+                                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                  ItemsSource="{Binding Categories, Mode=TwoWay}"
+                                  Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelComboBoxVisibilityConverter}}" />
+                        </Grid>
+
+                        <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
         <!--<Grid x:Name="CatBanner" Visibility="{Binding IsCatBannerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid Background="Gray" Opacity="0.6" />
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">

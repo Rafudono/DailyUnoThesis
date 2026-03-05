@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using Windows.UI.Core;
 
 //using System.Windows.Controls;
@@ -79,6 +80,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 FindId();
                 Signal();
                 ChangeCategory();
+                
             }
         }
 
@@ -125,6 +127,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 if (Task.InverseIdUpMissionNavigation != null)
                     Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                PageNavigation.GetInstance().ChangeSelected(Task);
+                if (Task.Id != 0)
+                    PageNavigation.GetInstance().TaskPageControle.IsSplitViewPaneOpen = true;
+
+
+
             }
         }
         public User AuthPerson { get; set; }
@@ -220,16 +228,59 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         }
 
-       
+
+        private RelayCommand<Mission> completeTaskCommand;
+        public RelayCommand<Mission> CompleteTaskCommand
+        {
+            get
+            {
+                return completeTaskCommand ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (Mission != null)
+                    {
+                        if ((bool)Mission.IsComplete)
+                        {
+                        
+                            ChangeOfCompletionStatus(Mission);
+
+                            if (Mission.IdUpMission == 0 || Mission.IdUpMission == 0)
+                            {
+                                Missions.Remove(Mission);
+                            }
+
+
+                        }
+                        
+                        Missions = new(Missions);
+                        //await Task.Delay(500);
+
+                    }
+                }
+                );
+            }
+        }
+
+        private void ChangeOfCompletionStatus(Mission Mission)
+        {
+            foreach (var mis in Mission.InverseIdUpMissionNavigation)
+            {
+                mis.IsComplete = true;
+                if (mis.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    ChangeOfCompletionStatus(mis);
+                }
+            }
+        }
 
         public TaskListControle()
         {
             AuthPerson = AuthorizedUser.GetInstance().AuthUser;
-            Task = new() { LevelUp = 1 };
+           
             GetCategories();
 
             SelectedCategory = new();
             FillData();
+            Task = new() { LevelUp = 1 };
         }
 
         private async void CreateAndEditNewTask()
@@ -271,7 +322,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             Mission mission = Task;
             Task = new() { LevelUp = 1};
-
             List<Mission> missions = new List<Mission>();
             missions = await APIHost.GetInstance().GetMissions();
             //GetCategories();
@@ -309,8 +359,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
                     {
                         downMis.LevelUp = 2;
-                        Missions.Add(downMis);
-                        Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
+                        //Missions.Add(downMis);
+                        //Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
                     }
                 }
                 //else

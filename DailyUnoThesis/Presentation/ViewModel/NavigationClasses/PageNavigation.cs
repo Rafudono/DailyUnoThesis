@@ -1,5 +1,7 @@
+using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +27,39 @@ private INavigator _navigator;
     }
     public PageNavigation Navigation;
     private TaskPages TaskPages;
+    public TaskPageControle TaskPageControle;
+
     public TaskListPage TaskListPage;
     //public Pomodoro PomodoroPage;
     public PanelTimer TimerPage;
+
+
+
+    public TaskListPageCategory PageCategory;
+    public TaskCategotyControle CategotyControle;
+
+    public SelectedAndNewTask SelectedAndNewTask;
+    public TaskViewModel SelectedViewModel;
+    public void GetPageCategory(TaskListPageCategory pageCategory)
+    {
+
+        PageCategory = pageCategory;
+        CategotyControle = pageCategory.DataContext as TaskCategotyControle;
+        CategotyControle.GetIdCategory(1);
+    }
+
+
+    public void GetPageTask(SelectedAndNewTask page)
+    {
+        SelectedAndNewTask = page;
+        SelectedViewModel = page.DataContext as TaskViewModel;
+    }
+
+    public void ChangeSelected(Mission mission)
+    {
+        if(SelectedViewModel != null)
+        SelectedViewModel.GetTask(mission);
+    }
 
     public async void GetClass()
     {
