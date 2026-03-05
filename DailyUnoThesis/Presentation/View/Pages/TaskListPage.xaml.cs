@@ -35,7 +35,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             en?.SetControl(this);
             //this.DataContextChanged += OnDataContextChanged;
 
-        }
+    }
 
 
 
@@ -101,22 +101,19 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //    }
         //}
 
-        //public async Task GetCompletePage()
-        //{
-        //    try
-        //    {
-        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-        //          {
-        //              var en = DataContext as TaskListControle;
-        //              await en.GetComplete();
-        //          });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
-        //    }
-        //}
-
-
-    }
+    //public async Task GetCompletePage()
+    //{
+    //    try
+    //    {
+    //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+    //          {
+    //              var en = DataContext as TaskListControle;
+    //              await en.GetComplete();
+    //          });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
+    //    }
+    //}
 }

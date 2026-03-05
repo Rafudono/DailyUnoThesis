@@ -326,7 +326,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             missions = await APIHost.GetInstance().GetMissions();
             //GetCategories();
             await UpdateLists(mission, missions);
-          
+      
                
         }
 

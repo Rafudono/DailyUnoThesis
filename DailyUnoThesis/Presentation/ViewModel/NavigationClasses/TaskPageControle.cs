@@ -150,7 +150,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         //    set => SetProperty(ref _isSplitViewPaneOpen, value);
         //}
 
-        // Это свойство будет связано с ColumnDefinition.Width
+        // ��� �������� ����� ������� � ColumnDefinition.Width
 
 
 
@@ -308,17 +308,17 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
             ListNavigations = new()
             { 
-              "Все задания",
-              "На сегодня",
-              "Выполненные",
-              "Просроченные",
+              "��� �������",
+              "�� �������",
+              "�����������",
+              "������������",
             };
 
             //SelectedBaseCategory = ListNavigations[0];
             //GetListPage();
 
             //BuildMenu();
-            SplitViewDisplayMode = SplitViewDisplayMode.Inline; // Или другая модель
+            SplitViewDisplayMode = SplitViewDisplayMode.Inline; // ��� ������ ������
             SplitViewOpenPaneLength = 350;
             IsSplitViewPaneOpen = false;
             DynamicColumnWidth = 0;
@@ -331,7 +331,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             if (e.PropertyName == nameof(IsSplitViewPaneOpen) ||
                 e.PropertyName == nameof(SplitViewOpenPaneLength))
             {
-                // Вручную обновляем ширину, если свойства, от которых она зависит, изменились
+                // ������� ��������� ������, ���� ��������, �� ������� ��� �������, ����������
                 //await Task.Delay(150);
                 var newWidth = IsSplitViewPaneOpen ? new GridLength(SplitViewOpenPaneLength) : new GridLength(0);
                 DynamicColumnWidth = newWidth;
@@ -361,8 +361,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             TaskPages.framePage.Visibility = Visibility.Visible;
 
 
-            // Мы вызываем навигацию на тот же маршрут, но с новыми данными.
-            // Навигатор увидит этот вызов и обновит DataContext в регионе TaskContentRegion.
+            // �� �������� ��������� �� ��� �� �������, �� � ������ �������.
+            // ��������� ������ ���� ����� � ������� DataContext � ������� TaskContentRegion.
             //await _navigator.NavigateRouteAsync(this, "Category", data: category);
             //await _navigator.NavigateRouteAsync(this, "TaskContentRegion/Category", data: category);
 
@@ -378,25 +378,25 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         //        //{
         //        switch (value)
         //        {
-        //            case "Все задания":
+        //            case "��� �������":
         //                TaskPages.framePage.Navigate(typeof(TaskListPage));
         //                break;
-        //            case "На сегодня":
+        //            case "�� �������":
         //                TaskPages.framePage.Navigate(typeof(TaskTodayListPage));
         //                break;
-        //            case "Выполненные":
+        //            case "�����������":
         //                TaskPages.framePage.Navigate(typeof(TaskCompleteListPage));
         //                break;
-        //            case "Просроченные":
+        //            case "������������":
         //                TaskPages.framePage.Navigate(typeof(TaskOverdueListPage));
         //                break;
         //        }
         //        ////CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
         //        ////await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();
-        //        //CategoriesListView.SelectedItem = null; // Снимаем выделение с категорий
+        //        //CategoriesListView.SelectedItem = null; // ������� ��������� � ���������
         //        //ContentFrame.Navigate(typeof(HomePage));
         //        //});
-        //        // Ваша логика открытия
+        //        // ���� ������ ��������
         //        //SelectedCategory
         //    }
 
@@ -436,19 +436,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         {
             //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             //{
-                // 1. Статические пункты
-                MenuItemsNav.Add(new NavMenuItem("Все задания", "Accept", "TaskList"));
-            MenuItemsNav.Add(new NavMenuItem("На сегодня", "Accept", "Today"));
-            MenuItemsNav.Add(new NavMenuItem("Выполненные", "Accept", "Complete"));
-            MenuItemsNav.Add(new NavMenuItem("Просроченные", "Accept", "Overdue"));
+                // 1. ����������� ������
+                MenuItemsNav.Add(new NavMenuItem("��� �������", "Accept", "TaskList"));
+            MenuItemsNav.Add(new NavMenuItem("�� �������", "Accept", "Today"));
+            MenuItemsNav.Add(new NavMenuItem("�����������", "Accept", "Complete"));
+            MenuItemsNav.Add(new NavMenuItem("������������", "Accept", "Overdue"));
 
-            // 2. Разделитель и заголовок (визуальный отступ за счет свойств шаблона)
+            // 2. ����������� � ��������� (���������� ������ �� ���� ������� �������)
             MenuItemsNav.Add(new NavMenuItem("", IsSeparator: true));
-            MenuItemsNav.Add(new NavMenuItem("Категории", IsHeader: true));
+            MenuItemsNav.Add(new NavMenuItem("���������", IsHeader: true));
             MenuItemsNav.Add(new NavMenuItem("", IsSeparator: true));
             //});
 
-            // 3. Динамические категории из API
+            // 3. ������������ ��������� �� API
             //var categories = await api.GetCategories();
             Categories = await APIHost.GetInstance().GetCategories();
             await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
@@ -458,13 +458,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
                 //{
                 Categories = new List<Category>(Categories);
                     List<Category> categories = new();
-                    categories = Categories; //надо будет потом напрямик изменить
-                                             //categories.Add(new Category() { Title = "первый каталог", Id = 1, IdBigBoss = 1 });
-                                             //categories.Add(new Category() { Title = "второй каталог", Id = 2, IdBigBoss = 1 });
-                                             //categories.Add(new Category() { Title = "третий каталог", Id = 3, IdBigBoss = 1 });
+                    categories = Categories; //���� ����� ����� �������� ��������
+                                             //categories.Add(new Category() { Title = "������ �������", Id = 1, IdBigBoss = 1 });
+                                             //categories.Add(new Category() { Title = "������ �������", Id = 2, IdBigBoss = 1 });
+                                             //categories.Add(new Category() { Title = "������ �������", Id = 3, IdBigBoss = 1 });
                     foreach (var cat in categories)
                     {
-                        // Передаем весь объект Category в свойство Data
+                        // �������� ���� ������ Category � �������� Data
                         MenuItemsNav.Add(new NavMenuItem(cat.Title, "Tag", $"Category", Data: cat));
                     }
                 //MenuItemsNav = new(MenuItemsNav);
@@ -480,14 +480,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         
         }
 
-        public void GetLists()
+        public async void GetLists()
         {
             TaskListPageToday = new();
             TaskListPageComplete = new();
             SelectedCategory = new();
             TaskOverdueListPage = new();
             TaskListPageCategory = new();
-            GetCaterogy();
+            await GetCaterogy();
         }
       
 
@@ -528,7 +528,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListCompletePage()
         {
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskListPageComplete;
                 //await TaskListPageComplete.GetCompletePage();
@@ -538,7 +538,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListOverduePage()
         {
-              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 CurPageCategory = TaskOverdueListPage;
                 //await TaskListPageComplete.GetCompletePage();
@@ -550,12 +550,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         //public async Task GetListCategotyPage()
         //{
 
-        //    this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        //  {
-        //      CurPageCategory = TaskListPageCategory;
-        //      TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
-        //      //await TaskListPageComplete.GetCompletePage();
-        //  });
+              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                CurPageCategory = TaskListPageCategory;
+                TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
+                //await TaskListPageComplete.GetCompletePage();
+            });
 
         //}
 
@@ -564,7 +564,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             Category category = new Category() { Title = CategoryTitle };
             await APIHost.GetInstance().CreateCategory(category);
             await GetCaterogy();
-           await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+              this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 TaskPages.CloseCatBannerClass();
             });
@@ -575,11 +575,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         {
             Categories = await APIHost.GetInstance().GetCategories();
             Categories = new List<Category>(Categories);
-           //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-           // {
-           //     var en = TaskListPageCategory.DataContext as TaskListControle;
-           //     en?.GetCategories();
-           // });
+            this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                var en = TaskListPageCategory.DataContext as TaskListControle;
+                en?.GetCategories();
+            });
 
 
             //TaskOverdueListPage = new();
