@@ -11,6 +11,9 @@ public sealed partial class MainPage : Page
         //DataContext = PageNavigation.GetInstance();
         var en = DataContext as PageNavigation;
         //Task.Run(async () => { await GetClassPage(en); });
+        
+
+
     }
 
     private async Task GetClassPage(PageNavigation? en)
@@ -19,13 +22,14 @@ public sealed partial class MainPage : Page
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                en.GetClass();
+                //en.GetClass();
             });
         }
         catch (Exception ex)
         {
             ContentDialog dialog = new ContentDialog
             {
+                
                 Title = "Внимание",
                 Content = ex,
                 CloseButtonText = "Ок",

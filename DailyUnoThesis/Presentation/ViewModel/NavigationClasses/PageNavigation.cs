@@ -61,19 +61,19 @@ private INavigator _navigator;
         SelectedViewModel.GetTask(mission);
     }
 
-    public async void GetClass()
-    {
-        if (instance != null)
-        {
-            Navigation = this;
-            TaskPages = new TaskPages();
-            TaskListPage = new TaskListPage();
-            CurPageCategory = TaskListPage;
-            PomodoroPage = new Pomodoro();
-            TimerPage = new PanelTimer();   
-            CurPage = TaskPages;
-        }
-    }
+    //public async void GetClass()
+    //{
+    //    if (instance != null)
+    //    {
+    //        Navigation = this;
+    //        TaskPages = new TaskPages();
+    //        TaskListPage = new TaskListPage();
+    //        CurPageCategory = TaskListPage;
+    //        PomodoroPage = new Pomodoro();
+    //        TimerPage = new PanelTimer();   
+    //        CurPage = TaskPages;
+    //    }
+    //}
     private Page curPage { get; set; }
     public Page CurPage
     {
@@ -133,7 +133,7 @@ private INavigator _navigator;
 
     public PageNavigation()
     {
-        
+        instance = this;
     }
     public string? Title { get; }
 

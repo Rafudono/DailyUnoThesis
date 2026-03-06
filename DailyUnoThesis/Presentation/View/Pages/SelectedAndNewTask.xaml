@@ -115,10 +115,10 @@
                         <Ellipse Width="30" Height="30" Fill="Blue" Margin="5" HorizontalAlignment="Left" />
 
                         <StackPanel Orientation="Horizontal">
-                            <CalendarDatePicker Height="50" Width="130" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.StartDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
+                            <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.StartDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
     Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
                             <TextBlock Text="---" Margin="10,0,10,0" />
-                            <CalendarDatePicker Height="50" Width="130" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.EndDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
+                            <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.EndDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
                             Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
                         </StackPanel>
                         <TextBlock Text="список папок" />

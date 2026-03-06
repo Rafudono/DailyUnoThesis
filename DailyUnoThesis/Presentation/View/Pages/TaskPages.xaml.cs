@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,8 +58,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-
-
+          
             // Проверяем, что DataContext — это наша ViewModel
             if (args.NewValue is TaskPageControle viewModel)
             {

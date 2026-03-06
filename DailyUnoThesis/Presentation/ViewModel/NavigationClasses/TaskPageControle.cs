@@ -301,9 +301,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         //}
 
 
-        public TaskPageControle(INavigator navigator)
+        public TaskPageControle(/*INavigator navigator*/)
         {
-            _navigator = navigator;
+            //_navigator = navigator;
             SelectedCategory = new();
             MenuItemsNav = new();
 
@@ -594,8 +594,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             if(TaskPages == null)   
             TaskPages = pass;
             SelectedBaseCategory = ListNavigations[0];
-            TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
-            var vm = PageNavigation.GetInstance().CategotyControle;
+        TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+        var vm = PageNavigation.GetInstance().CategotyControle;
             TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
             CategotyControle = vm;
         }

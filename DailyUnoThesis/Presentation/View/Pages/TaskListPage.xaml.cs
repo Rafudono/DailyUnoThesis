@@ -22,7 +22,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskListPage : Page
     {
-        public TaskListControle ViewModel;
+        //public TaskListControle ViewModel;
         TaskListPage pass;
         public TaskListPage()
         {
@@ -30,54 +30,50 @@ namespace DailyUnoThesis.Presentation.View.Pages
             pass = this;
             //DataContext = ViewModel;
             var en = DataContext as TaskListControle;
-            ViewModel = en;
+            //ViewModel = en;
             en?.SetDispatcher(Dispatcher);
             en?.SetControl(this);
-            //this.DataContextChanged += OnDataContextChanged;
+            this.DataContextChanged += OnDataContextChanged;
 
         }
 
+        private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
 
+            //if (args.NewValue is TaskListControle viewModel)
+            //{
+            //    // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
+            //    viewModel.SetDispatcher(this.Dispatcher);
 
-        //private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+            //    // Передаем саму View
+            //    viewModel.SetControl(this);
+            //    viewModel.GetCaterogy();
+            //    //BaseList.SelectedItem = BaseList.IndexOf(1);
+            //    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //    //{
+            //    // await viewModel.BuildMenu();
+            //    //BaseListView.SelectedItem = viewModel.ListNavigations[0];
+            //    ;
+            //    //});
+            //}
+        }
+
+        //public async Task GetTaskCatPage()
         //{
-
-
-
-        //    if (args.NewValue is TaskListControle viewModel)
+        //    try
         //    {
-        //        // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
-        //        viewModel.SetDispatcher(this.Dispatcher);
-
-        //        // Передаем саму View
-        //        viewModel.SetControl(this);
-        //        viewModel.GetCaterogy();
-        //        //BaseList.SelectedItem = BaseList.IndexOf(1);
-        //        //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        //        //{
-        //        // await viewModel.BuildMenu();
-        //        //BaseListView.SelectedItem = viewModel.ListNavigations[0];
-        //        ;
-        //        //});
+        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //          {
+        //              var en = DataContext as TaskListControle;
+        //              await en.FillData();
+        //          });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };
+        //        await dialog.ShowAsync();
         //    }
         //}
-
-        public async Task GetTaskCatPage()
-        {
-            try
-            {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                  {
-                      var en = DataContext as TaskListControle;
-                      await en.FillData();
-                  });
-            }
-            catch (Exception ex)
-            {
-                var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" };
-                await dialog.ShowAsync();
-            }
-        }
 
         //private void ToggleButton_Click(object sender, RoutedEventArgs e)
         //{

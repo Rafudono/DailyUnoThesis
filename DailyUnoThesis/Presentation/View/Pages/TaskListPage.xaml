@@ -49,9 +49,9 @@ NavigationCacheMode="Required"
         <control:TaskListControle x:Key="Control"/>
         <con:ScrollHeightConventer x:Key="heightOffsetConverter"/>
     </Page.Resources>-->
-    <Page.DataContext>
+    <!--<Page.DataContext>
         <control:TaskListControle/>
- </Page.DataContext>
+ </Page.DataContext>-->
 
     <Grid Background="#fafaf9">
         <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@ Height="600">
 
 
 
-                    <TreeView ItemsSource="{Binding Missions}" 
+                    <TreeView ItemsSource="{Binding Missions, Mode=TwoWay}" 
           SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}">
                         <!--<TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
@@ -99,14 +99,17 @@ Height="600">
                         </TreeView.ItemContainerStyle>-->
                         <TreeView.ItemTemplate>
                             <DataTemplate x:DataType="mod:Mission">
-                                <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" >
+                                <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}">
                                     <Border CornerRadius="15" BorderBrush="Black" BorderThickness="1" Margin="3">
                                         <Grid Background="#ffffff" Width="Auto" MinWidth="300" MaxWidth="700">
                                             <StackPanel Orientation="Horizontal" Padding="5">
 
                                                 
                                                 <!--<Ellipse Width="20" Height="20" Fill="Blue" VerticalAlignment="Center" Margin="5"/>-->
-                                                <ToggleButton CommandParameter="{Binding}" IsChecked="{Binding IsComplete, Mode=TwoWay}"
+                                                <CheckBox CommandParameter="{Binding}"
+                                                          Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}"
+                                                          IsChecked="{Binding IsComplete, Mode=TwoWay}" />
+                                                <!--<ToggleButton CommandParameter="{Binding}" IsChecked="{Binding IsComplete, Mode=TwoWay}"
                                                      Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}"
                                                     Background="Transparent"
                                                     Padding="0" MinWidth="0" MinHeight="0">
@@ -115,7 +118,7 @@ Height="600">
                                                             <Grid x:Name="RootGrid" Background="Transparent">
                                                                 <VisualStateManager.VisualStateGroups>
                                                                     <VisualStateGroup x:Name="CheckStates">
-                                                                        <!-- Анимация возврата к ПУСТОМУ кругу -->
+                                                                        --><!-- Анимация возврата к ПУСТОМУ кругу --><!--
                                                                         <VisualState x:Name="Unchecked">
                                                                             <Storyboard>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillCircle" 
@@ -129,7 +132,7 @@ Height="600">
                                                                                  To="0.4" Duration="0:0:0.2"/>
                                                                             </Storyboard>
                                                                         </VisualState>
-                                                                        <!--<VisualState x:Name="Checked">
+                                                                        --><!--<VisualState x:Name="Checked">
                                                                             <VisualState.StateTriggers>
                                                                                 --><!-- Триггер: если IsComplete == True, активируй это состояние --><!--
                                                                                 <StateTrigger IsActive="{Binding IsComplete}" />
@@ -141,7 +144,7 @@ Height="600">
                                                                             </Storyboard>
                                                                         </VisualState>-->
 
-                                                                        <!-- Анимация ЗАПОЛНЕНИЯ круга -->
+                                                                        <!-- Анимация ЗАПОЛНЕНИЯ круга --><!--
                                                                         <VisualState x:Name="Checked">
                                                                             <Storyboard>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillCircle" 
@@ -156,7 +159,7 @@ Height="600">
                                                                             </Storyboard>
                                                                         </VisualState>
 
-                                                                        <!-- Чтобы не ждать ухода курсора, дублируем состояния -->
+                                                                        --><!-- Чтобы не ждать ухода курсора, дублируем состояния --><!--
                                                                         <VisualState x:Name="CheckedPointerOver">
                                                                             <Storyboard>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
@@ -173,22 +176,22 @@ Height="600">
                                                                             </Storyboard>
                                                                         </VisualState>
 
-                                                                        <!--<VisualState x:Name="CheckedPressed">
+                                                                        --><!--<VisualState x:Name="CheckedPressed">
                                                                             <Storyboard>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
                                                                                 <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
                                                                             </Storyboard>
-                                                                        </VisualState>-->
+                                                                        </VisualState>--><!--
                                                                     </VisualStateGroup>
                                                                 </VisualStateManager.VisualStateGroups>
 
-                                                                <!-- Контур круга -->
+                                                                --><!-- Контур круга --><!--
                                                                 <Ellipse Width="22" Height="22" 
                                                                  Stroke="{ThemeResource SystemControlHighlightAccentBrush}" 
                                                                  StrokeThickness="2"/>
 
-                                                                <!-- Заливка (изначально прозрачная и маленькая) -->
+                                                                --><!-- Заливка (изначально прозрачная и маленькая) --><!--
                                                                 <Ellipse x:Name="FillCircle" 
                                                                      Width="22" Height="22" 
                                                                      Fill="{ThemeResource SystemControlHighlightAccentBrush}" 
@@ -201,7 +204,7 @@ Height="600">
                                                             </Grid>
                                                         </ControlTemplate>
                                                     </ToggleButton.Template>
-                                                </ToggleButton>
+                                                </ToggleButton>-->
                                                 
                                                 <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
 

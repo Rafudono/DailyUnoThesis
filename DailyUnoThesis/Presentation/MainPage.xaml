@@ -170,7 +170,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                            <utu:TabBar Grid.Row="0"
+                            <utu:TabBar Grid.Row="0" SelectedIndex="1"
                     Orientation="Vertical" Foreground="White" 
                     Background="Transparent" SelectionChanged="SideTabBar_SelectionChanged"
                     uen:Region.Attached="True" MinHeight="130">

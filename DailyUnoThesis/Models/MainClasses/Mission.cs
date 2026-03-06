@@ -44,8 +44,8 @@ public partial class Mission
     public virtual User? User { get; set; } = null!;
     public virtual int? LevelUp { get; set; } = 0;  
 
-    public static implicit operator List<object>(Mission v)
-    {
-        throw new NotImplementedException();
-    }
+    //public static implicit operator List<object>(Mission v)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

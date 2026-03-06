@@ -94,7 +94,7 @@ public partial class App : Application
 
         var view = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
         view.TryResizeView(new Windows.Foundation.Size(1200, 700));
-         
+
 
         MainWindow = builder.Window;
 
@@ -102,7 +102,6 @@ public partial class App : Application
         MainWindow.UseStudio();
 #endif
         MainWindow.SetWindowIcon();
-
         Host = await builder.NavigateAsync<Shell>();
     }
 
@@ -136,7 +135,7 @@ public partial class App : Application
                      new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true,
                      Nested: new RouteMap[] // Просто используем массив
                      {
-                         new("TaskPage", View: views.FindByViewModel<TaskPageControle>(), IsDefault:true,
+                         new("TaskPage", View: views.FindByViewModel<TaskPageControle>()/*, IsDefault:true*/,
                          Nested: new RouteMap[]
                          {
                               new ("Second", View: views.FindByViewModel<SecondViewModel>()),
@@ -151,7 +150,7 @@ public partial class App : Application
                          new("PanelTimers", View: views.FindByViewModel<PanelTimerControle>(), 
                          Nested: new RouteMap[]
                          {
-                              new ("Pomodoro", View: views.FindByViewModel<PomodoroTimerControle>(), IsDefault:true),
+                              new ("Pomodoro", View: views.FindByViewModel<PomodoroTimerControle>()),
                               new ("Regular", View: views.FindByViewModel<RegularTimerControle>()),
                          }),
                          new("PanelCalendar", View: views.FindByViewModel<TableCalendarControle>()),

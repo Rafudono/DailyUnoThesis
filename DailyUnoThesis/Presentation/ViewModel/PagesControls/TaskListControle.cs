@@ -2,6 +2,7 @@
 //using DailyThesis.Model.MainClasses;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -164,7 +165,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return newTask ?? new RelayCommand(async () =>
                 {
                     Task = new() { LevelUp = 1 };
-                    SelectedCategory = Categories[0];
+                    //SelectedCategory = Categories[0];
 
                 }
 
@@ -240,17 +241,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     {
                         if ((bool)Mission.IsComplete)
                         {
-                        
                             ChangeOfCompletionStatus(Mission);
 
                             if (Mission.IdUpMission == 0 || Mission.IdUpMission == 0)
                             {
                                 Missions.Remove(Mission);
                             }
-
-
                         }
-                        
+                        //Mission.InverseIdUpMissionNavigation = new List<Mission>(Mission.InverseIdUpMissionNavigation);
                         Missions = new(Missions);
                         //await Task.Delay(500);
 
@@ -355,10 +353,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 if (mis.IdUpMission == null)
                 {
                     mis.LevelUp = 1;
+                    
                     Missions.Add(mis);
                     foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
                     {
                         downMis.LevelUp = 2;
+                        
                         //Missions.Add(downMis);
                         //Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
                     }
