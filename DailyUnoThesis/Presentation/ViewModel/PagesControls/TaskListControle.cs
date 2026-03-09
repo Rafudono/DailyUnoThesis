@@ -2,6 +2,7 @@
 //using DailyThesis.Model.MainClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Windows;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using Uno.Extensions;
 using Windows.UI.Core;
 
 //using System.Windows.Controls;
@@ -17,74 +19,83 @@ using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
-    public partial class TaskListControle: Base
+    public partial class TaskListControle: ObservableObject
     {
         public int[] Items { get; } = new[] { 1, 2, 3 };
         public string SomeText { get; } = "Lorem Ipsum";
         private CoreDispatcher dispatcher { get; set; }
         //public PageNavigation Navigation;
         private TaskListPage TaskPages;
-
+        [ObservableProperty]
         private List<Category> categories;
+        [ObservableProperty]
         private Category selectedCategory;
+        [ObservableProperty]
         private Category selectedFilterCategory;
 
-        public List<Category> Categories
-        { get => categories;
-            set
-            {
-                categories = value;
-                Signal();
-            }
-        }
+        //public List<Category> Categories
+        //{ get => categories;
+        //    set
+        //    {
+        //        categories = value;
+        //        Signal();
+        //    }
+        //}
 
-        public Category SelectedCategory
-        { get => selectedCategory;
-            set
-            {
-                selectedCategory = value;
-                Signal();
-            }
-        }
+        //public Category SelectedCategory
+        //{ get => selectedCategory;
+        //    set
+        //    {
+        //        selectedCategory = value;
+        //        Signal();
+        //    }
+        //}
 
-        public Category SelectedFilterCategory
-        {
-            get => selectedFilterCategory;
-            set
-            {
-                selectedFilterCategory = value;
-                Signal();
-            }
-        }
+        //public Category SelectedFilterCategory
+        //{
+        //    get => selectedFilterCategory;
+        //    set
+        //    {
+        //        selectedFilterCategory = value;
+        //        Signal();
+        //    }
+        //}
 
 
-
-        private string taskTitle { get; set; }
-        public string TaskTitle
-        {
-            get => taskTitle; set
-            {
-                taskTitle = value;
-                Signal();
-            }
-        }
+        [ObservableProperty]
+        private string taskTitle;
+        //public string TaskTitle
+        //{
+        //    get => taskTitle; set
+        //    {
+        //        taskTitle = value;
+        //        Signal();
+        //    }
+        //}
         //[ObservableProperty]
-        private List<Mission> missions {get; set;}   
+        [ObservableProperty]
+        private ObservableCollection<Mission> missions;
 
-        private Mission task { get; set; }
+        [ObservableProperty]
+        private Mission task;
 
-        public Mission Task
+        //public Mission Task
+        //{
+        //    get => task; set
+        //    {
+        //        task = value;
+        //        FindId();
+        //        Signal();
+        //        ChangeCategory();
+
+        //    }
+        //}
+
+        partial void OnTaskChanged(Mission value)
         {
-            get => task; set
-            {
-                task = value;
-                FindId();
-                Signal();
-                ChangeCategory();
-                
-            }
+            FindId();
+            ChangeCategory();
         }
-
         private async Task ChangeCategory()
         {
             if (SelectedCategory != null && Task != null)
@@ -100,47 +111,57 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     SelectedCategory = Categories[0];
                 }
             }
-        
-        }
 
-        public List<Mission> Missions
-        {
-            get => missions; set
-            {
-                missions = value;
-                Signal();
-            }
         }
-
-        private List<Mission> subtasks { get; set; }
-        public List<Mission> Subtasks
-        {
-            get => subtasks; set
-            {
-                subtasks = value;
-                Signal();
-            }
-        }
-
         private void FindId()
         {
             if (Task != null)
             {
                 if (Task.InverseIdUpMissionNavigation != null)
-                    Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                {
+                    List<Mission> missions = new();
+                    missions.AddRange(Task.InverseIdUpMissionNavigation);
+                    Subtasks = missions;
+                }
                 PageNavigation.GetInstance().ChangeSelected(Task);
                 if (Task.Id != 0)
                     PageNavigation.GetInstance().TaskPageControle.IsSplitViewPaneOpen = true;
-
-
-
             }
         }
-        public User AuthPerson { get; set; }
 
 
 
 
+
+
+
+
+        //public List<Mission> Missions
+        //{
+        //    get => missions; set
+        //    {
+        //        missions = value;
+        //        Signal();
+        //    }
+        //}
+        [ObservableProperty]
+        private List<Mission> subtasks;
+        //public List<Mission> Subtasks
+        //{
+        //    get => subtasks; set
+        //    {
+        //        subtasks = value;
+        //        Signal();
+        //    }
+        //}
+
+       
+        [ObservableProperty]
+        public User authPerson;
+
+
+
+        //-
         private RelayCommand createAndEditTask;
         public RelayCommand CreateAndEditTask
         {
@@ -157,6 +178,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         }
 
+
+
+        //-
         private RelayCommand newTask;
         public RelayCommand NewTask
         {
@@ -241,28 +265,52 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     {
                         if ((bool)Mission.IsComplete)
                         {
-                            ChangeOfCompletionStatus(Mission);
 
-                            if (Mission.IdUpMission == 0 || Mission.IdUpMission == 0)
+
+                            if (Mission.IdUpMission == 0 || Mission.IdUpMission == null)
                             {
+                                ChangeOfCompletionStatusAndRemoving(Mission);
+                                Mission.IsRemoving = true;
                                 Missions.Remove(Mission);
                             }
+                            else
+                            {
+                                ChangeOfCompletionStatus(Mission);
+                            }
                         }
-                        //Mission.InverseIdUpMissionNavigation = new List<Mission>(Mission.InverseIdUpMissionNavigation);
+                       
+                        //await System.Threading.Tasks.Task.Delay(300);
+                       
+                        await System.Threading.Tasks.Task.Delay(500);
                         Missions = new(Missions);
-                        //await Task.Delay(500);
-
                     }
                 }
                 );
             }
         }
 
-        private void ChangeOfCompletionStatus(Mission Mission)
+        private void ChangeOfCompletionStatusAndRemoving(Mission Mission)
         {
+            if (Mission.InverseIdUpMissionNavigation == null) return;
             foreach (var mis in Mission.InverseIdUpMissionNavigation)
             {
                 mis.IsComplete = true;
+                mis.IsRemoving = true;
+
+                if (mis.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    ChangeOfCompletionStatusAndRemoving(mis);
+                }
+            }
+        }
+
+        private void ChangeOfCompletionStatus(Mission Mission)
+        {
+            if (Mission.InverseIdUpMissionNavigation == null) return;
+            foreach (var mis in Mission.InverseIdUpMissionNavigation)
+            {
+                mis.IsComplete = true;
+                
                 if (mis.InverseIdUpMissionNavigation.Count != 0)
                 {
                     ChangeOfCompletionStatus(mis);
@@ -273,12 +321,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         public TaskListControle()
         {
             AuthPerson = AuthorizedUser.GetInstance().AuthUser;
-           
             GetCategories();
-
             SelectedCategory = new();
             FillData();
             Task = new() { LevelUp = 1 };
+            PageNavigation.GetInstance().TaskListControle = this;
         }
 
         private async void CreateAndEditNewTask()
@@ -377,15 +424,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //missions = missions.OrderBy(s=>s.IdUpMission).ToList();
             Missions = new(Missions);
 
-            if (mission == null)
-                Task = new();
-            else
-            {
-                if (mission.Id == 0)
-                    Task = Missions.LastOrDefault(s => s.Title == mission.Title);
-                else
-                    Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
-            }
+            
         }
 
         internal void SetControl(TaskListPage pass)

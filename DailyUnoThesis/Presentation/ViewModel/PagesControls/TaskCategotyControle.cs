@@ -110,7 +110,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             if (Task != null)
             {
                 if (Task.InverseIdUpMissionNavigation != null)
-                    Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                {
+                    List<Mission> missions = new();
+                    missions.AddRange(Task.InverseIdUpMissionNavigation);
+                    Subtasks = missions;
+                }
             }
         }
         public User AuthPerson { get; set; }
@@ -319,15 +323,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //missions = missions.OrderBy(s=>s.IdUpMission).ToList();
             Missions = new(Missions);
 
-            if (mission == null)
-                Task = new();
-            else
-            {
-                if (mission.Id == 0)
-                    Task = Missions.LastOrDefault(s => s.Title == mission.Title);
-                else
-                    Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
-            }
+            //if (mission == null)
+            //    Task = new();
+            //else
+            //{
+            //    if (mission.Id == 0)
+            //        Task = Missions.LastOrDefault(s => s.Title == mission.Title);
+            //    else
+            //        Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
+            //}
         }
 
         internal void SetControl(TaskListPageCategory pass)

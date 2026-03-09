@@ -37,7 +37,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             framePage = ContentFrame;
             GridStatic = TaskContentGrid;
             framePageTask = ContentFrameTask;
-            acpanel = FilterSplitView.ActualWidth;
+            //acpanel = FilterSplitView.ActualWidth;
             //BaseList = BaseListView;
             //CategoriesList = CategoriesListView;
 
@@ -54,6 +54,14 @@ namespace DailyUnoThesis.Presentation.View.Pages
             //ViewModel.GetLists();
             //Task.Run(async () => { await GetTaskCatPage(ViewModel); });
             this.DataContextChanged += OnDataContextChanged;
+            this.SizeChanged += (s, e) =>
+            {
+                if (DataContext is TaskPageControle vm)
+                {
+                    // Передаем новую ширину страницы во ViewModel
+                    vm.OnWindowSizeChanged(e.NewSize.Width);
+                }
+            };
         }
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)

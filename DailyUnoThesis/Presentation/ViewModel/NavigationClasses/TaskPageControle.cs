@@ -319,18 +319,17 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             //GetListPage();
 
             //BuildMenu();
-            SplitViewDisplayMode = SplitViewDisplayMode.Inline; 
-        SplitViewOpenPaneLength = 350;
-            IsSplitViewPaneOpen = false;
+            SplitViewDisplayMode = SplitViewDisplayMode.Inline;
+        SplitViewOpenPaneLength = 0;
+        IsSplitViewPaneOpen = false;
             DynamicColumnWidth = 0;
-            PropertyChanged += MyViewModel_PropertyChanged;
-            PageNavigation.GetInstance().TaskPageControle = this;
+        //PropertyChanged += ChangedDynamicColumnWidth;
+        PageNavigation.GetInstance().TaskPageControle = this;
         }
 
-        private async void MyViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void ChangedDynamicColumnWidth(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(IsSplitViewPaneOpen) ||
-                e.PropertyName == nameof(SplitViewOpenPaneLength))
+            if (e.PropertyName == nameof(IsSplitViewPaneOpen) || e.PropertyName == nameof(SplitViewOpenPaneLength))
             {
                 
                 //await Task.Delay(150);
@@ -340,7 +339,28 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             }
         }
 
-        public ICommand SelectCategoryCommand => new AsyncRelayCommand<Category>(SelectCategory);
+    public void OnWindowSizeChanged(double newWindowWidth)
+    {
+        // 1. Рассчитываем пропорциональную ширину (60% от окна)
+        double calculatedWidth = newWindowWidth * 0.4;
+
+        // 2. Ограничиваем её лимитами [350, 550]
+        // Math.Clamp(значение, минимум, максимум)
+        SplitViewOpenPaneLength = Math.Clamp(calculatedWidth, 350, 550);
+
+        //if (IsSplitViewPaneOpen == true)
+        //{
+            // Дополнительно: если всё окно меньше 350, 
+            // ширина панели не должна превышать ширину окна
+            if (SplitViewOpenPaneLength > newWindowWidth)
+            {
+                SplitViewOpenPaneLength = newWindowWidth;
+            }
+        //}
+    }
+
+
+    public ICommand SelectCategoryCommand => new AsyncRelayCommand<Category>(SelectCategory);
 
         private async Task SelectCategory(Category category)
         {

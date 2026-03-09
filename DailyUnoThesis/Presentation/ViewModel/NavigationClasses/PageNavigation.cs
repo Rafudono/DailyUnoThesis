@@ -27,19 +27,24 @@ private INavigator _navigator;
     }
     public PageNavigation Navigation;
     private TaskPages TaskPages;
-    public TaskPageControle TaskPageControle;
-
-    public TaskListPage TaskListPage;
     //public Pomodoro PomodoroPage;
     public PanelTimer TimerPage;
 
+    //Раздел задач
+    public TaskPageControle TaskPageControle;
 
+    //Все задачи
+    public TaskListPage TaskListPage;
+    public TaskListControle TaskListControle;
 
+    //Катагории
     public TaskListPageCategory PageCategory;
     public TaskCategotyControle CategotyControle;
 
+    //Меню подробностей задач
     public SelectedAndNewTask SelectedAndNewTask;
     public TaskViewModel SelectedViewModel;
+
     public void GetPageCategory(TaskListPageCategory pageCategory)
     {
 
@@ -57,8 +62,17 @@ private INavigator _navigator;
 
     public void ChangeSelected(Mission mission)
     {
-        if(SelectedViewModel != null)
-        SelectedViewModel.GetTask(mission);
+        if (SelectedViewModel != null && mission.Id != 0)
+        {
+            SelectedViewModel.GetTask(mission);
+            
+        }
+    }
+
+    public async Task FillDataViewModels()
+    {
+       await TaskListControle.FillData();
+       await  CategotyControle.FillData();
     }
 
     //public async void GetClass()
@@ -81,6 +95,17 @@ private INavigator _navigator;
         set
         {
             curPage = value;
+            Signal();
+        }
+    }
+
+    private int numCurPage { get; set; }
+    public int NumCurPage
+    {
+        get => numCurPage;
+        set
+        {
+            numCurPage = value;
             Signal();
         }
     }

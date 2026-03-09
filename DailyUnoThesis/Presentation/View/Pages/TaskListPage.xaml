@@ -22,6 +22,7 @@ NavigationCacheMode="Required"
         <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
         <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+        <con:NullToVisibilityConverterTextBoxCategory x:Key="ConverterTextBoxVisibility"/>
 
 
         <Style TargetType="Grid" x:Key="OldPaper">
@@ -56,7 +57,7 @@ NavigationCacheMode="Required"
     <Grid Background="#fafaf9">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="0.6*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Background="#f5f8ff">
@@ -91,139 +92,173 @@ Height="600">
 
 
                     <TreeView ItemsSource="{Binding Missions, Mode=TwoWay}" 
-          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}">
-                        <!--<TreeView.ItemContainerStyle>
+          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}" HorizontalAlignment="Left">
+                        <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="True"/>
+                                <!-- Убираем стандартные отступы, которые могут мешать схлопыванию -->
+                                <Setter Property="MinHeight" Value="0"/>
+                                <Setter Property="Transitions">
+                                    <Setter.Value>
+                                        <TransitionCollection>
+                                            <!-- Эта штука заставляет соседей плавно ехать на свободное место -->
+                                            <AddDeleteThemeTransition />
+                                        </TransitionCollection>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
-                        </TreeView.ItemContainerStyle>-->
+                        </TreeView.ItemContainerStyle>
+                        
                         <TreeView.ItemTemplate>
                             <DataTemplate x:DataType="mod:Mission">
                                 <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}">
-                                    <Border CornerRadius="15" BorderBrush="Black" BorderThickness="1" Margin="3">
-                                        <Grid Background="#ffffff" Width="Auto" MinWidth="300" MaxWidth="700">
-                                            <StackPanel Orientation="Horizontal" Padding="5">
+                                    <Border x:Name="RootBorder" HorizontalAlignment="Left" MaxWidth="800" CornerRadius="15"
+                                            BorderBrush="Black" BorderThickness="1" Margin="3" Width="Auto" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" MinHeight="0">
+                                        <Border.RenderTransform>
+                                            <CompositeTransform />
+                                        </Border.RenderTransform>
 
-                                                
-                                                <!--<Ellipse Width="20" Height="20" Fill="Blue" VerticalAlignment="Center" Margin="5"/>-->
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="LifeCycleStates">
+                                                <VisualState x:Name="Alive" />
+
+                                                <VisualState x:Name="Removing">
+                                                    <VisualState.StateTriggers>
+                                                        <StateTrigger IsActive="{Binding IsRemoving}" />
+                                                    </VisualState.StateTriggers>
+                                                    <Storyboard>
+                                                        <!-- 1. Плавно исчезаем -->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                                         Storyboard.TargetProperty="Opacity" 
+                                                         To="0" Duration="0:0:0.4"/>
+                                                        <!-- 2. Сдвигаем влево (эффект вылета) -->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+                                                         To="-100" Duration="0:0:0.4">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                        <!--<DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" 
+                                         To="0" Duration="0:0:0.4"/>-->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                                             Storyboard.TargetProperty="Height" 
+                                                             To="0" Duration="0:0:0.4">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+
+                                        <Grid HorizontalAlignment="Left" Background="#ffffff" Width="Auto" MinWidth="300">
+
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="TaskCompletionStates">
+                                                    <!--<VisualState x:Name="Active">
+                                                        --><!-- Изначальное состояние (не выполнено) --><!--
+                                                        <VisualState.StateTriggers>
+                                                            --><!-- Триггер: если IsComplete == false --><!--
+                                                            <StateTrigger IsActive="{Binding IsComplete, Converter={StaticResource InverseBoolConverter}}" />
+                                                        </VisualState.StateTriggers>
+                                                        --><!-- Здесь не нужно ничего менять, т.к. это состояние по умолчанию --><!--
+                                                    </VisualState>-->
+                                                    <VisualState x:Name="Completed">
+                                                        <!-- Состояние: выполнено -->
+                                                        <VisualState.StateTriggers>
+                                                            <!-- Триггер: если IsComplete == true -->
+                                                            <StateTrigger IsActive="{Binding IsComplete}" />
+                                                        </VisualState.StateTriggers>
+                                                        <!-- Применяем стили к дочерним элементам -->
+                                                        <Storyboard>
+                                                            <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
+                                                            <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
+                                                              Storyboard.TargetProperty="ScaleX" 
+                                                              To="1" 
+                                                              Duration="0:0:0.4">
+                                                                <DoubleAnimation.EasingFunction>
+                                                                    <CubicEase EasingMode="EaseOut"/>
+                                                                </DoubleAnimation.EasingFunction>
+                                                            </DoubleAnimation>
+
+                                                            <!-- Плавная смена цвета текста -->
+                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
+                                       Storyboard.TargetProperty="Foreground">
+                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
+                                                            </ObjectAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                        <VisualState.Setters>
+                                                            
+                                                            <!-- Применяем к TextBlock с заголовком -->
+                                                            <!--<Setter Target="TitleTextBlock.Foreground" Value="Gray"/>
+                                                            <Setter Target="TitleTextBlock.TextDecorations" Value="Strikethrough"/>-->
+
+                                                            <!-- Применяем к TextBlock с датой -->
+                                                            <Setter Target="DateTextBlock.Foreground" Value="Gray"/>
+                                                            <!--<Setter Target="DateTextBlock.Visibility" Value="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"/>-->
+
+                                                            <!-- Применяем к TextBlock с категорией -->
+                                                            <Setter Target="CategoryTextBlock.Foreground" Value="Gray"/>
+                                                            <!--<Setter Target="CategoryTextBlock.Visibility" Value="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"/>-->
+
+                                                            <!-- Можно также сделать разделитель менее заметным -->
+                                                            <Setter Target="SeparatorRectangle.Opacity" Value="0.1"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+
+                                            <StackPanel Width="Auto" Orientation="Horizontal" Padding="5">
                                                 <CheckBox CommandParameter="{Binding}"
                                                           Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}"
                                                           IsChecked="{Binding IsComplete, Mode=TwoWay}" />
-                                                <!--<ToggleButton CommandParameter="{Binding}" IsChecked="{Binding IsComplete, Mode=TwoWay}"
-                                                     Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}"
-                                                    Background="Transparent"
-                                                    Padding="0" MinWidth="0" MinHeight="0">
-                                                    <ToggleButton.Template>
-                                                        <ControlTemplate TargetType="ToggleButton">
-                                                            <Grid x:Name="RootGrid" Background="Transparent">
-                                                                <VisualStateManager.VisualStateGroups>
-                                                                    <VisualStateGroup x:Name="CheckStates">
-                                                                        --><!-- Анимация возврата к ПУСТОМУ кругу --><!--
-                                                                        <VisualState x:Name="Unchecked">
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" 
-                                                                                 Storyboard.TargetProperty="Opacity" 
-                                                                                 To="0" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
-                                                                                 Storyboard.TargetProperty="ScaleX" 
-                                                                                 To="0.4" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
-                                                                                 Storyboard.TargetProperty="ScaleY" 
-                                                                                 To="0.4" Duration="0:0:0.2"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>
-                                                                        --><!--<VisualState x:Name="Checked">
-                                                                            <VisualState.StateTriggers>
-                                                                                --><!-- Триггер: если IsComplete == True, активируй это состояние --><!--
-                                                                                <StateTrigger IsActive="{Binding IsComplete}" />
-                                                                            </VisualState.StateTriggers>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>-->
+                                                <StackPanel Width="Auto" Margin="10,0,0,0" HorizontalAlignment="Stretch">
+                                                    <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"  FontSize="20" TextWrapping="Wrap" Width="Auto" MaxWidth="800" FontWeight="Medium"/>
 
-                                                                        <!-- Анимация ЗАПОЛНЕНИЯ круга --><!--
-                                                                        <VisualState x:Name="Checked">
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" 
-                                                                                 Storyboard.TargetProperty="Opacity" 
-                                                                                 To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
-                                                                                 Storyboard.TargetProperty="ScaleX" 
-                                                                                 To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" 
-                                                                                 Storyboard.TargetProperty="ScaleY" 
-                                                                                 To="1" Duration="0:0:0.2"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>
-
-                                                                        --><!-- Чтобы не ждать ухода курсора, дублируем состояния --><!--
-                                                                        <VisualState x:Name="CheckedPointerOver">
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.1"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.1"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>
-
-                                                                        <VisualState x:Name="UncheckedPointerOver">
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="0.4" Duration="0:0:0.1"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="0.4" Duration="0:0:0.1"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>
-
-                                                                        --><!--<VisualState x:Name="CheckedPressed">
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillCircle" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
-                                                                                <DoubleAnimation Storyboard.TargetName="FillScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
-                                                                            </Storyboard>
-                                                                        </VisualState>--><!--
-                                                                    </VisualStateGroup>
-                                                                </VisualStateManager.VisualStateGroups>
-
-                                                                --><!-- Контур круга --><!--
-                                                                <Ellipse Width="22" Height="22" 
-                                                                 Stroke="{ThemeResource SystemControlHighlightAccentBrush}" 
-                                                                 StrokeThickness="2"/>
-
-                                                                --><!-- Заливка (изначально прозрачная и маленькая) --><!--
-                                                                <Ellipse x:Name="FillCircle" 
-                                                                     Width="22" Height="22" 
-                                                                     Fill="{ThemeResource SystemControlHighlightAccentBrush}" 
-                                                                     Opacity="0"
-                                                                     RenderTransformOrigin="0.5,0.5">
-                                                                    <Ellipse.RenderTransform>
-                                                                        <ScaleTransform x:Name="FillScale" ScaleX="0.4" ScaleY="0.4"/>
-                                                                    </Ellipse.RenderTransform>
-                                                                </Ellipse>
-                                                            </Grid>
-                                                        </ControlTemplate>
-                                                    </ToggleButton.Template>
-                                                </ToggleButton>-->
-                                                
-                                                <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
-
-                                                    <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
+                                                        <!-- Линия зачеркивания -->
+                                                        <Rectangle x:Name="StrikeLine"
+                                                             Height="2"  
+                                                             Fill="Gray"
+                                                             HorizontalAlignment="Stretch" 
+                                                             VerticalAlignment="Center"
+                                                             RenderTransformOrigin="0,0.5"
+                                                             IsHitTestVisible="False">
+                                                            <Rectangle.RenderTransform>
+                                                                <!-- Оставляем ScaleX="0" только здесь -->
+                                                                <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
+                                                            </Rectangle.RenderTransform>
+                                                        </Rectangle>
+                                                    </Grid>
+                                                    
                                                     <StackPanel Orientation="Horizontal" Spacing="10">
-                                                        <TextBlock Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
-
-                                                        <TextBlock>
+                                                        <TextBlock x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}" Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+                                                        <TextBlock x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}">
                                                     <Run Text="#"/>
                                                     <Run Text="{Binding Category.Title}"/>
                                                         </TextBlock>
                                                     </StackPanel>
                                                     <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
                                                 </StackPanel>
+
+                                                <!--<StackPanel Width="Auto" Margin="10,0,0,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock Foreground="Gray" Text="{Binding Title}" TextDecorations="Strikethrough"  FontSize="20" TextWrapping="Wrap" Width="Auto" MaxWidth="800" FontWeight="Medium"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                                        <TextBlock Foreground="Gray" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}" Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+                                                        <TextBlock Foreground="Gray" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}">
+                                                        <Run Text="#"/>
+                                                        <Run Text="{Binding Category.Title}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
+                                                </StackPanel>-->
                                             </StackPanel>
                                         </Grid>
                                     </Border>
                                 </TreeViewItem>
-
                             </DataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
@@ -277,7 +312,12 @@ Height="600">
                 </StackPanel>
             </ScrollViewer>
         </Grid>
-        <Border Grid.Column="1"  BorderThickness="1,0,0,0" CornerRadius="8 0 0 8" BorderBrush="#311a11">
+
+
+
+
+        
+        <Border Grid.Column="1" Visibility="Collapsed" BorderThickness="1,0,0,0" CornerRadius="8 0 0 8" BorderBrush="#311a11">
             <Grid Grid.Column="1" Background="#ecf1ff">
                 <!--<Grid.Style>
                     <Style TargetType="Grid">

@@ -102,7 +102,7 @@
 
                     <VisualState x:Name="WideState">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="641" />
+                            <AdaptiveTrigger MinWindowWidth="800" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay" />

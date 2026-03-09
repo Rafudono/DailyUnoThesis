@@ -92,7 +92,7 @@
                         <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
              MinWidth="150"
              PlaceholderText="Введите описание"
-             Height="50" TextWrapping="Wrap" FontSize="15" />
+             MinHeight="50" TextWrapping="Wrap" FontSize="15" />
 
                         <ListView Margin="0 10 0 0" Background="Transparent"
              ItemsSource="{Binding Subtasks, Mode=TwoWay}"

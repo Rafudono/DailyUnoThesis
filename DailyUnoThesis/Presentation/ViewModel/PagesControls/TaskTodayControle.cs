@@ -117,8 +117,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             if (task != null)
             {
-                if (task.InverseIdUpMissionNavigation != null)
-                    Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                if (Task.InverseIdUpMissionNavigation != null)
+                {
+                    List<Mission> missions = new();
+                    missions.AddRange(Task.InverseIdUpMissionNavigation);
+                    Subtasks = missions;
+                }
             }
         }
         public User AuthPerson { get; set; }

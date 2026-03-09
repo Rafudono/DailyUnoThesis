@@ -1,17 +1,40 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DailyUnoThesis.Models.MainClasses;
 
-public partial class Mission
+public partial class Mission: INotifyPropertyChanged
 {
+    // Событие, которое ищет CheckBox и TreeView
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public int Id { get; set; }
 
     public string? Description { get; set; }
 
     public string Title { get; set; } = null!;
 
-    public bool? IsComplete { get; set; } = false;   
+    //public bool? IsComplete { get; set; } = false;
+    private bool? _isComplete = false;
+    public bool? IsComplete
+    {
+        get => _isComplete;
+        set
+        {
+            if (_isComplete != value)
+            {
+                _isComplete = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public DateTime? StartDate { get; set; }
 
@@ -33,7 +56,7 @@ public partial class Mission
 
     public virtual Mission? IdUpMissionNavigation { get; set; }
 
-    public virtual ICollection<Mission> InverseIdUpMissionNavigation { get; set; } = new List<Mission>();
+    public virtual ICollection<Mission> InverseIdUpMissionNavigation { get; set; } = new ObservableCollection<Mission>();
 
     public virtual Notification? Notification { get; set; }
 
@@ -42,10 +65,20 @@ public partial class Mission
     public virtual Tag? Tag { get; set; } = null!;
 
     public virtual User? User { get; set; } = null!;
-    public virtual int? LevelUp { get; set; } = 0;  
+    public virtual int? LevelUp { get; set; } = 0;
 
     //public static implicit operator List<object>(Mission v)
     //{
     //    throw new NotImplementedException();
     //}
+    private bool _isRemoving = false;
+    public bool IsRemoving
+    {
+        get => _isRemoving;
+        set
+        {
+            _isRemoving = value;
+            OnPropertyChanged();
+        }
+    }
 }

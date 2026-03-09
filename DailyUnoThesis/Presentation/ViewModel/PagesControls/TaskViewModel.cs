@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
@@ -71,7 +73,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             if (Task != null)
             {
                 if (Task.InverseIdUpMissionNavigation != null)
-                    Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                {
+                    List<Mission> missions = new();
+                    missions.AddRange(Task.InverseIdUpMissionNavigation);
+                    Subtasks = missions;
+                }
             }
         }
 
@@ -100,15 +106,63 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
+
+        private RelayCommand newTask;
+        public RelayCommand NewTask
+        {
+            get
+            {
+                return newTask ?? new RelayCommand(async () =>
+                {
+                    Task = new() { LevelUp = 1 };
+                    //SelectedCategory = Categories[0];
+                }
+                );
+            }
+        }
+
+        private RelayCommand createAndEditTask;
+        public RelayCommand CreateAndEditTask
+        {
+            get
+            {
+                return createAndEditTask ?? new RelayCommand(async () =>
+                {
+                    CreateAndEditNewTask();
+                }
+
+                );
+
+            }
+
+        }
+
+
+
+
         public TaskViewModel()
         {
             Task = new Mission();
+            GetCategories();
+            SelectedCategory = new();
+            Task = new() { LevelUp = 1 };
         }
 
         public void GetTask(Mission mission)
         {
-            
             Task = mission;
+        }
+
+        public async Task GetCategories()
+        {
+            Categories = new();
+            Categories = await APIHost.GetInstance().GetCategories();
+            Categories = new List<Category>(Categories);
+            Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            SelectedCategory = Categories[0];
+            SelectedFilterCategory = Categories[0];
+
+
         }
 
         private async void CreateAndEditNewTask()
@@ -138,7 +192,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     await APIHost.GetInstance().EditMission(Task);
 
                 }
-                //await FillData();
+                
+                if (Task == null)
+                    Task = new();
+                else
+                {
+                    Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
+                }
+                await PageNavigation.GetInstance().FillDataViewModels();
+                //await PageNavigation.GetInstance().CurPage.FillData();
 
             }
         }
