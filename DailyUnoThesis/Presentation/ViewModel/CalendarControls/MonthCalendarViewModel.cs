@@ -34,7 +34,6 @@ public class MonthCalendarViewModel : ObservableObject
         if (diff < 0) diff += 7;
         var start = firstDay.AddDays(-diff);
 
-        // Всегда 6 недель × 7 дней = 42 дня
         for (int i = 0; i < 42; i++)
         {
             var date = start.AddDays(i);

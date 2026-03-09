@@ -81,4 +81,19 @@ public partial class Mission: INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    public string FormattedTime
+    {
+        get
+        {
+            if (StartDate.HasValue && EndDate.HasValue)
+            {
+                return $"{StartDate.Value:HH:mm}-{EndDate.Value:HH:mm}";
+            }
+            else if (StartDate.HasValue)
+            {
+                return StartDate.Value.ToString("HH:mm");
+            }
+            return string.Empty;
+        }
+    }
 }

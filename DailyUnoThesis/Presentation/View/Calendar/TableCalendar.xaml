@@ -61,9 +61,7 @@
                                                 <StackPanel CanDrag="True" AllowDrop="True" >
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="{Binding Title}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
-                                                        <TextBlock Text="{Binding StartDate.Value.Hour}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
-                                                        <TextBlock Text="{Binding EndDate.Value.Hour}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
-                                                        сделать свойство и запихнуть туда время нормально часы и мунты только
+                                                        <TextBlock Text="{Binding FormattedTime}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </ScrollPresenter>
