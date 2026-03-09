@@ -109,7 +109,8 @@ public partial class App : Application
             new ViewMap<Pomodoro, PomodoroTimerControle>(),
             new ViewMap<RegularTimer, RegularTimerControle>(),
 
-            new ViewMap<TableCalendar, TableCalendarControle>(),
+           // new ViewMap<TableCalendar, TableCalendarControle>(),
+            new ViewMap<TableCalendar, MonthCalendarViewModel>(),
 
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
         );
@@ -136,7 +137,7 @@ public partial class App : Application
                               new ("PomodoroTimer", View: views.FindByViewModel<PomodoroTimerControle>(), IsDefault:true),
                               new ("RegularTimers", View: views.FindByViewModel<RegularTimerControle>()),
                          }),
-                         new("PanelCalendar", View: views.FindByViewModel<TableCalendarControle>()),
+                         new("PanelCalendar", View: views.FindByViewModel<MonthCalendarViewModel>()),
                      }),
 
                 }
