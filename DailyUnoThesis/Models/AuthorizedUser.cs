@@ -11,7 +11,7 @@ namespace DailyUnoThesis.Models
     {
         public AuthorizedUser()
         {
-            
+            instance = this;
         }
         public User AuthUser { get; set; }
 

@@ -10,9 +10,10 @@
       xmlns:um="using:Uno.Material"
       NavigationCacheMode="Required"
       Background="{ThemeResource BackgroundBrush}">
-    <!--<Page.Resources>
-        <control:PanelTimerControle x:Key="Control"/>
-    </Page.Resources>-->
+    <Page.Resources>
+        <!--<control:PanelTimerControle x:Key="Control"/>-->
+        <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="SystemControlTransparentBrush" />
+    </Page.Resources>
 
     <ScrollViewer IsTabStop="True">
         <Grid  uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
@@ -25,7 +26,7 @@
                 <NavigationView OpenPaneLength="170" IsPaneOpen="False" uen:Region.Attached="true"
                   Grid.Row="1" IsSettingsVisible="False">
                     <NavigationView.MenuItems>
-                        <!-- Tag должен совпадать с именами в маршрутах -->
+                         <!--Tag должен совпадать с именами в маршрутах--> 
                         <NavigationViewItem Icon="Clock" Content="Помодоро"
                               uen:Region.Name="PomodoroTimer" />
                         <NavigationViewItem Icon="Clock" Content="Обычный"
@@ -46,6 +47,12 @@
                         </Grid>
                     </Grid>
                 </NavigationView>
+                <!--<SelectorBar Grid.Row="1" x:Name="SelectorBar2" >
+                    <SelectorBarItem Icon="Clock" Text="Помодоро" uen:Region.Name="PomodoroTimer"/>
+                    <SelectorBarItem x:Name="SelectorBarItemPage2" Icon="Clock" Text="Обычный" uen:Region.Name="RegularTimers" />
+                    <SelectorBarItem x:Name="SelectorBarItemPage3" Icon="Clock" Text="Analize" uen:Region.Name="Analize" />
+                </SelectorBar>-->
+
             </Grid>
 
         </Grid>

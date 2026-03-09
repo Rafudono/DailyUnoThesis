@@ -4,8 +4,16 @@
     xmlns:local="using:DailyUnoThesis.Presentation.View.Pages"
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
-    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls">
-
+    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls"
+    xmlns:uen="using:Uno.Extensions.Navigation.UI"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:utu="using:Uno.Toolkit.UI"
+    xmlns:um="using:Uno.Material"
+    NavigationCacheMode="Enabled">
+    <Page.DataContext>
+        <control:TaskCategotyControle/>
+    </Page.DataContext>
     <Page.Resources>
         <!--<con:LevelMarginConverter x:Key="LevelMarginConverter" />
         <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter" />
@@ -43,10 +51,40 @@
                     <TextBlock Text="папки" />
                     <ComboBox />
                 </StackPanel>
-                <ListBox ItemsSource="{Binding Missions}"
+                <!--<ListBox ItemsSource="{Binding Missions}"
                          SelectedItem="{Binding Task}"
                          Height="600"
-                         ItemTemplate="{StaticResource MissionTemplate}" />
+                         ItemTemplate="{StaticResource MissionTemplate}" />-->
+
+                <TreeView ItemsSource="{Binding Missions}" 
+          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}">
+                    <TreeView.ItemTemplate>
+                        <DataTemplate x:DataType="mod:Mission">
+                            <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" >
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal" Padding="5">
+                                        <Ellipse Width="20" Height="20" Fill="Blue" VerticalAlignment="Center" Margin="5"/>
+                                        <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
+
+                                            <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+
+                                                <TextBlock>
+                                                    <Run Text="#"/>
+                                                    <Run Text="{Binding Category.Title}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </TreeViewItem>
+
+                        </DataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+
             </StackPanel>
         </Grid>
 

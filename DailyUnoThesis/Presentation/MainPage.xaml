@@ -4,49 +4,314 @@
       xmlns:local="using:DailyUnoThesis.Presentation"
        xmlns:pages="using:DailyUnoThesis.Presentation.View.Pages"
        xmlns:cal="using:DailyUnoThesis.Presentation.View.Calendar"
+      xmlns:time="using:DailyUnoThesis.Presentation.View.Timer"
       xmlns:controlepage="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
+       xmlns:mod="using:DailyUnoThesis.Models"
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
       xmlns:um="using:Uno.Material"
       NavigationCacheMode="Required"
       Background="{ThemeResource BackgroundBrush}">
-    <!--<Page.Resources>
-        <DataTemplate x:Key="TasksTemplate" x:DataType="controlepage:TaskPageControle">
+    <Page.Resources>
+        <!--<DataTemplate x:Key="TasksTemplate" x:DataType="controlepage:TaskPageControle">
             <pages:TaskPages />
         </DataTemplate>
-        --><!--<DataTemplate x:Key="CalendarTemplate" TargetType="local:CalendarViewModel">
+        <DataTemplate x:Key="CalendarTemplate" TargetType="local:CalendarViewModel">
             <local:CalendarPage />
-        </DataTemplate>--><!--
-    </Page.Resources>-->
+        </DataTemplate>-->
+        <SolidColorBrush x:Key="NavigationViewExpandedBackground" Color="Red" />
 
-    
-    <ScrollViewer IsTabStop="True">
-        <Grid  uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
 
-            <Grid Background="LightSeaGreen">
+        <Style x:Key="SideTabItemStyle" TargetType="utu:TabBarItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="utu:TabBarItem">
+                        <!-- Grid фиксированной ширины (250), чтобы контент не прыгал при сжатии панели -->
+                       
+                            <Grid  x:Name="RootGrid" Background="{TemplateBinding Background}" Width="250">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="Blue" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Target="SelectionIndicator.Visibility" Value="Visible" />
+                                                <Setter Target="RootGrid.Background" Value="Blue" />
+                                                <Setter Target="RootGrid.Background.Opacity" Value="0.5" />
+                                            </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50" />
+                                <!-- Область для иконки -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Область для текста -->
+                            </Grid.ColumnDefinitions>
+                            <!-- Полоска выделения (как в стандартном Windows меню) -->
+                            <Rectangle x:Name="SelectionIndicator" 
+                                   Fill="Red" 
+                                   Width="5" Height="45" 
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Left"
+                                   Visibility="Collapsed"/>
+                            <!--Fill="{ThemeResource SystemAccentColor}"-->
+                            <!-- Иконка -->
+                            <ContentPresenter x:Name="IconPresenter"
+                                          Content="{TemplateBinding Icon}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                            <!-- Текст -->
+                            <ContentPresenter x:Name="ContentPresenter"
+                                          Grid.Column="1"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          VerticalAlignment="Center"
+                                          Margin="12,0,0,0" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+    </Page.Resources>
+
+    <!--<ScrollViewer IsTabStop="True">-->
+    <Grid Background="#f4f7ff" Margin="3" uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
+
+
+
+        <Grid Background="#f4f7ff" x:Name="RootGrid" uen:Region.Attached="True">
+
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="WindowStates">
+                    <VisualStateGroup.Transitions>
+                        <VisualTransition GeneratedDuration="0:0:0.9" />
+                    </VisualStateGroup.Transitions>
+
+                    <VisualState x:Name="WideState">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="800" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay" />
+                            <Setter Target="RootSplitView.CompactPaneLength" Value="60" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="NarrowState">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
+                            <Setter Target="RootSplitView.CompactPaneLength" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border BorderBrush="Black" BorderThickness="0 0 0 1">
+                <Button x:Name="PaneToggleButton" 
+    Click="TogglePane_Click" CornerRadius="0"
+    Content="&#xE700;" FontFamily="Segoe Fluent Icons" 
+    FontSize="20" Background="#f4f7ff" Foreground="Black"
+    Width="60" Height="48" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Padding="0 0 2 0"/>
+            </Border>
+
+
+            
+                <SplitView x:Name="RootSplitView"
+                   Grid.Row="1"
+                   OpenPaneLength="250"
+                   IsPaneOpen="False"
+                   Background="Transparent"
+                   PaneBackground="Transparent" CornerRadius="0,8,8,0" >
+
+                <SplitView.Pane >
+
+                    <Border BorderBrush="Black" BorderThickness="0 0 1 0" CornerRadius="0,8,8,0">
+                   
+                    <Grid CornerRadius="0,8,8,0">
+                            <Grid.Background>
+
+                                <LinearGradientBrush StartPoint="0.1,1" EndPoint="0.9,0.7">
+                                    <GradientStop Color="#0038b5" Offset="0" />
+                                    <GradientStop Color="#bfd1f9" Offset="0.7" />
+                                    <GradientStop Color="#f4f7ff" Offset="1" />
+                                </LinearGradientBrush>
+
+                            </Grid.Background>
+
+                        <Grid.ChildrenTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition FromHorizontalOffset="20" />
+                            </TransitionCollection>
+                        </Grid.ChildrenTransitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition MinHeight="400" Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                            <utu:TabBar Grid.Row="0" SelectedIndex="1"
+                    Orientation="Vertical" Foreground="White" 
+                    Background="Transparent" SelectionChanged="SideTabBar_SelectionChanged"
+                    uen:Region.Attached="True" MinHeight="130">
+
+                                <utu:TabBarItem
+                            Style="{StaticResource SideTabItemStyle}"
+                            utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+                            Content="Главная" >
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="Home" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+                            <utu:TabBarItem uen:Region.Name="TaskPage"
+                            Style="{StaticResource SideTabItemStyle}"
+                            utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                            utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+                            Content="Задачи">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="AllApps" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+                            <utu:TabBarItem 
+                            Style="{StaticResource SideTabItemStyle}"
+                            utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+                            Content="Проекты">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="Manage" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+                            <utu:TabBarItem 
+ Style="{StaticResource SideTabItemStyle}"
+ utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+ Content="Чаты">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="LeaveChat" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+
+                            <utu:TabBarItem uen:Region.Name="PanelCalendar"
+ Style="{StaticResource SideTabItemStyle}"
+ utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                            utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+ Content="Календарь">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="Calendar" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+                            <utu:TabBarItem uen:Region.Name="PanelTimers"
+Style="{StaticResource SideTabItemStyle}"
+utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                            utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+Content="Таймеры">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="Clock" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+
+                            <utu:TabBarItem 
+Style="{StaticResource SideTabItemStyle}"
+utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                                utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
+Content="Аналитика">
+                                <utu:TabBarItem.Icon>
+                                    <SymbolIcon Symbol="List" />
+                                </utu:TabBarItem.Icon>
+                            </utu:TabBarItem>
+
+
+
+
+
+                        </utu:TabBar>
+
+                    </Grid>
+
+
+                    </Border>
+                </SplitView.Pane>
+
+                <SplitView.Content>
+                    <Border BorderBrush="Black" BorderThickness="1 0 0 0" >
+                        
+              
+                    <Grid Padding="1 0 1 0" x:Name="InnerContentGrid"
+uen:Region.Attached="True"
+uen:Region.Navigator="Visibility" />
+                    </Border>
+                </SplitView.Content>
+            </SplitView>
+               
+        </Grid>
+
+
+
+
+
+
+        <!--<Grid Background="#e5e7eb">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.1" />
+                    <RowDefinition Height="0.1*" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <NavigationView IsBackButtonVisible="Collapsed" OpenPaneLength="200" IsPaneOpen="False" uen:Region.Attached="true"
-                    Grid.Row="1" IsSettingsVisible="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+                <NavigationView  IsBackButtonVisible="Collapsed" OpenPaneLength="180" IsPaneOpen="False" uen:Region.Attached="true"
+                    Grid.Row="0" Grid.RowSpan="2" IsSettingsVisible="False">
+                   
+
                     <NavigationView.MenuItems>
-                        <!-- Tag должен совпадать с именами в маршрутах -->
-                        <NavigationViewItem Icon="List" Content="Задачи"
+                    <NavigationViewItem  Icon="Home" Content="Главная" />
+        Tag должен совпадать с именами в маршрутах 
+                    <NavigationViewItem  Icon="AllApps" Content="Задачи"
                                 uen:Region.Name="TaskPage" />
-                        <NavigationViewItem Icon="Calendar" Content="Календарь"
+                    <NavigationViewItem  Icon="Manage" Content="Проекты" />
+                    <NavigationViewItem  Icon="LeaveChat" Content="Чаты" />
+                    <NavigationViewItem Icon="Calendar" Content="Календарь"
                 uen:Region.Name="PanelCalendar" />
                         <NavigationViewItem Icon="Clock" Content="Таймеры"
                 uen:Region.Name="PanelTimers" />
+                    <NavigationViewItem  Icon="List" Content="Аналитика" />
 
-                    </NavigationView.MenuItems>
-                    <Grid uen:Region.Attached="True"
+                </NavigationView.MenuItems>
+
+                </NavigationView>
+            <Grid Grid.Column="1" uen:Region.Attached="True"
               uen:Region.Navigator="Visibility"
               Grid.Row="1">
-                    </Grid>
-                </NavigationView>
             </Grid>
+        </Grid>-->
 
-        </Grid>
-  </ScrollViewer>
+    </Grid>
+    <!--</ScrollViewer>-->
 </Page>

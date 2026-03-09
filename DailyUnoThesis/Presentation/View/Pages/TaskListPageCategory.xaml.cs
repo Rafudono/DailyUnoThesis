@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 
 namespace DailyUnoThesis.Presentation.View.Pages
@@ -14,20 +16,57 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskListPageCategory : Page
     {
-        public TaskCategotyControle ViewModel { get; } = new();
+        //public TaskCategotyControle ViewModel { get; } = new();
+        private Category Category;
         public TaskListPageCategory()
         {
             this.InitializeComponent();
-            DataContext = ViewModel;
-            ViewModel.SetDispatcher(Dispatcher);
-            ViewModel?.SetControl(this);
-            ViewModel?.FillData();
+            //var en = DataContext as TaskCategotyControle;
+            //en.SetDispatcher(Dispatcher);
+            //en?.SetControl(this);
+            DataContext = new TaskCategotyControle();
+            //ViewModel.SetDispatcher(Dispatcher);
+            //ViewModel?.SetControl(this);
+            //ViewModel?.FillData();
+            this.DataContextChanged += OnDataContextChanged;
+            PageNavigation.GetInstance().GetPageCategory(this);
+            //PageNavigation.GetInstance().GetPageCategory(this);
+
         }
 
-        public void GetIdCategory(int id)
+
+        //protected override void OnNavigatedTo(NavigationEventArgs e)
+        //{
+        //    base.OnNavigatedTo(e);
+
+        //    // e.Parameter — это тот самый 'category', который вы передали во фрейм
+        //    if (e.Parameter is Category category)
+        //    {
+        //        Category = category;
+        //    }
+        //}
+
+        private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            var en = DataContext as TaskCategotyControle;
-            en?.GetIdCategory(id);
+
+        
+            // Проверяем, что DataContext — это наша ViewModel
+            if (args.NewValue is TaskCategotyControle viewModel)
+            {
+                // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
+                viewModel.SetDispatcher(this.DispatcherQueue);
+
+                // Передаем саму View
+                viewModel.SetControl(this);
+                //PageNavigation.GetInstance().GetPageCategory(this);
+
+            }
         }
+
+        //public void GetIdCategory(int id)
+        //{
+        //    var en = DataContext as TaskCategotyControle;
+        //    en?.GetIdCategory(id);
+        //}
     }
 }

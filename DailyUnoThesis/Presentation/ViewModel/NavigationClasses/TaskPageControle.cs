@@ -1,22 +1,34 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using CommunityToolkit.Mvvm.Messaging.Internals;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
+using Microsoft.UI.Dispatching;
+using Newtonsoft.Json.Linq;
+using Uno.Extensions.Navigation;
+using Uno.Extensions.Navigation;
+using Uno.Toolkit.UI;
 using Windows.UI.Core;
 
-namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
-{
-   public class TaskPageControle: Base
-    {
+
+namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+
+   public partial class TaskPageControle: ObservableObject
+   {
+        private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        public readonly INavigator _navigator;
         private CoreDispatcher dispatcher;
         //public PageNavigation Navigation;
         private TaskPages TaskPages;
@@ -24,59 +36,137 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         private TaskCompleteListPage TaskListPageComplete;
         private TaskOverdueListPage TaskOverdueListPage;
         private TaskListPageCategory TaskListPageCategory;
+        private TaskCategotyControle CategotyControle;
 
+        [ObservableProperty]
         private List<Category> categories;
-        public List<Category> Categories
-        {
-            get => categories;
-            set
-            {
-                categories = value;
-                Signal();
-            }
-        }
-
+        //public List<Category> Categories
+        //{
+        //    get => categories;
+        //    set
+        //    {
+        //        categories = value;
+        //        Signal();
+        //    }
+        //}
+        [ObservableProperty]
         private Category selectedCategory;
-        public Category SelectedCategory
-        {
-            get => selectedCategory;
-            set
-            {
-                selectedCategory = value;
-                Signal();
-            }
-        }
+        //public Category SelectedCategory
+        //{
+        //    get => selectedCategory;
+        //    set
+        //    {
+        //        selectedCategory = value;
+        //        Signal();
+        //    }
+        //}
 
+
+        [ObservableProperty]
+        private string selectedBaseCategory;
+        //public string SelectedBaseCategory
+        //{
+        //    get => selectedBaseCategory;
+        //    set
+        //    {
+        //        selectedBaseCategory = value;
+        //        Signal();
+        //    }
+        //}
+
+
+        [ObservableProperty]
         private string categoryTitle;
-        public string CategoryTitle
-        {
-            get => categoryTitle;
-            set
-            {
-                categoryTitle = value;
-                Signal();
-            }
-        }
+        //public string CategoryTitle
+        //{
+        //    get => categoryTitle;
+        //    set
+        //    {
+        //        categoryTitle = value;
+        //        Signal();
+        //    }
+        //}
 
 
         private static TaskPageControle instance;
-        public static TaskPageControle GetInstance()
-        {
-            if (instance == null)
-                instance = new TaskPageControle();
-            return instance;
-        }
+        //public static TaskPageControle GetInstance()
+        //{
+        //    if (instance == null)
+        //        instance = new TaskPageControle();
+        //    return instance;
+        //}
 
-        private Page curPageCategory { get; set; }
-        public Page CurPageCategory
-        {
-            get => curPageCategory;
-            set
-            {
-                curPageCategory = value;
-                Signal();
-            }
-        }
+        [ObservableProperty]
+        private Page curPageCategory;
+        //public Page CurPageCategory
+        //{
+        //    get => curPageCategory;
+        //    set
+        //    {
+        //        curPageCategory = value;
+        //        Signal();
+        //    }
+        //}
+
+        [ObservableProperty]
+        private List<string> listNavigations;
+
+
+
+
+
+
+
+        [ObservableProperty]
+        private SplitViewDisplayMode splitViewDisplayMode;
+        [ObservableProperty]
+        private double splitViewOpenPaneLength;
+        [ObservableProperty]
+        private double splitViewCompactPaneLength;
+        [ObservableProperty]
+        private bool isSplitViewPaneOpen;
+
+        //public SplitViewDisplayMode SplitViewDisplayMode
+        //{
+        //    get => _splitViewDisplayMode;
+        //    set => SetProperty(ref _splitViewDisplayMode, value);
+        //}
+
+        //public double SplitViewOpenPaneLength
+        //{
+        //    get => _splitViewOpenPaneLength;
+        //    set => SetProperty(ref _splitViewOpenPaneLength, value);
+        //}
+
+        //public double SplitViewCompactPaneLength
+        //{
+        //    get => _splitViewCompactPaneLength;
+        //    set => SetProperty(ref _splitViewCompactPaneLength, value);
+        //}
+
+        //public bool IsSplitViewPaneOpen
+        //{
+        //    get => _isSplitViewPaneOpen;
+        //    set => SetProperty(ref _isSplitViewPaneOpen, value);
+        //}
+
+        // Это свойство будет связано с ColumnDefinition.Width
+
+
+
+
+        [ObservableProperty]
+        private GridLength dynamicColumnWidth;
+        //public IState<GridLength> DynamicColumnWidth { get; private set; }
+
+
+
+
+
+
+
+
+
 
         private RelayCommand openTodayList;
         public RelayCommand OpenTodayList
@@ -146,25 +236,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         }
 
-        private RelayCommand openCategoryList;
-        public RelayCommand OpenCategoryList
-        {
-            get
-            {
-                return openCategoryList ?? new RelayCommand(async () =>
-                {
-                    await GetListCategotyPage();
+        //private RelayCommand openCategoryList;
+        //public RelayCommand OpenCategoryList
+        //{
+        //    get
+        //    {
+        //        return openCategoryList ?? new RelayCommand(async () =>
+        //        {
+        //            await GetListCategotyPage();
 
-                }
+        //        }
 
-                );
+        //        );
 
-            }
+        //    }
 
-        }
+        //}
 
         private RelayCommand createCat;
-     
 
         public RelayCommand CreateCat
         {
@@ -183,12 +272,233 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         }
 
 
-
-        public TaskPageControle()
+        private RelayCommand closeAndOpenDetailedSplitView;
+        public RelayCommand CloseAndOpenDetailedSplitView
         {
-            SelectedCategory = new();
+            get
+            {
+                return closeAndOpenDetailedSplitView ?? new RelayCommand(async () =>
+                {
+                    IsSplitViewPaneOpen = IsSplitViewPaneOpen ? false : true;
+
+                }
+
+                );
+
+            }
+
         }
 
+        [ObservableProperty]
+        private ObservableCollection<NavMenuItem> menuItemsNav;
+        //public ObservableCollection<NavMenuItem> MenuItemsNav
+        //{ get => menuItemsNav;
+        //    set
+        //    {
+        //        menuItemsNav = value;
+        //        Signal();
+        //    }
+        //}
+
+
+        public TaskPageControle(/*INavigator navigator*/)
+        {
+            //_navigator = navigator;
+            SelectedCategory = new();
+            MenuItemsNav = new();
+
+            ListNavigations = new()
+            {
+              "Все задания",
+              "На сегодня",
+              "Выполненные",
+              "Просроченные",
+            };
+
+            //SelectedBaseCategory = ListNavigations[0];
+            //GetListPage();
+
+            //BuildMenu();
+            SplitViewDisplayMode = SplitViewDisplayMode.Inline;
+        SplitViewOpenPaneLength = 0;
+        IsSplitViewPaneOpen = false;
+            DynamicColumnWidth = 0;
+        //PropertyChanged += ChangedDynamicColumnWidth;
+        PageNavigation.GetInstance().TaskPageControle = this;
+        }
+
+        private async void ChangedDynamicColumnWidth(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(IsSplitViewPaneOpen) || e.PropertyName == nameof(SplitViewOpenPaneLength))
+            {
+                
+                //await Task.Delay(150);
+                var newWidth = IsSplitViewPaneOpen ? new GridLength(SplitViewOpenPaneLength) : new GridLength(0);
+                DynamicColumnWidth = newWidth;
+                
+            }
+        }
+
+    public void OnWindowSizeChanged(double newWindowWidth)
+    {
+        // 1. Рассчитываем пропорциональную ширину (60% от окна)
+        double calculatedWidth = newWindowWidth * 0.4;
+
+        // 2. Ограничиваем её лимитами [350, 550]
+        // Math.Clamp(значение, минимум, максимум)
+        SplitViewOpenPaneLength = Math.Clamp(calculatedWidth, 350, 550);
+
+        //if (IsSplitViewPaneOpen == true)
+        //{
+            // Дополнительно: если всё окно меньше 350, 
+            // ширина панели не должна превышать ширину окна
+            if (SplitViewOpenPaneLength > newWindowWidth)
+            {
+                SplitViewOpenPaneLength = newWindowWidth;
+            }
+        //}
+    }
+
+
+    public ICommand SelectCategoryCommand => new AsyncRelayCommand<Category>(SelectCategory);
+
+        private async Task SelectCategory(Category category)
+        {
+            if (category == null) return;
+            if (PageNavigation.GetInstance().PageCategory == null)
+            {
+                //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+
+            }
+            if (PageNavigation.GetInstance().PageCategory != null)
+            {
+
+                var vm = PageNavigation.GetInstance().CategotyControle;
+                CategotyControle = vm;
+                await CategotyControle.GetIdCategory(category.Id);
+            }
+            TaskPages.GridStatic.Visibility = Visibility.Collapsed;
+            TaskPages.CollapsedStaticTabBar();
+            TaskPages.framePage.Visibility = Visibility.Visible;
+
+
+           
+            //await _navigator.NavigateRouteAsync(this, "Category", data: category);
+            //await _navigator.NavigateRouteAsync(this, "TaskContentRegion/Category", data: category);
+
+        }
+
+
+    //partial void OnSelectedBaseCategoryChanged(string value)
+    //{
+    //    //var selected = (sender as ListView)?.SelectedItem as string;
+    //    if (value != null)
+    //    {
+    //        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+    //        //{
+    //        switch (value)
+    //        {
+    //            case "Все задания":
+    //                TaskPages.framePage.Navigate(typeof(TaskListPage));
+    //                break;
+    //            case "На сегодня":
+    //                TaskPages.framePage.Navigate(typeof(TaskTodayListPage));
+    //                break;
+    //            case "Выполненные":
+    //                TaskPages.framePage.Navigate(typeof(TaskCompleteListPage));
+    //                break;
+    //            case "Просроченные":
+    //                TaskPages.framePage.Navigate(typeof(TaskOverdueListPage));
+    //                break;
+    //        }
+    //        ////CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
+    //        ////await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();
+    //        //CategoriesListView.SelectedItem = null; // Снимаем выделение с категорий
+    //        //ContentFrame.Navigate(typeof(HomePage));
+    //        //});
+    //        // Ваша логика открытия
+    //        //SelectedCategory
+    //    }
+
+    //}
+
+
+    partial void OnSelectedCategoryChanged(Category value)
+        {
+            if (value != null && value.Id != 0)
+            {
+                //if (PageNavigation.GetInstance().PageCategory == null)
+                //{
+                //    //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+
+                //}
+                if (PageNavigation.GetInstance().PageCategory != null)
+                {
+                    GoToSelectCategory(value);
+                    TaskPages.GridStatic.Visibility = Visibility.Collapsed;
+                    TaskPages.CollapsedStaticTabBar();
+                    TaskPages.framePage.Visibility = Visibility.Visible;
+
+                }
+               
+
+                //TaskPages.framePage.Navigate(typeof(TaskCategotyControle));
+            }
+        }
+
+        private async void GoToSelectCategory(Category value)
+        {
+           await CategotyControle.GetIdCategory(value.Id);
+        }
+
+
+    public async Task BuildMenu()
+    {
+        //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //{
+        // 1. Статические пункты
+        MenuItemsNav.Add(new NavMenuItem("Все задания", "Accept", "TaskList"));
+        MenuItemsNav.Add(new NavMenuItem("На сегодня", "Accept", "Today"));
+        MenuItemsNav.Add(new NavMenuItem("Выполненные", "Accept", "Complete"));
+        MenuItemsNav.Add(new NavMenuItem("Просроченные", "Accept", "Overdue"));
+
+        // 2. Разделитель и заголовок (визуальный отступ за счет свойств шаблона)
+        MenuItemsNav.Add(new NavMenuItem("", IsSeparator: true));
+        MenuItemsNav.Add(new NavMenuItem("Категории", IsHeader: true));
+        MenuItemsNav.Add(new NavMenuItem("", IsSeparator: true));
+        //});
+
+        // 3. Динамические категории из API
+        //var categories = await api.GetCategories();
+        Categories = await APIHost.GetInstance().GetCategories();
+        await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        {
+            //_dispatcherQueue.TryEnqueue(() =>
+            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //{
+            Categories = new List<Category>(Categories);
+            List<Category> categories = new();
+            categories = Categories; //надо будет потом напрямик изменить
+                                     //categories.Add(new Category() { Title = "первый каталог", Id = 1, IdBigBoss = 1 });
+                                     //categories.Add(new Category() { Title = "второй каталог", Id = 2, IdBigBoss = 1 });
+                                     //categories.Add(new Category() { Title = "третий каталог", Id = 3, IdBigBoss = 1 });
+            foreach (var cat in categories)
+            {
+                // Передаем весь объект Category в свойство Data
+                MenuItemsNav.Add(new NavMenuItem(cat.Title, "Tag", $"Category", Data: cat));
+            }
+            //MenuItemsNav = new(MenuItemsNav);
+        });
+
+    }
+
+
+
+    public async void SelectorBar_SelectionChanged()
+        { 
+        
+        
+        }
 
         public async void GetLists()
         {
@@ -206,8 +516,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
            
            await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
-                await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();
+                TaskPages.framePage.Navigate(typeof(TaskListPage));
+                //await _navigator.NavigateViewModelAsync<TaskListControle>(this);
+                //CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
+                //await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();
+
             });
             
         }
@@ -215,10 +528,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
 
         public async Task GetListTodayPage()
         {
-           await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            // {
+            //     CurPageCategory = TaskListPageToday;
+            //     //await TaskListPageToday.GetTodayPage();
+            // });
+
+            await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                CurPageCategory = TaskListPageToday;
-                //await TaskListPageToday.GetTodayPage();
+                TaskPages.framePage.Navigate(typeof(TaskTodayListPage));
+                //await _navigator.NavigateViewModelAsync<TaskListControle>(this);
+                //CurPageCategory = PageNavigation.GetInstance().CurPageCategory;
+                //await PageNavigation.GetInstance().TaskListPage.GetTaskCatPage();
+
             });
 
         }
@@ -245,24 +567,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         }
 
 
-        public async Task GetListCategotyPage()
-        {
+        ////public async Task GetListCategotyPage()
+        ////{
 
-            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                CurPageCategory = TaskListPageCategory;
-                TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
-                //await TaskListPageComplete.GetCompletePage();
-            });
+        //      this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    {
+        //        CurPageCategory = TaskListPageCategory;
+        //        TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
+        //        //await TaskListPageComplete.GetCompletePage();
+        //    });
 
-        }
+        ////}
 
         public async Task CreateCategory()
         {
             Category category = new Category() { Title = CategoryTitle };
             await APIHost.GetInstance().CreateCategory(category);
             await GetCaterogy();
-            await  this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 TaskPages.CloseCatBannerClass();
             });
@@ -273,11 +595,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         {
             Categories = await APIHost.GetInstance().GetCategories();
             Categories = new List<Category>(Categories);
-            await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                var en = TaskListPageCategory.DataContext as TaskListControle;
-                en?.GetCategories();
-            });
+        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    {
+        //        var en = TaskListPageCategory.DataContext as TaskListControle;
+        //        en?.GetCategories();
+        //    });
 
 
             //TaskOverdueListPage = new();
@@ -286,16 +608,20 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
         }
 
 
-        internal void SetControl(TaskPages pass)
+        public void SetControl(TaskPages pass)
         {
             //this.Navigation = PageNavigation.GetInstance().;
             if(TaskPages == null)   
             TaskPages = pass;
-           
+            SelectedBaseCategory = ListNavigations[0];
+        TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+        var vm = PageNavigation.GetInstance().CategotyControle;
+            TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
+            CategotyControle = vm;
         }
 
 
-        internal void SetDispatcher(CoreDispatcher dispatcher)
+        public void SetDispatcher(CoreDispatcher dispatcher)
         {
             if (this.dispatcher == null)
             {
@@ -304,6 +630,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses
             }
 
         }
-
-    }
 }
+
+    
+

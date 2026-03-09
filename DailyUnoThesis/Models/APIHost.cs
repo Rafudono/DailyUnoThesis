@@ -1,5 +1,3 @@
-using DailyUnoThesis.Models.MainClasses;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +9,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.MainClasses;
+using Microsoft.Extensions.Options;
+//using Tmds.DBus.Protocol;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DailyUnoThesis.Models
@@ -284,6 +285,24 @@ namespace DailyUnoThesis.Models
             else
                 Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
             return Missions;
+        }
+
+        public async Task<Mission> GetLastMission(int id, string title)
+        {
+            
+            var resp = await client.GetAsync($"Missions/GetLastMission?id={id}&title={title}");
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await resp.Content.ReadAsStringAsync();
+                //MessageBox.Show(Error);
+            }
+            else
+            {
+                var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
+                return mission;
+            }
+           return new Mission();
+
         }
     }
 }

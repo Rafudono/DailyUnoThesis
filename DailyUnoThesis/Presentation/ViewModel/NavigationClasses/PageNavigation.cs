@@ -1,5 +1,7 @@
+using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,23 +27,67 @@ private INavigator _navigator;
     }
     public PageNavigation Navigation;
     private TaskPages TaskPages;
-    public TaskListPage TaskListPage;
     //public Pomodoro PomodoroPage;
     public PanelTimer TimerPage;
 
-    public async void GetClass()
+    //Раздел задач
+    public TaskPageControle TaskPageControle;
+
+    //Все задачи
+    public TaskListPage TaskListPage;
+    public TaskListControle TaskListControle;
+
+    //Катагории
+    public TaskListPageCategory PageCategory;
+    public TaskCategotyControle CategotyControle;
+
+    //Меню подробностей задач
+    public SelectedAndNewTask SelectedAndNewTask;
+    public TaskViewModel SelectedViewModel;
+
+    public void GetPageCategory(TaskListPageCategory pageCategory)
     {
-        if (instance != null)
+
+        PageCategory = pageCategory;
+        CategotyControle = pageCategory.DataContext as TaskCategotyControle;
+        CategotyControle.GetIdCategory(1);
+    }
+
+
+    public void GetPageTask(SelectedAndNewTask page)
+    {
+        SelectedAndNewTask = page;
+        SelectedViewModel = page.DataContext as TaskViewModel;
+    }
+
+    public void ChangeSelected(Mission mission)
+    {
+        if (SelectedViewModel != null && mission.Id != 0)
         {
-            Navigation = this;
-            TaskPages = new TaskPages();
-            TaskListPage = new TaskListPage();
-            CurPageCategory = TaskListPage;
-            PomodoroPage = new Pomodoro();
-            TimerPage = new PanelTimer();   
-            CurPage = TaskPages;
+            SelectedViewModel.GetTask(mission);
+            
         }
     }
+
+    public async Task FillDataViewModels()
+    {
+       await TaskListControle.FillData();
+       await  CategotyControle.FillData();
+    }
+
+    //public async void GetClass()
+    //{
+    //    if (instance != null)
+    //    {
+    //        Navigation = this;
+    //        TaskPages = new TaskPages();
+    //        TaskListPage = new TaskListPage();
+    //        CurPageCategory = TaskListPage;
+    //        PomodoroPage = new Pomodoro();
+    //        TimerPage = new PanelTimer();   
+    //        CurPage = TaskPages;
+    //    }
+    //}
     private Page curPage { get; set; }
     public Page CurPage
     {
@@ -49,6 +95,17 @@ private INavigator _navigator;
         set
         {
             curPage = value;
+            Signal();
+        }
+    }
+
+    private int numCurPage { get; set; }
+    public int NumCurPage
+    {
+        get => numCurPage;
+        set
+        {
+            numCurPage = value;
             Signal();
         }
     }
@@ -101,7 +158,7 @@ private INavigator _navigator;
 
     public PageNavigation()
     {
-        
+        instance = this;
     }
     public string? Title { get; }
 

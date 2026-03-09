@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using Microsoft.UI.Dispatching;
 using Windows.UI.Core;
+using Uno.Extensions.Navigation;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
     public class TaskCategotyControle: Base
     {
-        private CoreDispatcher dispatcher { get; set; }
+        private DispatcherQueue dispatcher { get; set; }
         //public PageNavigation Navigation;
         private TaskListPageCategory TaskPages;
         private int IdCategory { get; set; }
@@ -108,7 +110,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             if (Task != null)
             {
                 if (Task.InverseIdUpMissionNavigation != null)
-                    Subtasks = (List<Mission>)Task.InverseIdUpMissionNavigation;
+                {
+                    List<Mission> missions = new();
+                    missions.AddRange(Task.InverseIdUpMissionNavigation);
+                    Subtasks = missions;
+                }
             }
         }
         public User AuthPerson { get; set; }
@@ -210,11 +216,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             AuthPerson = AuthorizedUser.GetInstance().AuthUser;
             Task = new() { LevelUp = 1 };
             GetCategories();
-            //FillData();
+            /*GetIdCategory(category.Id);*/ //расскоментировать когда начнётся реконструкция для получения данных
+
         }
 
         public async Task GetIdCategory(int id)
         {
+
+            if (id == IdCategory)
+                return;
             IdCategory = id;
             await FillData();
 
@@ -294,8 +304,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
                         {
                             downMis.LevelUp = 2;
-                            Missions.Add(downMis);
-                            Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
+                            //Missions.Add(downMis);
+                            //Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
                         }
                     }
                 }
@@ -313,15 +323,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //missions = missions.OrderBy(s=>s.IdUpMission).ToList();
             Missions = new(Missions);
 
-            if (mission == null)
-                Task = new();
-            else
-            {
-                if (mission.Id == 0)
-                    Task = Missions.LastOrDefault(s => s.Title == mission.Title);
-                else
-                    Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
-            }
+            //if (mission == null)
+            //    Task = new();
+            //else
+            //{
+            //    if (mission.Id == 0)
+            //        Task = Missions.LastOrDefault(s => s.Title == mission.Title);
+            //    else
+            //        Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
+            //}
         }
 
         internal void SetControl(TaskListPageCategory pass)
@@ -331,7 +341,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
-        internal void SetDispatcher(CoreDispatcher dispatcher)
+        internal void SetDispatcher(DispatcherQueue dispatcher)
         {
           
             this.dispatcher = dispatcher;

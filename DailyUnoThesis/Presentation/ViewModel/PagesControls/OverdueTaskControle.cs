@@ -190,7 +190,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             AuthPerson = AuthorizedUser.GetInstance().AuthUser;
             Task = new();
             //FillData();
-            
+            GetOverdue();
+
         }
 
         private async void CreateAndEditNewTask()
@@ -264,19 +265,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
                     {
                         downMis.LevelUp = 2;
-                        Missions.Add(downMis);
-                        Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
+                        //Missions.Add(downMis);
+                        //Missions.AddRange(missions.Where(s => s.IdUpMission == downMis.Id));
                     }
-                }
-                else
-                {
-
-                    if (missions.FirstOrDefault(s => s.Id == mis.IdUpMission) == null)
-                    {
-                        mis.LevelUp = 1;
-                        Missions.Add(mis);
-                    }
-
                 }
             }
             //missions = missions.OrderBy(s=>s.IdUpMission).ToList();
@@ -284,13 +275,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
             if (mission == null)
                 Task = new();
-            else
-            {
-                if (mission.Id == 0)
-                    Task = Missions.LastOrDefault(s => s.Title == mission.Title);
-                else
-                    Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
-            }
+            //else
+            //{
+            //    if (mission.Id == 0)
+            //        Task = Missions.LastOrDefault(s => s.Title == mission.Title);
+            //    else
+            //        Task = Missions.FirstOrDefault(s => s.Id == mission.Id);
+            //}
         }
 
         internal void SetControl(TaskOverdueListPage pass)
