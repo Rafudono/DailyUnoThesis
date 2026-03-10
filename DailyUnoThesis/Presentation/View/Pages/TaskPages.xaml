@@ -546,7 +546,7 @@ uen:Region.Name="Overdue" />
                Content="{Binding CurPageCategory}" />-->
 
         <Grid x:Name="CatBanner" Visibility="{Binding IsVisibleCat,Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid Background="Gray" Opacity="0.6"  />
+            <Grid Background="Gray" Opacity="0.6"  Tapped="{x:Bind ViewModel.CloseCategoryPanel}"/>
             <!--Tapped="{Binding CloseAndOpenAddCategoryPanel}"-->
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
                 <Grid>

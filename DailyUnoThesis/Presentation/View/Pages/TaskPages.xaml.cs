@@ -26,6 +26,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
         PageNavigation Navigation;
         TaskPages pass;
         public Grid GridStatic;
+        public TaskPageControle ViewModel;
         double acpanel;
         
         //public TaskPageControle ViewModel { get; } = new();
@@ -75,7 +76,8 @@ namespace DailyUnoThesis.Presentation.View.Pages
 
                 // Передаем саму View
                 viewModel.SetControl(this);
-                viewModel.GetCaterogy();
+                await viewModel.GetCaterogy();
+                ViewModel = viewModel;
                 //BaseList.SelectedItem = BaseList.IndexOf(1);
                 //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 //{

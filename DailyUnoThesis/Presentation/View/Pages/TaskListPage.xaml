@@ -287,8 +287,8 @@ To="0" Duration="0:0:0.4"/>-->
                                                     </StackPanel>
                                                     <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
                                                 </StackPanel>-->
-                                                <Button Content="Del" CommandParameter="{Binding}" Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}"/>
                                             </StackPanel>
+                                            <Button Content="Del" HorizontalAlignment="Right" CommandParameter="{Binding}" Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}"/>
                                         </Grid>
                                     </Border>
                                 </TreeViewItem>

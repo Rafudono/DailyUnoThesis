@@ -1,10 +1,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using Windows.UI.Core;
@@ -17,17 +19,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private TaskOverdueListPage TaskPages;
         private string TypePage;
 
-        private List<Category> categories;
+        private ObservableCollection<Category> categories;
         private Category selectedCategory;
-        public List<Category> Categories
-        {
-            get => categories;
-            set
-            {
-                categories = value;
-                Signal();
-            }
-        }
+
+        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
+        //public ObservableCollection<Category> Categories
+        //{
+        //    get => categories;
+        //    set
+        //    {
+        //        categories = value;
+        //        Signal();
+        //    }
+        //}
 
         public Category SelectedCategory
         {
@@ -242,9 +246,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public async Task GetCategories()
         {
-            Categories = await APIHost.GetInstance().GetCategories();
-            Categories = new List<Category>(Categories);
-            Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            //Categories = await APIHost.GetInstance().GetCategories();
+            //Categories = new ObservableCollection<Category>(Categories);
+            //Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             SelectedCategory = Categories[0];
 
 

@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
@@ -27,8 +28,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private CoreDispatcher dispatcher { get; set; }
         //public PageNavigation Navigation;
         private TaskListPage TaskPages;
-        [ObservableProperty]
-        private List<Category> categories;
+        //[ObservableProperty]
+        //private ObservableCollection<Category> categories;
+        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
         [ObservableProperty]
         private Category selectedCategory;
         [ObservableProperty]
@@ -104,8 +106,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 if (Task.Category != null)
                 {
 
-                    int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
-                    SelectedCategory = Categories[index];
+                    SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id);
                 }
                 else
                 {
@@ -279,8 +280,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                        
                         //await System.Threading.Tasks.Task.Delay(300);
                        
-                        await System.Threading.Tasks.Task.Delay(500);
-                        Missions = new(Missions);
+                        //await System.Threading.Tasks.Task.Delay(500);
+                        //Missions = new(Missions);
                     }
                 }
                 );
@@ -395,10 +396,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public async Task GetCategories()
         {
-            Categories = new();
-            Categories = await APIHost.GetInstance().GetCategories();
-            Categories = new List<Category>(Categories);
-            Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            //Categories = new();
+            //Categories = await APIHost.GetInstance().GetCategories();
+            //Categories = new ObservableCollection<Category>(Categories);
+            //Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             SelectedCategory = Categories[0];
             SelectedFilterCategory = Categories[0];
 
@@ -461,9 +462,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //await System.Threading.Tasks.Task.Delay(500);
             //Missions = new(Missions);
             await System.Threading.Tasks.Task.Delay(400);
-            await APIHost.GetInstance().DeleteMission(mission.Id);
-            await System.Threading.Tasks.Task.Delay(400);
-            await FillData();
+            await APIHost.GetInstance().DeleteMission(mission);
+            await System.Threading.Tasks.Task.Delay(300);
+            Missions.Remove(mission);
+            //await FillData();
         }
 
         private void DeleteSubtasks(Mission mission)
