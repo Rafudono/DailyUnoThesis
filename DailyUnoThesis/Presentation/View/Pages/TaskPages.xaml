@@ -21,6 +21,7 @@
         <con:ScrollHeightConventer x:Key="heightOffsetConverter" />
         <con:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter"/>
         <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
         <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Red" />
         
@@ -159,7 +160,11 @@
      utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
                             </utu:TabBar>
 
-                            <TextBlock Text="#Категории" Margin="0,10" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="#Категории" Margin="0,10" />
+                                <Button Content="+" Command="{Binding CloseAndOpenAddCategoryPanel}" />
+                            </StackPanel>
+                            
 
                             <!-- 
             Используем ItemsRepeater как в Chefs.
@@ -540,13 +545,14 @@ uen:Region.Name="Overdue" />
                Visibility="Collapsed"
                Content="{Binding CurPageCategory}" />-->
 
-        <Grid x:Name="CatBanner" Visibility="Collapsed">
-            <Grid Background="Gray" Opacity="0.6" Tapped="CloseCatBanner" />
+        <Grid x:Name="CatBanner" Visibility="{Binding IsVisibleCat,Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid Background="Gray" Opacity="0.6"  />
+            <!--Tapped="{Binding CloseAndOpenAddCategoryPanel}"-->
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
                 <Grid>
                     <TextBox PlaceholderText="Название категории"
-                             Text="{Binding CategoryTitle}"
-                             Width="400" Height="40" FontSize="25" />
+                             Text="{Binding CategoryTitle, Mode=TwoWay}"
+                             Width="400" Height="40" FontSize="20" />
                     <Button Content="Сохранить"
                             Margin="20"
                             VerticalAlignment="Bottom"

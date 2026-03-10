@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -226,8 +227,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
 
         private RelayCommand saveSubtasks;
-      
-
         public RelayCommand SaveSubtasks
         {
             get
@@ -261,16 +260,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return completeTaskCommand ?? new RelayCommand<Mission>(async (Mission) =>
                 {
-                    if (Mission != null)
+                    if (Mission != null && Mission.IsComplete != null)
                     {
                         if ((bool)Mission.IsComplete)
                         {
-
-
                             if (Mission.IdUpMission == 0 || Mission.IdUpMission == null)
                             {
                                 ChangeOfCompletionStatusAndRemoving(Mission);
                                 Mission.IsRemoving = true;
+                                await System.Threading.Tasks.Task.Delay(400);
                                 Missions.Remove(Mission);
                             }
                             else
@@ -317,6 +315,26 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 }
             }
         }
+
+
+
+        private RelayCommand<Mission> deleteTask;
+        public RelayCommand<Mission> DeleteTask
+        {
+            get
+            {
+                return deleteTask ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (Mission != null)
+                    {
+                        DeleteTasks(Mission);
+                    }
+
+                }
+                );
+            }
+        }
+
 
         public TaskListControle()
         {
@@ -425,6 +443,36 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             Missions = new(Missions);
 
             
+        }
+
+        public async void DeleteTasks(Mission mission)
+        {
+            if(mission == null)
+                { return; }
+
+            if (mission.InverseIdUpMissionNavigation.Count > 0)
+            {
+                DeleteSubtasks(mission);        
+            }
+            mission.IsDelete = true;
+            //await System.Threading.Tasks.Task.Delay(400);
+            //Missions.Remove(mission);
+            ////await System.Threading.Tasks.Task.Delay(300);
+            //await System.Threading.Tasks.Task.Delay(500);
+            //Missions = new(Missions);
+            await System.Threading.Tasks.Task.Delay(400);
+            await APIHost.GetInstance().DeleteMission(mission.Id);
+            await System.Threading.Tasks.Task.Delay(400);
+            await FillData();
+        }
+
+        private void DeleteSubtasks(Mission mission)
+        {
+            foreach (Mission submission in mission.InverseIdUpMissionNavigation)
+            {
+                submission.IsDelete = true;
+            }
+        
         }
 
         internal void SetControl(TaskListPage pass)

@@ -125,37 +125,39 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private double splitViewCompactPaneLength;
         [ObservableProperty]
         private bool isSplitViewPaneOpen;
-
-        //public SplitViewDisplayMode SplitViewDisplayMode
-        //{
-        //    get => _splitViewDisplayMode;
-        //    set => SetProperty(ref _splitViewDisplayMode, value);
-        //}
-
-        //public double SplitViewOpenPaneLength
-        //{
-        //    get => _splitViewOpenPaneLength;
-        //    set => SetProperty(ref _splitViewOpenPaneLength, value);
-        //}
-
-        //public double SplitViewCompactPaneLength
-        //{
-        //    get => _splitViewCompactPaneLength;
-        //    set => SetProperty(ref _splitViewCompactPaneLength, value);
-        //}
-
-        //public bool IsSplitViewPaneOpen
-        //{
-        //    get => _isSplitViewPaneOpen;
-        //    set => SetProperty(ref _isSplitViewPaneOpen, value);
-        //}
-
-        // Это свойство будет связано с ColumnDefinition.Width
-
-
-
-
         [ObservableProperty]
+        private bool isVisibleCat;
+
+    //public SplitViewDisplayMode SplitViewDisplayMode
+    //{
+    //    get => _splitViewDisplayMode;
+    //    set => SetProperty(ref _splitViewDisplayMode, value);
+    //}
+
+    //public double SplitViewOpenPaneLength
+    //{
+    //    get => _splitViewOpenPaneLength;
+    //    set => SetProperty(ref _splitViewOpenPaneLength, value);
+    //}
+
+    //public double SplitViewCompactPaneLength
+    //{
+    //    get => _splitViewCompactPaneLength;
+    //    set => SetProperty(ref _splitViewCompactPaneLength, value);
+    //}
+
+    //public bool IsSplitViewPaneOpen
+    //{
+    //    get => _isSplitViewPaneOpen;
+    //    set => SetProperty(ref _isSplitViewPaneOpen, value);
+    //}
+
+    // Это свойство будет связано с ColumnDefinition.Width
+
+
+
+
+    [ObservableProperty]
         private GridLength dynamicColumnWidth;
         //public IState<GridLength> DynamicColumnWidth { get; private set; }
 
@@ -289,6 +291,25 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         }
 
+
+    private RelayCommand closeAndOpenAddCategoryPanel;
+    public RelayCommand CloseAndOpenAddCategoryPanel
+    {
+        get
+        {
+            return closeAndOpenAddCategoryPanel ?? new RelayCommand(async () =>
+            {
+                IsVisibleCat = IsVisibleCat ? false : true;
+
+            }
+
+            );
+
+        }
+
+    }
+   
+
         [ObservableProperty]
         private ObservableCollection<NavMenuItem> menuItemsNav;
         //public ObservableCollection<NavMenuItem> MenuItemsNav
@@ -320,11 +341,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
             //BuildMenu();
             SplitViewDisplayMode = SplitViewDisplayMode.Inline;
-        SplitViewOpenPaneLength = 0;
-        IsSplitViewPaneOpen = false;
+            SplitViewOpenPaneLength = 0;
+            IsSplitViewPaneOpen = false;
             DynamicColumnWidth = 0;
-        //PropertyChanged += ChangedDynamicColumnWidth;
-        PageNavigation.GetInstance().TaskPageControle = this;
+            IsVisibleCat = false;
+
+            //PropertyChanged += ChangedDynamicColumnWidth;
+            PageNavigation.GetInstance().TaskPageControle = this;
         }
 
         private async void ChangedDynamicColumnWidth(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -584,10 +607,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             Category category = new Category() { Title = CategoryTitle };
             await APIHost.GetInstance().CreateCategory(category);
             await GetCaterogy();
-        await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                TaskPages.CloseCatBannerClass();
-            });
+            IsVisibleCat = false;
+            Categories = new(Categories);
+        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    {
+        //        TaskPages.CloseCatBannerClass();
+        //    });
 
         }
 

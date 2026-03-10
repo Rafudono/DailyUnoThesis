@@ -81,6 +81,17 @@ public partial class Mission: INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    private bool _isDelete = false;
+    public bool IsDelete
+    {
+        get => _isDelete;
+        set
+        {
+            _isDelete = value;
+            OnPropertyChanged();
+        }
+    }
     public string FormattedTime
     {
         get

@@ -304,5 +304,16 @@ namespace DailyUnoThesis.Models
            return new Mission();
 
         }
+
+        public async Task DeleteMission(int id)
+        {
+            var resp = await client.GetAsync($"Missions/DeletedMission?id={id}");
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await resp.Content.ReadAsStringAsync();
+                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
+            }
+            
+        }
     }
 }
