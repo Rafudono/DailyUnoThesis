@@ -29,11 +29,12 @@ public class MonthCalendarViewModel : ObservableObject
         Days.Clear();
 
         var firstDay = new DateTime(_currentMonth.Year, _currentMonth.Month, 1);
-        //начало с пн
-        int diff = (int)firstDay.DayOfWeek - 1;  
-        if (diff < 0) diff += 7;
-        var start = firstDay.AddDays(-diff);
 
+        int daysFromMonday = ((int)firstDay.DayOfWeek + 6) % 7; 
+
+        var start = firstDay.AddDays(-daysFromMonday);
+
+        // Всегда 6 недель × 7 дней = 42 дня
         for (int i = 0; i < 42; i++)
         {
             var date = start.AddDays(i);
@@ -50,7 +51,6 @@ public class MonthCalendarViewModel : ObservableObject
             Days.Add(day);
         }
 
-        // Здесь вы загружаете задачи (из сервиса, базы и т.д.)
         LoadTasksForMonth();
     }
 
