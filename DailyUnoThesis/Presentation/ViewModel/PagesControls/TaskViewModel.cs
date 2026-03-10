@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
@@ -15,8 +17,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private CoreDispatcher dispatcher { get; set; }
         private SelectedAndNewTask Page;
 
-        [ObservableProperty]
-        private List<Category> categories;
+        //[ObservableProperty]
+        //private ObservableCollection<Category> categories;
+        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
 
         [ObservableProperty]
         private Category selectedCategory;
@@ -53,13 +56,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
         private async Task ChangeCategory()
         {
+            if (SelectedCategory == null)
+            {
+                SelectedCategory = new Category();  
+            }
             if (SelectedCategory != null && Task != null)
             {
                 if (Task.Category != null)
                 {
-
-                    int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
-                    SelectedCategory = Categories[index];
+                    //int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
+                    SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id); /*Categories[index];*/
                 }
                 else
                 {
@@ -155,10 +161,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public async Task GetCategories()
         {
-            Categories = new();
-            Categories = await APIHost.GetInstance().GetCategories();
-            Categories = new List<Category>(Categories);
-            Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            //Categories = new();
+            //Categories = await APIHost.GetInstance().GetCategories();
+            //Categories = new ObservableCollection<Category>(Categories);
+            //Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             SelectedCategory = Categories[0];
             SelectedFilterCategory = Categories[0];
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
@@ -226,11 +227,11 @@ namespace DailyUnoThesis.Models
             }
         }
 
-        internal async Task<List<Category>> GetCategories()
+        internal async Task<ObservableCollection<Category>> GetCategories()
         {
             //int id = AuthorizedUser.GetInstance().AuthUser.Id;
             int id = 1;
-            List<Category> categories = new List<Category>();
+            ObservableCollection<Category> categories = new ObservableCollection<Category>();
             var req = JsonSerializer.Serialize(id, options);
             var resp = await client.GetAsync($"Categories/GetMyCategory?id={id}");
             //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -243,7 +244,7 @@ namespace DailyUnoThesis.Models
                 };
             }
             else
-                categories = await resp.Content.ReadFromJsonAsync<List<Category>>(options);
+                categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
             return categories;
         }
 
@@ -302,6 +303,25 @@ namespace DailyUnoThesis.Models
                 return mission;
             }
            return new Mission();
+
+        }
+
+        public async Task DeleteMission(Mission mission)
+        {
+            //var resp = await client.GetAsync($"Missions/DeletedMission");
+            //if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            //{
+            //    string Error = await resp.Content.ReadAsStringAsync();
+            //    ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
+            //}
+
+            var arg = JsonSerializer.Serialize(mission, options);
+            var res = await client.PostAsync($"Missions/DeletedMission", new StringContent(arg, Encoding.UTF8, "application/json"));
+            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await res.Content.ReadAsStringAsync();
+                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось удалить task \t  {Error} " };
+            }
 
         }
     }

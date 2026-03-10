@@ -38,18 +38,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private TaskListPageCategory TaskListPageCategory;
         private TaskCategotyControle CategotyControle;
 
-        [ObservableProperty]
-        private List<Category> categories;
-        //public List<Category> Categories
-        //{
-        //    get => categories;
-        //    set
-        //    {
-        //        categories = value;
-        //        Signal();
-        //    }
-        //}
-        [ObservableProperty]
+        //[ObservableProperty]
+        //private ObservableCollection<Category> categories;
+    public ObservableCollection<Category> Categories => CategoryService.Instance.NavCategories;
+    //public List<Category> Categories
+    //{
+    //    get => categories;
+    //    set
+    //    {
+    //        categories = value;
+    //        Signal();
+    //    }
+    //}
+    [ObservableProperty]
         private Category selectedCategory;
         //public Category SelectedCategory
         //{
@@ -125,37 +126,39 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private double splitViewCompactPaneLength;
         [ObservableProperty]
         private bool isSplitViewPaneOpen;
-
-        //public SplitViewDisplayMode SplitViewDisplayMode
-        //{
-        //    get => _splitViewDisplayMode;
-        //    set => SetProperty(ref _splitViewDisplayMode, value);
-        //}
-
-        //public double SplitViewOpenPaneLength
-        //{
-        //    get => _splitViewOpenPaneLength;
-        //    set => SetProperty(ref _splitViewOpenPaneLength, value);
-        //}
-
-        //public double SplitViewCompactPaneLength
-        //{
-        //    get => _splitViewCompactPaneLength;
-        //    set => SetProperty(ref _splitViewCompactPaneLength, value);
-        //}
-
-        //public bool IsSplitViewPaneOpen
-        //{
-        //    get => _isSplitViewPaneOpen;
-        //    set => SetProperty(ref _isSplitViewPaneOpen, value);
-        //}
-
-        // Это свойство будет связано с ColumnDefinition.Width
-
-
-
-
         [ObservableProperty]
+        private bool isVisibleCat;
+
+    //public SplitViewDisplayMode SplitViewDisplayMode
+    //{
+    //    get => _splitViewDisplayMode;
+    //    set => SetProperty(ref _splitViewDisplayMode, value);
+    //}
+
+    //public double SplitViewOpenPaneLength
+    //{
+    //    get => _splitViewOpenPaneLength;
+    //    set => SetProperty(ref _splitViewOpenPaneLength, value);
+    //}
+
+    //public double SplitViewCompactPaneLength
+    //{
+    //    get => _splitViewCompactPaneLength;
+    //    set => SetProperty(ref _splitViewCompactPaneLength, value);
+    //}
+
+    //public bool IsSplitViewPaneOpen
+    //{
+    //    get => _isSplitViewPaneOpen;
+    //    set => SetProperty(ref _isSplitViewPaneOpen, value);
+    //}
+
+    // Это свойство будет связано с ColumnDefinition.Width
+
+
+
+
+    [ObservableProperty]
         private GridLength dynamicColumnWidth;
         //public IState<GridLength> DynamicColumnWidth { get; private set; }
 
@@ -289,7 +292,31 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         }
 
-        [ObservableProperty]
+
+    private RelayCommand closeAndOpenAddCategoryPanel;
+    public RelayCommand CloseAndOpenAddCategoryPanel
+    {
+        get
+        {
+            return closeAndOpenAddCategoryPanel ?? new RelayCommand(async () =>
+            {
+                IsVisibleCat = IsVisibleCat ? false : true;
+
+            }
+
+            );
+
+        }
+
+    }
+
+    public void CloseCategoryPanel()
+    {
+        IsVisibleCat = false; 
+    }
+
+
+    [ObservableProperty]
         private ObservableCollection<NavMenuItem> menuItemsNav;
         //public ObservableCollection<NavMenuItem> MenuItemsNav
         //{ get => menuItemsNav;
@@ -320,11 +347,17 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
             //BuildMenu();
             SplitViewDisplayMode = SplitViewDisplayMode.Inline;
-        SplitViewOpenPaneLength = 0;
-        IsSplitViewPaneOpen = false;
+            SplitViewOpenPaneLength = 0;
+            IsSplitViewPaneOpen = false;
             DynamicColumnWidth = 0;
-        //PropertyChanged += ChangedDynamicColumnWidth;
-        PageNavigation.GetInstance().TaskPageControle = this;
+            IsVisibleCat = false;
+
+
+
+
+
+            //PropertyChanged += ChangedDynamicColumnWidth;
+            PageNavigation.GetInstance().TaskPageControle = this;
         }
 
         private async void ChangedDynamicColumnWidth(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -368,7 +401,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             if (PageNavigation.GetInstance().PageCategory == null)
             {
                 //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
-
             }
             if (PageNavigation.GetInstance().PageCategory != null)
             {
@@ -470,25 +502,25 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         // 3. Динамические категории из API
         //var categories = await api.GetCategories();
-        Categories = await APIHost.GetInstance().GetCategories();
-        await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        {
-            //_dispatcherQueue.TryEnqueue(() =>
-            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            //{
-            Categories = new List<Category>(Categories);
-            List<Category> categories = new();
-            categories = Categories; //надо будет потом напрямик изменить
-                                     //categories.Add(new Category() { Title = "первый каталог", Id = 1, IdBigBoss = 1 });
-                                     //categories.Add(new Category() { Title = "второй каталог", Id = 2, IdBigBoss = 1 });
-                                     //categories.Add(new Category() { Title = "третий каталог", Id = 3, IdBigBoss = 1 });
-            foreach (var cat in categories)
-            {
-                // Передаем весь объект Category в свойство Data
-                MenuItemsNav.Add(new NavMenuItem(cat.Title, "Tag", $"Category", Data: cat));
-            }
-            //MenuItemsNav = new(MenuItemsNav);
-        });
+        //Categories = await APIHost.GetInstance().GetCategories();
+        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //{
+        //    //_dispatcherQueue.TryEnqueue(() =>
+        //    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    //{
+        //    Categories = new List<Category>(Categories);
+        //    List<Category> categories = new();
+        //    categories = Categories; //надо будет потом напрямик изменить
+        //                             //categories.Add(new Category() { Title = "первый каталог", Id = 1, IdBigBoss = 1 });
+        //                             //categories.Add(new Category() { Title = "второй каталог", Id = 2, IdBigBoss = 1 });
+        //                             //categories.Add(new Category() { Title = "третий каталог", Id = 3, IdBigBoss = 1 });
+        //    foreach (var cat in categories)
+        //    {
+        //        // Передаем весь объект Category в свойство Data
+        //        MenuItemsNav.Add(new NavMenuItem(cat.Title, "Tag", $"Category", Data: cat));
+        //    }
+        //    //MenuItemsNav = new(MenuItemsNav);
+        //});
 
     }
 
@@ -500,15 +532,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         
         }
 
-        public async void GetLists()
-        {
-            TaskListPageToday = new();
-            TaskListPageComplete = new();
-            SelectedCategory = new();
-            TaskOverdueListPage = new();
-            TaskListPageCategory = new();
-            await GetCaterogy();
-        }
+        //public async void GetLists()
+        //{
+        //    TaskListPageToday = new();
+        //    TaskListPageComplete = new();
+        //    SelectedCategory = new();
+        //    TaskOverdueListPage = new();
+        //    TaskListPageCategory = new();
+        //    await GetCaterogy();
+        //}
       
 
         public async Task GetListPage()
@@ -583,18 +615,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         {
             Category category = new Category() { Title = CategoryTitle };
             await APIHost.GetInstance().CreateCategory(category);
-            await GetCaterogy();
-        await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                TaskPages.CloseCatBannerClass();
-            });
+        //await GetCaterogy();
+        await CategoryService.Instance.RefreshFromDatabaseAsync();
+        IsVisibleCat = false;
+            //Categories = new(Categories);
+        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    {
+        //        TaskPages.CloseCatBannerClass();
+        //    });
 
         }
 
         public async Task GetCaterogy()
         {
-            Categories = await APIHost.GetInstance().GetCategories();
-            Categories = new List<Category>(Categories);
+        await CategoryService.Instance.RefreshFromDatabaseAsync();
+        //Categories = await APIHost.GetInstance().GetCategories();
+        //Categories = new ObservableCollection<Category>(Categories);
+
+
         //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
         //    {
         //        var en = TaskListPageCategory.DataContext as TaskListControle;
@@ -602,13 +640,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         //    });
 
 
-            //TaskOverdueListPage = new();
-            //TaskListPageCategory = new();
+        //TaskOverdueListPage = new();
+        //TaskListPageCategory = new();
 
-        }
+    }
 
 
-        public void SetControl(TaskPages pass)
+    public async void SetControl(TaskPages pass)
         {
             //this.Navigation = PageNavigation.GetInstance().;
             if(TaskPages == null)   
@@ -618,7 +656,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         var vm = PageNavigation.GetInstance().CategotyControle;
             TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
             CategotyControle = vm;
-        }
+        
+    }
 
 
         public void SetDispatcher(CoreDispatcher dispatcher)

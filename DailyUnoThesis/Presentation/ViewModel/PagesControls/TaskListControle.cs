@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
@@ -26,8 +28,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private CoreDispatcher dispatcher { get; set; }
         //public PageNavigation Navigation;
         private TaskListPage TaskPages;
-        [ObservableProperty]
-        private List<Category> categories;
+        //[ObservableProperty]
+        //private ObservableCollection<Category> categories;
+        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
         [ObservableProperty]
         private Category selectedCategory;
         [ObservableProperty]
@@ -103,8 +106,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 if (Task.Category != null)
                 {
 
-                    int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
-                    SelectedCategory = Categories[index];
+                    SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id);
                 }
                 else
                 {
@@ -226,8 +228,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
 
         private RelayCommand saveSubtasks;
-      
-
         public RelayCommand SaveSubtasks
         {
             get
@@ -261,16 +261,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return completeTaskCommand ?? new RelayCommand<Mission>(async (Mission) =>
                 {
-                    if (Mission != null)
+                    if (Mission != null && Mission.IsComplete != null)
                     {
                         if ((bool)Mission.IsComplete)
                         {
-
-
                             if (Mission.IdUpMission == 0 || Mission.IdUpMission == null)
                             {
                                 ChangeOfCompletionStatusAndRemoving(Mission);
                                 Mission.IsRemoving = true;
+                                await System.Threading.Tasks.Task.Delay(400);
                                 Missions.Remove(Mission);
                             }
                             else
@@ -281,8 +280,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                        
                         //await System.Threading.Tasks.Task.Delay(300);
                        
-                        await System.Threading.Tasks.Task.Delay(500);
-                        Missions = new(Missions);
+                        //await System.Threading.Tasks.Task.Delay(500);
+                        //Missions = new(Missions);
                     }
                 }
                 );
@@ -317,6 +316,26 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 }
             }
         }
+
+
+
+        private RelayCommand<Mission> deleteTask;
+        public RelayCommand<Mission> DeleteTask
+        {
+            get
+            {
+                return deleteTask ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (Mission != null)
+                    {
+                        DeleteTasks(Mission);
+                    }
+
+                }
+                );
+            }
+        }
+
 
         public TaskListControle()
         {
@@ -377,10 +396,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public async Task GetCategories()
         {
-            Categories = new();
-            Categories = await APIHost.GetInstance().GetCategories();
-            Categories = new List<Category>(Categories);
-            Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            //Categories = new();
+            //Categories = await APIHost.GetInstance().GetCategories();
+            //Categories = new ObservableCollection<Category>(Categories);
+            //Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             SelectedCategory = Categories[0];
             SelectedFilterCategory = Categories[0];
 
@@ -425,6 +444,37 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             Missions = new(Missions);
 
             
+        }
+
+        public async void DeleteTasks(Mission mission)
+        {
+            if(mission == null)
+                { return; }
+
+            if (mission.InverseIdUpMissionNavigation.Count > 0)
+            {
+                DeleteSubtasks(mission);        
+            }
+            mission.IsDelete = true;
+            //await System.Threading.Tasks.Task.Delay(400);
+            //Missions.Remove(mission);
+            ////await System.Threading.Tasks.Task.Delay(300);
+            //await System.Threading.Tasks.Task.Delay(500);
+            //Missions = new(Missions);
+            await System.Threading.Tasks.Task.Delay(400);
+            await APIHost.GetInstance().DeleteMission(mission);
+            await System.Threading.Tasks.Task.Delay(300);
+            Missions.Remove(mission);
+            //await FillData();
+        }
+
+        private void DeleteSubtasks(Mission mission)
+        {
+            foreach (Mission submission in mission.InverseIdUpMissionNavigation)
+            {
+                submission.IsDelete = true;
+            }
+        
         }
 
         internal void SetControl(TaskListPage pass)

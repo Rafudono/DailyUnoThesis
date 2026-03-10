@@ -151,6 +151,38 @@ Height="600">
                                                         </DoubleAnimation>
                                                     </Storyboard>
                                                 </VisualState>
+
+                                                <VisualState x:Name="Delete">
+                                                    <VisualState.StateTriggers>
+                                                        <StateTrigger IsActive="{Binding IsDelete}" />
+                                                    </VisualState.StateTriggers>
+                                                    <Storyboard>
+                                                        <!-- 1. Плавно исчезаем -->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                Storyboard.TargetProperty="Opacity" 
+                To="0" Duration="0:0:0.4"/>
+                                                        <!-- 2. Сдвигаем влево (эффект вылета) -->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+                To="100" Duration="0:0:0.4">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                        <!--<DoubleAnimation Storyboard.TargetName="RootBorder" 
+Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" 
+To="0" Duration="0:0:0.4"/>-->
+                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                    Storyboard.TargetProperty="Height" 
+                    To="0" Duration="0:0:0.4">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </VisualState>
+                                                
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
 
@@ -256,6 +288,7 @@ Height="600">
                                                     <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
                                                 </StackPanel>-->
                                             </StackPanel>
+                                            <Button Content="Del" HorizontalAlignment="Right" CommandParameter="{Binding}" Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}"/>
                                         </Grid>
                                     </Border>
                                 </TreeViewItem>
