@@ -216,7 +216,7 @@ namespace DailyUnoThesis.Models
         public async Task EditMission(Mission mission)
         {
             //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-            mission.UserId = 1;
+            //mission.UserId = 1;
             //mission.User = AuthorizedUser.GetInstance().AuthUser;
             var arg = JsonSerializer.Serialize(mission, options);
             var resp = await client.PutAsync($"Missions", new StringContent (arg, Encoding.UTF8, "application/json"));

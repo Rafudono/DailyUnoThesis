@@ -143,6 +143,74 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         }
 
+        private RelayCommand<Mission> completeTaskCommand;
+        public RelayCommand<Mission> CompleteTaskCommand
+        {
+            get
+            {
+                return completeTaskCommand ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (Mission != null && Mission.IsComplete != null)
+                    {
+                        if ((bool)Mission.IsComplete)
+                        {
+                            if (Mission.IdUpMission == 0 || Mission.IdUpMission == null)
+                            {
+                                ChangeOfCompletionStatusAndRemoving(Mission);
+                                Mission.IsRemoving = true;
+                                await System.Threading.Tasks.Task.Delay(400);
+                                //Missions.Remove(Mission);
+                            }
+                            else
+                            {
+                                ChangeOfCompletionStatus(Mission);
+
+                            }
+                        }
+
+                        await APIHost.GetInstance().EditMission(Mission);
+                        //await System.Threading.Tasks.Task.Delay(400);
+                        //FillData();
+
+                        //await System.Threading.Tasks.Task.Delay(300);
+
+                        //await System.Threading.Tasks.Task.Delay(500);
+                        //Missions = new(Missions);
+                    }
+                }
+                );
+            }
+        }
+
+        private void ChangeOfCompletionStatusAndRemoving(Mission Mission)
+        {
+            if (Mission.InverseIdUpMissionNavigation == null) return;
+            foreach (var mis in Mission.InverseIdUpMissionNavigation)
+            {
+                mis.IsComplete = true;
+                mis.IsRemoving = true;
+
+                if (mis.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    ChangeOfCompletionStatusAndRemoving(mis);
+                }
+            }
+        }
+
+        private void ChangeOfCompletionStatus(Mission Mission)
+        {
+            if (Mission.InverseIdUpMissionNavigation == null) return;
+            foreach (var mis in Mission.InverseIdUpMissionNavigation)
+            {
+                mis.IsComplete = true;
+
+                if (mis.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    ChangeOfCompletionStatus(mis);
+                }
+            }
+        }
+
 
 
 
@@ -196,7 +264,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 else
                 {
                     await APIHost.GetInstance().EditMission(Task);
-
                 }
                 
                 if (Task == null)

@@ -275,11 +275,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                             else
                             {
                                 ChangeOfCompletionStatus(Mission);
+                                
                             }
                         }
-                       
+                        
+                        await APIHost.GetInstance().EditMission(Mission);
+                        //await System.Threading.Tasks.Task.Delay(400);
+                        //FillData();
+
                         //await System.Threading.Tasks.Task.Delay(300);
-                       
+
                         //await System.Threading.Tasks.Task.Delay(500);
                         //Missions = new(Missions);
                     }
@@ -421,7 +426,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     mis.LevelUp = 1;
                     
                     Missions.Add(mis);
-                    foreach (Mission downMis in missions.Where(s => s.IdUpMission == mis.Id))
+                    foreach (Mission downMis in mis.InverseIdUpMissionNavigation/*.Where(s => s.IdUpMission == mis.Id)*/)
                     {
                         downMis.LevelUp = 2;
                         

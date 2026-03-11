@@ -17,6 +17,7 @@
     xmlns:utu="using:Uno.Toolkit.UI"
     xmlns:um="using:Uno.Material"
     NavigationCacheMode="Enabled"
+     x:Name="DetailPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.DataContext>
         <mv:TaskViewModel/>
@@ -84,15 +85,25 @@
             HorizontalAlignment="Right"
             Command="{Binding NewTask}" />
 
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.1*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox CommandParameter="{Binding Task}"
+Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
+IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
+                       
                         <TextBox Text="{Binding Task.Title, Mode=TwoWay}"
-             MinWidth="150"
+             MinWidth="150" Grid.Column="1"
              PlaceholderText="Введите название"
-             Height="30" FontSize="20" />
+             MinHeight="30" FontSize="18" TextWrapping="Wrap"/>
+                        </Grid>
 
                         <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
              MinWidth="150"
              PlaceholderText="Введите описание"
-             MinHeight="50" TextWrapping="Wrap" FontSize="15" />
+             MinHeight="50" TextWrapping="Wrap" FontSize="15" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
                         <ListView Margin="0 10 0 0" Background="Transparent"
              ItemsSource="{Binding Subtasks, Mode=TwoWay}"
@@ -101,10 +112,19 @@
 
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
-                                    <TextBox Width="300" Height="30" Margin="0,0,0,3" Padding="3"
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.1*"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox CommandParameter="{Binding}"
+          Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
+          IsChecked="{Binding IsComplete, Mode=TwoWay}" />
+                                        <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,3" Padding="3"
                          Text="{Binding Title, Mode=TwoWay}"
                          PlaceholderText="Новая подзадача"
-                         FontSize="16" FontWeight="Bold" />
+                         FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                                    </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
