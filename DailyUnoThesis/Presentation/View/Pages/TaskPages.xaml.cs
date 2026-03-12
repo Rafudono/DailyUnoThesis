@@ -131,7 +131,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             test = "заполнен";
         }
 
-        private void CloseCatBanner(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void CloseCatBanner(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) 
         {
 
         }

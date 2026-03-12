@@ -253,6 +253,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         }
 
+        [ObservableProperty]
+        private double delButtonOpacity = 0;
+
+        public void ShowButton()
+        {
+            DelButtonOpacity = 1;
+        }
+        public void HideButton() { DelButtonOpacity = 0; }
 
         private RelayCommand<Mission> completeTaskCommand;
         public RelayCommand<Mission> CompleteTaskCommand

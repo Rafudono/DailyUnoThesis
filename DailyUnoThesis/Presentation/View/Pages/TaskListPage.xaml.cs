@@ -24,6 +24,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
     {
         //public TaskListControle ViewModel;
         TaskListPage pass;
+        public TaskListControle ViewModel;
         public TaskListPage()
         {
             this.InitializeComponent();
@@ -40,22 +41,35 @@ namespace DailyUnoThesis.Presentation.View.Pages
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
 
-            //if (args.NewValue is TaskListControle viewModel)
-            //{
-            //    // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
-            //    viewModel.SetDispatcher(this.Dispatcher);
+            if (args.NewValue is TaskListControle viewModel)
+            {
+              
+                    ViewModel = viewModel;
 
-            //    // Передаем саму View
-            //    viewModel.SetControl(this);
-            //    viewModel.GetCaterogy();
-            //    //BaseList.SelectedItem = BaseList.IndexOf(1);
-            //    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            //    //{
-            //    // await viewModel.BuildMenu();
-            //    //BaseListView.SelectedItem = viewModel.ListNavigations[0];
-            //    ;
-            //    //});
-            //}
+                //Передаем DispatcherQueue(в WinUI/ Uno 5 это DispatcherQueue)
+                //viewModel.SetDispatcher(this.Dispatcher);
+
+                //Передаем саму View
+                //viewModel.SetControl(this);
+                //viewModel.GetCaterogy();
+                //BaseList.SelectedItem = BaseList.IndexOf(1);
+                //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                //{
+                // await viewModel.BuildMenu();
+                //BaseListView.SelectedItem = viewModel.ListNavigations[0];
+                ;
+                //});
+            }
+        }
+
+        private void ShowButton(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            ViewModel.ShowButton();
+        }
+
+        private void HideButton(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            ViewModel.HideButton();
         }
 
         //public async Task GetTaskCatPage()

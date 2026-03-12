@@ -114,6 +114,7 @@ Height="600">
                                 <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}">
                                     <Border x:Name="RootBorder" MinWidth="500" MaxWidth="800" CornerRadius="15"
                                             BorderBrush="Black" BorderThickness="0.8" Margin="3"  RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" MinHeight="0">
+
                                         <Border.RenderTransform>
                                             <CompositeTransform />
                                         </Border.RenderTransform>
@@ -121,6 +122,7 @@ Height="600">
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="LifeCycleStates">
                                                 <VisualState x:Name="Alive" />
+                                                
 
                                                 <VisualState x:Name="Removing">
                                                     <VisualState.StateTriggers>
@@ -187,7 +189,8 @@ To="0" Duration="0:0:0.4"/>-->
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
 
-                                        <Grid  Background="#ffffff"  MinWidth="300">
+                                        <Grid  Background="#ffffff" PointerEntered="ShowButton"
+                                               PointerExited="HideButton"  MinWidth="300">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="0.1*"/>
@@ -195,6 +198,16 @@ To="0" Duration="0:0:0.4"/>-->
 
                                             <VisualStateManager.VisualStateGroups>
                                                 <VisualStateGroup x:Name="TaskCompletionStates">
+                                                    <VisualState x:Name="HiddenDelButtonNormal">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="DelButton"  Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="HiddenDelButtonPointOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetName="DelButton"  Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                                        </Storyboard>
+                                                    </VisualState>
                                                     <!--<VisualState x:Name="Active">
                                                         --><!-- Изначальное состояние (не выполнено) --><!--
                                                         <VisualState.StateTriggers>
@@ -248,6 +261,8 @@ To="0" Duration="0:0:0.4"/>-->
                                                 </VisualStateGroup>
                                             </VisualStateManager.VisualStateGroups>
 
+                                            
+
                                             <Grid Width="Auto"  Padding="5">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="0.1*"/>
@@ -297,7 +312,15 @@ To="0" Duration="0:0:0.4"/>-->
                                                     <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
                                                 </StackPanel>-->
                                             </Grid>
-                                            <Button Grid.Column="1" Content="Del" HorizontalAlignment="Right" CommandParameter="{Binding}" Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}"/>
+                                            <Button x:Name="DelButton" Grid.Column="1" Content="Del" HorizontalAlignment="Right"
+                                                    CommandParameter="{Binding}" Opacity="{Binding DataContext.DelButtonOpacity, ElementName=MyPageRoot}"
+                                                    Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
+                                                <!--<Button.Style>
+                                                    <Style>
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </Style>
+                                                </Button.Style>-->
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </TreeViewItem>

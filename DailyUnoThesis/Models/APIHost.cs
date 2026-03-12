@@ -324,5 +324,18 @@ namespace DailyUnoThesis.Models
             }
 
         }
+
+        public async Task DeleteCategories(Category category)
+        {
+            var arg = JsonSerializer.Serialize(category, options);
+            var res = await client.PostAsync($"Categories/DeleteCategory",
+                new StringContent(arg, Encoding.UTF8, "application/json"));
+            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await res.Content.ReadAsStringAsync();
+
+            }
+        
+        }
     }
 }
