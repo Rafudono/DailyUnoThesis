@@ -7,21 +7,25 @@
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
       xmlns:model="using:DailyUnoThesis.Models"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
+      xmlns:help="using:DailyUnoThesis.Presentation.ViewModel.HelperClasses"
        xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
  xmlns:utu="using:Uno.Toolkit.UI"
  xmlns:um="using:Uno.Material"
+      x:Name="PanelTask"
  NavigationCacheMode="Enabled">
 
     <!--<Page.DataContext>
         <mv:TaskPageControle/>
     </Page.DataContext>-->
     <Page.Resources>
+        <!--<mv:TaskPageControle x:Key="Control"/>-->
         <con:ScrollHeightConventer x:Key="heightOffsetConverter" />
         <con:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter"/>
         <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
         <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <help:BindingProxy x:Key="VmProxy"/>
 
         <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Red" />
         
@@ -67,7 +71,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.2*" MinWidth="160" MaxWidth="220"></ColumnDefinition>
+                        <ColumnDefinition Width="0.2*" x:Name="MenuTask" MinWidth="160" MaxWidth="220"></ColumnDefinition>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition x:Name="PaneColumn" Width="0" />
                 </Grid.ColumnDefinitions>
@@ -82,7 +86,7 @@
                             <VisualState.Setters>
                                 <Setter Target="PaneColumn.Width" Value="0" />
                                 <Setter Target="PaneColumn.MinWidth" Value="0" />
-                                <Setter Target="DetailsPane.Visibility" Value="Collapsed" />
+                                <!--<Setter Target="DetailsPane.Visibility" Value="Collapsed" />-->
                             </VisualState.Setters>
                         </VisualState>
 
@@ -95,7 +99,7 @@
                                 <Setter Target="PaneColumn.Width" Value="0.5*" />
                                 <Setter Target="PaneColumn.MinWidth" Value="350" />
                                 <Setter Target="PaneColumn.MaxWidth" Value="850" />
-                                <Setter Target="DetailsPane.Visibility" Value="Visible" />
+                                <!--<Setter Target="DetailsPane.Visibility" Value="Visible" />-->
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -108,7 +112,10 @@
                             <RepositionThemeTransition />
                         </TransitionCollection>
                     </Border.Transitions>
-                    <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
+                    <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollMode="Enabled" 
+              VerticalScrollMode="Enabled">
                         <!--<NavigationView PaneDisplayMode="Left"  OpenPaneLength="200" IsPaneToggleButtonVisible="False" IsBackButtonVisible="Collapsed" IsPaneOpen="True" MenuItemsSource="{Binding MenuItemsNav}"
              MenuItemTemplateSelector="{StaticResource TaskMenuSelector}"
              uen:Region.Attached="True"
@@ -149,7 +156,7 @@
 
 
 
-                            <utu:TabBar x:Name="StaticTabBar" SelectionChanged="SelectedAndVisible" uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
+                            <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="SelectedAndVisible" uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
 
                                 <utu:TabBarItem Content="Все задания" 
                                     uen:Region.Name="TaskList"
@@ -189,7 +196,47 @@
                                     <DataTemplate x:DataType="mod:Category">
                                         <TreeViewItem ItemsSource="{Binding IdUpCategoryNavigation}" >
                                             <Grid  Width="Auto" MinWidth="300" MaxWidth="700">
+
+                                                <Grid.ContextFlyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem Text="Редактировать" 
+                                Command="{Binding DataContext.EditMissionCommand, ElementName=MyTreeView}"
+                                CommandParameter="{Binding}">
+                                                            <MenuFlyoutItem.Icon>
+                                                                <SymbolIcon Symbol="Edit" />
+                                                            </MenuFlyoutItem.Icon>
+                                                        </MenuFlyoutItem>
+
+
+                                                        <MenuFlyoutItem Text="Создать подкатегорию"
+                 Command="{Binding DataContext.DeleteMissionCommand, ElementName=MyTreeView}"
+                 CommandParameter="{Binding}">
+                                                            <MenuFlyoutItem.Icon>
+                                                                <SymbolIcon Symbol="List" />
+                                                            </MenuFlyoutItem.Icon>
+                                                        </MenuFlyoutItem>
+                                                        
+                                                        <MenuFlyoutSeparator />
+
+
+                                                        <MenuFlyoutItem Text="Удалить" 
+                                Foreground="Red"
+                               Command="{Binding TaskPageControle.Deletecategory, Source={StaticResource VmProxy}}"
+                                CommandParameter="{Binding}" >
+                                                            <MenuFlyoutItem.Icon>
+                                                                <SymbolIcon Symbol="Delete" />
+                                                            </MenuFlyoutItem.Icon>
+                                                        </MenuFlyoutItem>
+
+                                                       
+                                                    </MenuFlyout>
+                                                </Grid.ContextFlyout>
+                                                
+
                                                 <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
+                                                <!--<Button x:Name="DelButton" Grid.Column="1" Content="Del" 
+        CommandParameter="{Binding}"
+        Command="{Binding DataContext.Deletecategory, ElementName=CategoriesRepeater}" />-->
                                             </Grid>
                                         </TreeViewItem>
 
@@ -197,6 +244,26 @@
                                 </TreeView.ItemTemplate>
                             </TreeView>
 
+                            
+                            <utu:Card HeaderContent="Outlined card"
+          SubHeaderContent="With title and subtitle only"
+          AutomationProperties.AutomationId="Outlined_Card"
+          Style="{StaticResource OutlinedCardStyle}">
+                                <utu:Card.HeaderContentTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                    Margin="16,14,16,0"
+                    Style="{ThemeResource TitleLarge}" />
+                                    </DataTemplate>
+                                </utu:Card.HeaderContentTemplate>
+                                <utu:Card.SubHeaderContentTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                    Margin="16,0,16,14"
+                    Style="{ThemeResource BodySmall}" />
+                                    </DataTemplate>
+                                </utu:Card.SubHeaderContentTemplate>
+                            </utu:Card>
 
 
 
@@ -227,6 +294,16 @@
 
 
                             <TextBlock Text="#Проекты" Margin="0,10" />
+                            
+                            <TextBlock Text="#Проекты" Height="100" Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                                                                     Width="200"
+
                             <Button Grid.Column="1" Content="Filters" 
  Command="{Binding CloseAndOpenDetailedSplitView}"
 HorizontalAlignment="Right" 

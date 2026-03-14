@@ -78,6 +78,7 @@
   <ItemGroup>
     <PackageReference Include="MvvmLightLibs" />
     <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
+    <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Presentation\View\Timer\RegularTimer.xaml">

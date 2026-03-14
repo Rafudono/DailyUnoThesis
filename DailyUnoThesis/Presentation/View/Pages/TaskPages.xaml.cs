@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using Uno.Extensions.Specialized;
@@ -78,12 +79,14 @@ namespace DailyUnoThesis.Presentation.View.Pages
                 viewModel.SetControl(this);
                 await viewModel.GetCaterogy();
                 ViewModel = viewModel;
+
+                 BindingProxy.GetInstance().TaskPageControle = viewModel;
                 //BaseList.SelectedItem = BaseList.IndexOf(1);
                 //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 //{
                 // await viewModel.BuildMenu();
                 //BaseListView.SelectedItem = viewModel.ListNavigations[0];
-                ;
+                
                 //});
             }
         }
@@ -200,6 +203,11 @@ namespace DailyUnoThesis.Presentation.View.Pages
             }
             StaticTabBar.SelectedIndex = -1;
             StaticTabBar.SelectedItem = null;
+        }
+
+        private void novcat(object sender, RoutedEventArgs e)
+        {
+
         }
 
         //private void OpenFilters_Click(object sender, RoutedEventArgs e)

@@ -316,6 +316,26 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     }
 
 
+    private RelayCommand<Category> deletecategory;
+    public RelayCommand<Category> Deletecategory
+    {
+        get
+        {
+            return deletecategory ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                { }
+
+            }
+
+            );
+
+        }
+
+    }
+
+
+
     [ObservableProperty]
         private ObservableCollection<NavMenuItem> menuItemsNav;
         //public ObservableCollection<NavMenuItem> MenuItemsNav

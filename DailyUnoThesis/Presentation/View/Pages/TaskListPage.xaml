@@ -11,6 +11,8 @@
 xmlns:utu="using:Uno.Toolkit.UI"
 xmlns:um="using:Uno.Material"
 NavigationCacheMode="Required"
+          xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+xmlns:core="using:Microsoft.Xaml.Interactions.Core"
        mc:Ignorable="d"
       x:Name="MyPageRoot"
  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -189,25 +191,31 @@ To="0" Duration="0:0:0.4"/>-->
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
 
-                                        <Grid  Background="#ffffff" PointerEntered="ShowButton"
-                                               PointerExited="HideButton"  MinWidth="300">
+                                        <Grid  Background="#ffffff"  MinWidth="300">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="0.1*"/>
                                             </Grid.ColumnDefinitions>
 
+                                            <interactivity:Interaction.Behaviors>
+                                                <!-- Когда курсор входит в Grid -->
+                                                <core:EventTriggerBehavior EventName="PointerEntered">
+                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" 
+                PropertyName="Opacity" 
+                Value="1"/>
+                                                </core:EventTriggerBehavior>
+
+                                                <!-- Когда курсор выходит из Grid -->
+                                                <core:EventTriggerBehavior EventName="PointerExited">
+                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" 
+                PropertyName="Opacity" 
+                Value="0"/>
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+
                                             <VisualStateManager.VisualStateGroups>
                                                 <VisualStateGroup x:Name="TaskCompletionStates">
-                                                    <VisualState x:Name="HiddenDelButtonNormal">
-                                                        <Storyboard>
-                                                            <DoubleAnimation Storyboard.TargetName="DelButton"  Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
-                                                        </Storyboard>
-                                                    </VisualState>
-                                                    <VisualState x:Name="HiddenDelButtonPointOver">
-                                                        <Storyboard>
-                                                            <DoubleAnimation Storyboard.TargetName="DelButton"  Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
-                                                        </Storyboard>
-                                                    </VisualState>
+                                                    
                                                     <!--<VisualState x:Name="Active">
                                                         --><!-- Изначальное состояние (не выполнено) --><!--
                                                         <VisualState.StateTriggers>
@@ -312,8 +320,8 @@ To="0" Duration="0:0:0.4"/>-->
                                                     <Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
                                                 </StackPanel>-->
                                             </Grid>
-                                            <Button x:Name="DelButton" Grid.Column="1" Content="Del" HorizontalAlignment="Right"
-                                                    CommandParameter="{Binding}" Opacity="{Binding DataContext.DelButtonOpacity, ElementName=MyPageRoot}"
+                                            <Button x:Name="DelButton" Grid.Column="1" Content="Del" HorizontalAlignment="Right" Opacity="0"
+                                                    CommandParameter="{Binding}"
                                                     Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
                                                 <!--<Button.Style>
                                                     <Style>
