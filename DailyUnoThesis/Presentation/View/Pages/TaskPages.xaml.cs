@@ -29,7 +29,8 @@ namespace DailyUnoThesis.Presentation.View.Pages
         public Grid GridStatic;
         public TaskPageControle ViewModel;
         double acpanel;
-        
+
+
         //public TaskPageControle ViewModel { get; } = new();
         string test {  get; set; }  
         public TaskPages()
@@ -80,13 +81,14 @@ namespace DailyUnoThesis.Presentation.View.Pages
                 await viewModel.GetCaterogy();
                 ViewModel = viewModel;
 
-                 BindingProxy.GetInstance().TaskPageControle = viewModel;
+                //BindingProxy.GetInstance().TaskPageControle = viewModel;
+                ViewModelStore.GetInstance().PanelTask = viewModel;
                 //BaseList.SelectedItem = BaseList.IndexOf(1);
                 //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 //{
                 // await viewModel.BuildMenu();
                 //BaseListView.SelectedItem = viewModel.ListNavigations[0];
-                
+
                 //});
             }
         }

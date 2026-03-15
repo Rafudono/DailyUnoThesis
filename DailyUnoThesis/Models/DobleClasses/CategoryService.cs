@@ -27,16 +27,19 @@ namespace DailyUnoThesis.Models.DobleClasses
             var data = await APIHost.GetInstance().GetCategories();
             Categories.AddRange(data);
             Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
-            NavCategories.AddRange(data);
+            //data.AddRange(s => s.IdUpCategory != null);
+            //NavCategories.AddRange(data);
+            //NavCategories.RemoveAll(s => s.IdUpCategory != null);
 
             // 2. Очищаем текущую коллекцию
             //Categories.Clear();
 
             // 3. Заполняем её новыми данными
-            //foreach (var item in data)
-            //{
-            //    Categories.Add(item);
-            //}
+            foreach (var item in data.Where(s=>s.IdUpCategory == null || s.IdUpCategory == 0))
+            {
+                
+                NavCategories.Add(item);
+            }
         }
 
         private async Task<List<Category>> GetCategoriesFromApi()

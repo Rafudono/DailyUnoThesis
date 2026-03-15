@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,9 +29,10 @@ namespace DailyUnoThesis.Presentation.View.Pages
 		{
 			this.InitializeComponent();
             DataContext = new TaskViewModel();
+            //var vm = DataContext as TaskViewModel;
             this.DataContextChanged += OnDataContextChanged;
             //PageNavigation.GetInstance().GetPageCategory(this);
-            PageNavigation.GetInstance().GetPageTask(this);
+            ViewModelStore.GetInstance().GetPageTask(this);
         }
         private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {

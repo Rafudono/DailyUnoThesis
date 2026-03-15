@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Messaging.Internals;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using Microsoft.UI.Dispatching;
@@ -52,18 +53,20 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     //}
     [ObservableProperty]
         private Category selectedCategory;
-        //public Category SelectedCategory
-        //{
-        //    get => selectedCategory;
-        //    set
-        //    {
-        //        selectedCategory = value;
-        //        Signal();
-        //    }
-        //}
+    [ObservableProperty]
+    private Category category;
+    //public Category SelectedCategory
+    //{
+    //    get => selectedCategory;
+    //    set
+    //    {
+    //        selectedCategory = value;
+    //        Signal();
+    //    }
+    //}
 
 
-        [ObservableProperty]
+    [ObservableProperty]
         private string selectedBaseCategory;
         //public string SelectedBaseCategory
         //{
@@ -300,8 +303,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         {
             return closeAndOpenAddCategoryPanel ?? new RelayCommand(async () =>
             {
+                Category = new();
                 IsVisibleCat = IsVisibleCat ? false : true;
-
             }
 
             );
@@ -316,15 +319,75 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     }
 
 
-    private RelayCommand<Category> deletecategory;
-    public RelayCommand<Category> Deletecategory
+    private RelayCommand<Category> deleteCategoryMoveToParent;
+    public RelayCommand<Category> DeleteCategoryMoveToParent
     {
         get
         {
-            return deletecategory ?? new RelayCommand<Category>(async (category) =>
+            return deleteCategoryMoveToParent ?? new RelayCommand<Category>(async (category) =>
             {
                 if (category != null)
-                { }
+                {
+
+                   await DeleteCategory(category, CategoryDeleteMode.MoveToParent);
+                }
+            });
+        }
+    }
+
+    private RelayCommand<Category> deleteCategoryCascade;
+    public RelayCommand<Category> DeleteCategoryCascade
+    {
+        get
+        {
+            return deleteCategoryCascade ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                  await  DeleteCategory(category, CategoryDeleteMode.Cascade);
+                }
+            });
+        }
+    }
+
+    private RelayCommand<Category> deleteCategoryOrphanTasks;
+    public RelayCommand<Category> DeleteCategoryOrphanTasks
+    {
+        get
+        {
+            return deleteCategoryOrphanTasks ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                  await  DeleteCategory(category, CategoryDeleteMode.OrphanTasks);
+                }
+            });
+        }
+    }
+
+
+    private async Task DeleteCategory(Category category, CategoryDeleteMode deleteMode)
+    {
+        await APIHost.GetInstance().DeleteCategories(category.Id, deleteMode);
+        await CategoryService.Instance.RefreshFromDatabaseAsync();
+        await ViewModelStore.GetInstance().FillDataViewModels();
+    }
+
+
+
+    private RelayCommand<Category> createSubcategory;
+    public RelayCommand<Category> CreateSubcategory
+    {
+        get
+        {
+            return createSubcategory ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    Category = new() {IdUpCategory = category.Id };
+                    //Category.IdUpCategory = category.Id;
+                    IsVisibleCat = IsVisibleCat ? false : true;
+                }
 
             }
 
@@ -333,8 +396,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         }
 
     }
-
-
 
     [ObservableProperty]
         private ObservableCollection<NavMenuItem> menuItemsNav;
@@ -376,8 +437,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 
 
-            //PropertyChanged += ChangedDynamicColumnWidth;
-            PageNavigation.GetInstance().TaskPageControle = this;
+        //PropertyChanged += ChangedDynamicColumnWidth;
+          //ViewModelStore.GetInstance().PanelTask = this;
         }
 
         private async void ChangedDynamicColumnWidth(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -418,14 +479,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private async Task SelectCategory(Category category)
         {
             if (category == null) return;
-            if (PageNavigation.GetInstance().PageCategory == null)
+            if (ViewModelStore.GetInstance().PanelTask == null)
             {
                 //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
             }
-            if (PageNavigation.GetInstance().PageCategory != null)
+            if (ViewModelStore.GetInstance().Category != null)
             {
 
-                var vm = PageNavigation.GetInstance().CategotyControle;
+                var vm = ViewModelStore.GetInstance().Category;
                 CategotyControle = vm;
                 await CategotyControle.GetIdCategory(category.Id);
             }
@@ -484,7 +545,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
                 //    //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
 
                 //}
-                if (PageNavigation.GetInstance().PageCategory != null)
+                if (ViewModelStore.GetInstance().Category != null)
                 {
                     GoToSelectCategory(value);
                     TaskPages.GridStatic.Visibility = Visibility.Collapsed;
@@ -633,11 +694,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         public async Task CreateCategory()
         {
-            Category category = new Category() { Title = CategoryTitle };
-            await APIHost.GetInstance().CreateCategory(category);
+            //Category category = new Category() { Title = CategoryTitle };
+            await APIHost.GetInstance().CreateCategory(Category);
         //await GetCaterogy();
         await CategoryService.Instance.RefreshFromDatabaseAsync();
         IsVisibleCat = false;
+        Category = new();
             //Categories = new(Categories);
         //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
         //    {
@@ -673,7 +735,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             TaskPages = pass;
             SelectedBaseCategory = ListNavigations[0];
         TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
-        var vm = PageNavigation.GetInstance().CategotyControle;
+        var vm = ViewModelStore.GetInstance().Category;
             TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
             CategotyControle = vm;
         

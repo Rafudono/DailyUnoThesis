@@ -6,6 +6,7 @@ using System.Text;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using Windows.UI.Core;
 
@@ -250,12 +251,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 {
                     Task.CategoryId = SelectedCategory.Id;
                 }
-                foreach (var mis in Subtasks)
+                //foreach (var mis in Subtasks)
+                //{
+                //    mis.UserId = 1;
+                //    mis.CategoryId = Task.CategoryId;
+                //}
+                if (Subtasks != null)
                 {
-                    mis.UserId = 1;
-                    mis.CategoryId = Task.CategoryId;
+                    Task.InverseIdUpMissionNavigation = Subtasks;
+                    await EditSubtasksCategory(Task);
                 }
-                Task.InverseIdUpMissionNavigation = Subtasks;
 
                 if (Task.Id == 0)
                 {
@@ -271,10 +276,23 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 else
                 {
                     Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
+                    if (Task.IdUpMission == null)
+                        Task.LevelUp = 1;
                 }
-                await PageNavigation.GetInstance().FillDataViewModels();
+                await ViewModelStore.GetInstance().FillDataViewModels();
                 //await PageNavigation.GetInstance().CurPage.FillData();
 
+            }
+        }
+        private async Task EditSubtasksCategory(Mission mission)
+        {
+            if (mission.InverseIdUpMissionNavigation.Count == 0)
+                return;
+            foreach (var mis in mission.InverseIdUpMissionNavigation)
+            {
+                mis.UserId = 1;
+                mis.CategoryId = Task.CategoryId;
+               await EditSubtasksCategory(mis);
             }
         }
 

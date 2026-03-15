@@ -1,10 +1,12 @@
 ﻿<Application x:Class="DailyUnoThesis.App"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:utum="using:Uno.Toolkit.UI.Material">
+       xmlns:utum="using:Uno.Toolkit.UI.Material"
+             xmlns:helper="using:DailyUnoThesis.Presentation.ViewModel.HelperClasses">
 
   <Application.Resources>
-    <ResourceDictionary>
+        
+        <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <!-- Load WinUI resources -->
                 <ToolkitResources xmlns="using:Uno.Toolkit.UI" />
@@ -23,6 +25,7 @@
       </ResourceDictionary.MergedDictionaries>
 
       <!-- Add resources here -->
+            <helper:ViewModelStore x:Key="GlobalStore" />
 
     </ResourceDictionary>
   </Application.Resources>

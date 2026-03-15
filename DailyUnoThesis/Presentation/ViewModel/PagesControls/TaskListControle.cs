@@ -12,6 +12,7 @@ using System.Windows;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using Uno.Extensions;
 using Windows.UI.Core;
@@ -125,9 +126,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     missions.AddRange(Task.InverseIdUpMissionNavigation);
                     Subtasks = missions;
                 }
-                PageNavigation.GetInstance().ChangeSelected(Task);
+                ViewModelStore.GetInstance().ChangeSelected(Task);
                 if (Task.Id != 0)
-                    PageNavigation.GetInstance().TaskPageControle.IsSplitViewPaneOpen = true;
+                    ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
             }
         }
 
@@ -357,7 +358,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             SelectedCategory = new();
             FillData();
             Task = new() { LevelUp = 1 };
-            PageNavigation.GetInstance().TaskListControle = this;
+            //ViewModelStore.GetInstance().AllTasks = this;
         }
 
         private async void CreateAndEditNewTask()
@@ -429,7 +430,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             foreach (Mission mis in missions)
             {
 
-                if (mis.IdUpMission == null)
+                if (mis.IdUpMission == null || mis.IdUpMission == 0)
                 {
                     mis.LevelUp = 1;
                     

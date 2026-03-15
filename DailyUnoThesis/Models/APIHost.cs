@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -10,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using Microsoft.Extensions.Options;
 //using Tmds.DBus.Protocol;
@@ -325,15 +327,14 @@ namespace DailyUnoThesis.Models
 
         }
 
-        public async Task DeleteCategories(Category category)
+        public async Task DeleteCategories(int id, CategoryDeleteMode deleteMode)
         {
-            var arg = JsonSerializer.Serialize(category, options);
-            var res = await client.PostAsync($"Categories/DeleteCategory",
-                new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            //var arg = JsonSerializer.Serialize(category, options);
+            var res = await client.DeleteAsync($"Categories/DeleteCategory/{id}?mode={deleteMode}");
+            if (res.StatusCode != System.Net.HttpStatusCode.NoContent)
             {
                 string Error = await res.Content.ReadAsStringAsync();
-
+                Debug.WriteLine($"Ошибка удаления: {Error}");
             }
         
         }

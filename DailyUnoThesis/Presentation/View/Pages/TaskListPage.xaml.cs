@@ -1,3 +1,4 @@
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using System;
 using System.Collections.Generic;
@@ -40,25 +41,27 @@ namespace DailyUnoThesis.Presentation.View.Pages
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
 
-            //if (args.NewValue is TaskListControle viewModel)
-            //{
-              
-            //        ViewModel = viewModel;
+            if (args.NewValue is TaskListControle viewModel)
+            {
+                ViewModelStore.GetInstance().AllTasks = viewModel;
 
-            //    //Передаем DispatcherQueue(в WinUI/ Uno 5 это DispatcherQueue)
-            //    //viewModel.SetDispatcher(this.Dispatcher);
+                //        ViewModel = viewModel;
 
-            //    //Передаем саму View
-            //    //viewModel.SetControl(this);
-            //    //viewModel.GetCaterogy();
-            //    //BaseList.SelectedItem = BaseList.IndexOf(1);
-            //    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            //    //{
-            //    // await viewModel.BuildMenu();
-            //    //BaseListView.SelectedItem = viewModel.ListNavigations[0];
-            //    ;
-            //    //});
-            //}
+                //    //Передаем DispatcherQueue(в WinUI/ Uno 5 это DispatcherQueue)
+                //    //viewModel.SetDispatcher(this.Dispatcher);
+
+                //    //Передаем саму View
+                //    //viewModel.SetControl(this);
+                //    //viewModel.GetCaterogy();
+                //    //BaseList.SelectedItem = BaseList.IndexOf(1);
+                //    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                //    //{
+                //    // await viewModel.BuildMenu();
+                //    //BaseListView.SelectedItem = viewModel.ListNavigations[0];
+                //    ;
+                //    //});
+                //}
+            }
         }
 
        

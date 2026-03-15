@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 
@@ -21,15 +22,16 @@ namespace DailyUnoThesis.Presentation.View.Pages
         public TaskListPageCategory()
         {
             this.InitializeComponent();
-            //var en = DataContext as TaskCategotyControle;
+            
             //en.SetDispatcher(Dispatcher);
             //en?.SetControl(this);
             DataContext = new TaskCategotyControle();
+            //var en = DataContext as TaskCategotyControle;
             //ViewModel.SetDispatcher(Dispatcher);
             //ViewModel?.SetControl(this);
             //ViewModel?.FillData();
             this.DataContextChanged += OnDataContextChanged;
-            PageNavigation.GetInstance().GetPageCategory(this);
+            ViewModelStore.GetInstance().GetPageCategory(this);
             //PageNavigation.GetInstance().GetPageCategory(this);
 
         }

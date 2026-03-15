@@ -25,7 +25,6 @@
         <con:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter"/>
         <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
         <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <help:BindingProxy x:Key="VmProxy"/>
 
         <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Red" />
         
@@ -194,7 +193,7 @@
           SelectionMode="Single"  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
                                 <TreeView.ItemTemplate>
                                     <DataTemplate x:DataType="mod:Category">
-                                        <TreeViewItem ItemsSource="{Binding IdUpCategoryNavigation}" >
+                                        <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" >
                                             <Grid  Width="Auto" MinWidth="300" MaxWidth="700">
 
                                                 <Grid.ContextFlyout>
@@ -209,24 +208,39 @@
 
 
                                                         <MenuFlyoutItem Text="Создать подкатегорию"
-                 Command="{Binding DataContext.DeleteMissionCommand, ElementName=MyTreeView}"
-                 CommandParameter="{Binding}">
+                                                                        Command="{Binding PanelTask.CreateSubcategory,Source={StaticResource GlobalStore}}"
+                                                                        CommandParameter="{Binding}">
                                                             <MenuFlyoutItem.Icon>
                                                                 <SymbolIcon Symbol="List" />
                                                             </MenuFlyoutItem.Icon>
                                                         </MenuFlyoutItem>
-                                                        
+
+                                                        <MenuFlyoutItem Text="Очистить содержимое"
+                                                                        Command="{Binding DataContext.DeleteMissionCommand, ElementName=MyTreeView}"
+                                                                        CommandParameter="{Binding}">
+                                                            <MenuFlyoutItem.Icon>
+                                                                <SymbolIcon Symbol="List" />
+                                                            </MenuFlyoutItem.Icon>
+                                                        </MenuFlyoutItem>
+
                                                         <MenuFlyoutSeparator />
 
 
-                                                        <MenuFlyoutItem Text="Удалить" 
-                                Foreground="Red"
-                               Command="{Binding TaskPageControle.Deletecategory, Source={StaticResource VmProxy}}"
-                                CommandParameter="{Binding}" >
-                                                            <MenuFlyoutItem.Icon>
+                                                        <MenuFlyoutSubItem Text="Удалить"  Foreground="Red">
+                                                            <MenuFlyoutSubItem.Icon>
                                                                 <SymbolIcon Symbol="Delete" />
-                                                            </MenuFlyoutItem.Icon>
-                                                        </MenuFlyoutItem>
+                                                            </MenuFlyoutSubItem.Icon>
+                                                            <MenuFlyoutItem Text="Удалить только эту категорию" 
+                                                                            Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}" />
+                                                            <MenuFlyoutItem Text="Удалить всё" 
+                                                                            Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}" />
+                                                            <MenuFlyoutItem Text="Удалить только категории" 
+                                                                            Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}" />
+
+                                                        </MenuFlyoutSubItem>
 
                                                        
                                                     </MenuFlyout>
@@ -628,7 +642,7 @@ uen:Region.Name="Overdue" />
             <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
                 <Grid>
                     <TextBox PlaceholderText="Название категории"
-                             Text="{Binding CategoryTitle, Mode=TwoWay}"
+                             Text="{Binding Category.Title, Mode=TwoWay}"
                              Width="400" Height="40" FontSize="20" />
                     <Button Content="Сохранить"
                             Margin="20"
