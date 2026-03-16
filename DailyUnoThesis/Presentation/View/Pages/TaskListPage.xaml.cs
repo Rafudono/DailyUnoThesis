@@ -23,7 +23,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// </summary>
     public partial class TaskListPage : Page
     {
-        //public TaskListControle ViewModel;
+        public TaskListControle ViewModel;
         TaskListPage pass;
         public TaskListPage()
         {
@@ -44,6 +44,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             if (args.NewValue is TaskListControle viewModel)
             {
                 ViewModelStore.GetInstance().AllTasks = viewModel;
+                ViewModel = viewModel;
 
                 //        ViewModel = viewModel;
 
@@ -64,7 +65,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             }
         }
 
-       
+
 
         //public async Task GetTaskCatPage()
         //{
@@ -120,5 +121,9 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //        var dialog = new ContentDialog { Title = "Ошибка", Content = ex, CloseButtonText = "Закрыть" }; await dialog.ShowAsync();
         //    }
         //}
+
+
+
+      
     }
 }

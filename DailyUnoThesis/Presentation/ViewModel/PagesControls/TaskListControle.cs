@@ -14,6 +14,7 @@ using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Uno.Extensions;
 using Windows.UI.Core;
 
@@ -39,10 +40,90 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         [ObservableProperty]
         private string searchText;
 
-        partial Task OnSearchTextChanged(string value)
+        partial void OnSearchTextChanged(string value)
         {
             Search();
         }
+
+        private async Task Search()
+        {
+           
+        }
+        [ObservableProperty]
+        private ObservableCollection<MissionSuggestionDto> suggestions = new();
+
+        // Поле для отмены старых запросов
+        private CancellationTokenSource? _searchCts;
+        private bool SelectSearchMission = false;
+
+        // 1. Метод вызывается при каждом изменении текста
+        public async void OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            // Нам нужен поиск только если печатает человек
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                string query = sender.Text;
+
+                if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+                {
+                    Suggestions.Clear();
+                    return;
+                }
+
+                // --- ЛОГИКА ОТМЕНЫ И ЗАДЕРЖКИ (Debounce) ---
+                _searchCts?.Cancel(); // Останавливаем прошлый поиск
+                _searchCts = new CancellationTokenSource();
+                var token = _searchCts.Token;
+
+                try
+                {
+                    // Ждем 300 мс. Если пользователь нажмет еще клавишу, 
+                    // этот поток прервется на строчке выше (_searchCts?.Cancel())
+                    await System.Threading.Tasks.Task.Delay(300, token);
+
+                    // --- ЗАПРОС К АПИ ---
+                    var results = await APIHost.GetInstance().GetSuggestions(query);
+
+                    // Если за это время мы не отменили поиск - обновляем список
+                    if (!token.IsCancellationRequested)
+                    {
+                        Suggestions.Clear();
+                        foreach (var item in results)
+                        {
+                            Suggestions.Add(item); // Вот здесь данные попадают в интерфейс!
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Это нормально, просто пользователь печатает быстрее, чем работает интернет
+                }
+            }
+        }
+
+        // 2. Когда нажали на подсказку в списке
+        public async Task OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            var selected = args.SelectedItem as MissionSuggestionDto;
+            SelectSearchMission = true;
+            Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.Id);
+        }
+
+        // 3. Когда нажали Enter или лупу
+        public async Task OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (SelectSearchMission)
+            {
+                SelectSearchMission = false;
+                return;
+            }
+            string finalQuery = args.QueryText;
+            Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
+            // Тут выполняем глобальный поиск
+        }
+
+
+
 
         //public List<Category> Categories
         //{ get => categories;

@@ -340,5 +340,43 @@ namespace DailyUnoThesis.Models
             }
         
         }
+
+        public async Task<List<MissionSuggestionDto>> GetSuggestions(string query)
+        {
+            var resp = await client.GetAsync($"Missions/SearchSuggestions?searchText={query}&&id={1}");
+
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await resp.Content.ReadAsStringAsync();
+                //MessageBox.Show(Error);
+            }
+            else
+            {
+                var result = await resp.Content.ReadFromJsonAsync<List<MissionSuggestionDto>>(options);
+                return result ?? new List<MissionSuggestionDto>();
+            }
+
+            return new List<MissionSuggestionDto>();
+        }
+
+        public async Task<ObservableCollection<Mission>> GetSearchMission(string query, int id)
+        {
+            var resp = await client.GetAsync($"Missions/GetSearchMission?searchText={query}&&id={id}&&userId={1}");
+
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                string Error = await resp.Content.ReadAsStringAsync();
+                //MessageBox.Show(Error);
+            }
+            else
+            {
+                var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<Mission>>(options);
+                return result ?? new ObservableCollection<Mission>();
+            }
+
+            return new ObservableCollection<Mission>();
+        }
+
+
     }
 }

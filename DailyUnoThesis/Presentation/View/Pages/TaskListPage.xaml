@@ -65,7 +65,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <Grid Grid.Column="0" Background="#f5f8ff">
             <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
                 <StackPanel Margin="10">
-                    <StackPanel Orientation="Horizontal" Height="150">
+                    <StackPanel Orientation="Horizontal" >
                         <TextBlock Text="папки" />
                         <ComboBox Width="Auto"
                               DisplayMemberPath="Title"
@@ -73,6 +73,15 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                               ItemsSource="{Binding Categories}" />
                     </StackPanel>
                     <TextBox PlaceholderText="Найти по названию" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <AutoSuggestBox x:Name="MissionSearchBox"
+                PlaceholderText="Поиск задач..."
+                QueryIcon="Find"
+                ItemsSource="{Binding Suggestions, Mode=OneWay}"
+                DisplayMemberPath="Title"
+                TextMemberPath="Title"
+                TextChanged="{x:Bind ViewModel.OnTextChanged}"
+                SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}"
+                QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"/>
 
                     <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
 Height="600">
