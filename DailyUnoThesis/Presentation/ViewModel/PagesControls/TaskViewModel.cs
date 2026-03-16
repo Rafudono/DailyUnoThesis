@@ -276,8 +276,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 else
                 {
                     Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
-                    if (Task.IdUpMission == null)
-                        Task.LevelUp = 1;
+                    Subtasks = (List<Mission>?)Task.InverseIdUpMissionNavigation;
+                    
                 }
                 await ViewModelStore.GetInstance().FillDataViewModels();
                 //await PageNavigation.GetInstance().CurPage.FillData();

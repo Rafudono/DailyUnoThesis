@@ -302,6 +302,8 @@ namespace DailyUnoThesis.Models
             else
             {
                 var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
+                if (mission.IdUpMission == null || mission.IdUpMission == 0)
+                    mission.LevelUp = 1;
                 return mission;
             }
            return new Mission();

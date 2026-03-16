@@ -36,6 +36,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private Category selectedCategory;
         [ObservableProperty]
         private Category selectedFilterCategory;
+        [ObservableProperty]
+        private string searchText;
+
+        partial Task OnSearchTextChanged(string value)
+        {
+            Search();
+        }
 
         //public List<Category> Categories
         //{ get => categories;

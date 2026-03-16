@@ -233,6 +233,9 @@
                                                             <MenuFlyoutItem Text="Удалить только эту категорию" 
                                                                             Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" />
+                                                            <MenuFlyoutItem Text="Удалить только эту категорию с задачами(сейчас в разработке)" 
+                                                                            
+                                                                            CommandParameter="{Binding}" />
                                                             <MenuFlyoutItem Text="Удалить всё" 
                                                                             Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" />

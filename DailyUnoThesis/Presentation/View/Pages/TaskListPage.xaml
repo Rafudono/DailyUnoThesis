@@ -72,6 +72,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                               SelectedItem="{Binding SelectedFilterCategory}"
                               ItemsSource="{Binding Categories}" />
                     </StackPanel>
+                    <TextBox PlaceholderText="Найти по названию" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
                     <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
 Height="600">
@@ -200,9 +201,7 @@ To="0" Duration="0:0:0.4"/>-->
                                             <interactivity:Interaction.Behaviors>
                                                 <!-- Когда курсор входит в Grid -->
                                                 <core:EventTriggerBehavior EventName="PointerEntered">
-                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" 
-                PropertyName="Opacity" 
-                Value="1"/>
+                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>
                                                 </core:EventTriggerBehavior>
 
                                                 <!-- Когда курсор выходит из Grid -->

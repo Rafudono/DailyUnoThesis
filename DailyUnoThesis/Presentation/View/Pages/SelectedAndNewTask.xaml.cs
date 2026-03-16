@@ -28,7 +28,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
 		public SelectedAndNewTask()
 		{
 			this.InitializeComponent();
-            DataContext = new TaskViewModel();
+            //DataContext = new TaskViewModel();
             //var vm = DataContext as TaskViewModel;
             this.DataContextChanged += OnDataContextChanged;
             //PageNavigation.GetInstance().GetPageCategory(this);
