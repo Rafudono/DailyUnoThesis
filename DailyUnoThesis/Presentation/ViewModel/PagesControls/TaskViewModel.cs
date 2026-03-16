@@ -213,6 +213,62 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
+        private RelayCommand<Mission> deleteTask;
+        public RelayCommand<Mission> DeleteTask
+        {
+            get
+            {
+                return deleteTask ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (Mission != null)
+                    {
+                        DeleteTasks(Mission);
+                    }
+
+                }
+                );
+            }
+        }
+
+        public async void DeleteTasks(Mission mission)
+        {
+            if (mission == null)
+            { return; }
+
+            if (mission.InverseIdUpMissionNavigation.Count > 0)
+            {
+                DeleteSubtasks(mission);
+            }
+            mission.IsDelete = true;
+            await System.Threading.Tasks.Task.Delay(400);
+            await APIHost.GetInstance().DeleteMission(mission);
+            await System.Threading.Tasks.Task.Delay(300);
+            if (mission.Id == Task.Id)
+                Task = new();
+            else
+            {
+                Subtasks.Remove(mission);
+                Subtasks = new(Subtasks);
+            }
+            await ViewModelStore.GetInstance().FillDataViewModels();
+           
+
+        }
+
+        private void DeleteSubtasks(Mission mission)
+        {
+            foreach (Mission submission in mission.InverseIdUpMissionNavigation)
+            {
+                submission.IsDelete = true;
+
+                if (submission.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    DeleteSubtasks(submission);
+                }
+            }
+
+        }
+
 
 
         public TaskViewModel()

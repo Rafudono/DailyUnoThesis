@@ -16,6 +16,7 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:utu="using:Uno.Toolkit.UI"
     xmlns:um="using:Uno.Material"
+    xmlns:ut="using:Uno.Themes"
     NavigationCacheMode="Enabled"
      x:Name="DetailPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -84,6 +85,7 @@
                         <Button Content="новый"
             HorizontalAlignment="Right"
             Command="{Binding NewTask}" />
+                        
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -96,13 +98,13 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                        
                         <TextBox Text="{Binding Task.Title, Mode=TwoWay}"
              MinWidth="150" Grid.Column="1"
-             PlaceholderText="Введите название"
+             Header="Введите название"
              MinHeight="30" FontSize="18" TextWrapping="Wrap"/>
                         </Grid>
 
                         <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
              MinWidth="150"
-             PlaceholderText="Введите описание"
+             Header="Введите описание"
              MinHeight="50" TextWrapping="Wrap" FontSize="15" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 
@@ -110,10 +112,10 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
 
                         <StackPanel Orientation="Horizontal">
                             <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.StartDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
-    Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
+    Padding="0" VerticalContentAlignment="Center"  Header="Выберите конечную дату"/>
                             <TextBlock Text="---" Margin="10,0,10,0" />
                             <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.EndDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
-                            Padding="0" VerticalContentAlignment="Center"  PlaceholderText="Выберите конечную дату"/>
+                            Padding="0" VerticalContentAlignment="Center"  Header="Выберите конечную дату"/>
                         </StackPanel>
                         <TextBlock Text="список папок" />
 
@@ -138,8 +140,9 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                                 <DataTemplate x:DataType="mod:Mission">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.1*"/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="0.15*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <CheckBox CommandParameter="{Binding}"
           Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
@@ -148,6 +151,16 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                          Text="{Binding Title, Mode=TwoWay}"
                          PlaceholderText="Новая подзадача"
                          FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                                        <Button Grid.Column="2" Content="D"
+                                                Visibility="{Binding Id, Converter={StaticResource LevelVisibilityConverter}}"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
+                                                Style="{StaticResource TextButtonStyle}">
+                                            <ut:ControlExtensions.Icon>
+                                                <PathIcon  Data="M3,3H18V18H3V3M19,19H21V21H19V19M19,16H21V18H19V16M19,13H21V15H19V13M19,10H21V12H19V10M19,7H21V9H19V7M16,19H18V21H16V19M13,19H15V21H13V19M10,19H12V21H10V19M7,19H9V21H7V19Z"/>
+                                            </ut:ControlExtensions.Icon>
+
+                                        </Button>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -155,11 +168,22 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                         <Button Content="добавить подзадачу +"
             Command="{Binding CreateSubtask}"
             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
+                        
 
 
                         <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
                     </StackPanel>
                 </ScrollViewer>
+                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="D"
+        Visibility="{Binding Task.Id, Converter={StaticResource LevelVisibilityConverter}}"
+        CommandParameter="{Binding Task}"
+        Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
+        Style="{StaticResource TextButtonStyle}">
+                    <ut:ControlExtensions.Icon>
+                        <PathIcon  Data="M3,3H18V18H3V3M19,19H21V21H19V19M19,16H21V18H19V16M19,13H21V15H19V13M19,10H21V12H19V10M19,7H21V9H19V7M16,19H18V21H16V19M13,19H15V21H13V19M10,19H12V21H10V19M7,19H9V21H7V19Z"/>
+                    </ut:ControlExtensions.Icon>
+
+                </Button>
             </Grid>
         </Border>
 

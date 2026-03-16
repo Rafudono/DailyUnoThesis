@@ -341,7 +341,7 @@ namespace DailyUnoThesis.Models
         
         }
 
-        public async Task<List<MissionSuggestionDto>> GetSuggestions(string query)
+        public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(string query)
         {
             var resp = await client.GetAsync($"Missions/SearchSuggestions?searchText={query}&&id={1}");
 
@@ -352,11 +352,11 @@ namespace DailyUnoThesis.Models
             }
             else
             {
-                var result = await resp.Content.ReadFromJsonAsync<List<MissionSuggestionDto>>(options);
-                return result ?? new List<MissionSuggestionDto>();
+                var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
+                return result ?? new ObservableCollection<MissionSuggestionDto>();
             }
 
-            return new List<MissionSuggestionDto>();
+            return new ObservableCollection<MissionSuggestionDto>();
         }
 
         public async Task<ObservableCollection<Mission>> GetSearchMission(string query, int id)

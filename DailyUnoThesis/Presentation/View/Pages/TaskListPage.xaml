@@ -63,17 +63,30 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Background="#f5f8ff">
+            
             <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
                 <StackPanel Margin="10">
-                    <StackPanel Orientation="Horizontal" >
+                    
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock Text="папки" />
                         <ComboBox Width="Auto"
                               DisplayMemberPath="Title"
                               SelectedItem="{Binding SelectedFilterCategory}"
-                              ItemsSource="{Binding Categories}" />
+                              ItemsSource="{Binding Categories}"/> <!--как сдлелать визуально прикольный чекбокс для фильтров категорий-->
+                        <CalendarDatePicker  DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding FilterDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
+    Padding="0" VerticalContentAlignment="Center"  Header="Дата" MinWidth="200"/> <!--выбор между периодом и точным временем, пока попробуем точную-->
+                        <Button Content="Сбросить фильтры" Command="{Binding ResetData}"/> <!--как много кнопок для сброса понидобится(уже нет)-->
+                        
+                      
+                        
                     </StackPanel>
-                    <TextBox PlaceholderText="Найти по названию" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <AutoSuggestBox x:Name="MissionSearchBox"
+                    <AutoSuggestBox x:Name="MissionSearchBox" PlaceholderText="Поиск задач..." QueryIcon="Find" Text="{Binding SearchText, Mode=TwoWay}"
+ItemsSource="{Binding Suggestions, Mode=OneWay}" DisplayMemberPath="Title"
+TextMemberPath="Title" TextChanged="{x:Bind ViewModel.OnTextChanged}"
+SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}" QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"
+VerticalAlignment="Top" MaxHeight="40" MinWidth="400" />
+                    <!--<TextBox PlaceholderText="Найти по названию" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>-->
+                    <!--<AutoSuggestBox x:Name="MissionSearchBox"
                 PlaceholderText="Поиск задач..."
                 QueryIcon="Find"
                 ItemsSource="{Binding Suggestions, Mode=OneWay}"
@@ -81,7 +94,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                 TextMemberPath="Title"
                 TextChanged="{x:Bind ViewModel.OnTextChanged}"
                 SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}"
-                QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"/>
+                QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}" />-->
 
                     <!--<ListView ItemsSource="{Binding Missions}" SelectedItem="{Binding Task}"
 Height="600">

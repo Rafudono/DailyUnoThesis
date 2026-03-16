@@ -38,16 +38,43 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         [ObservableProperty]
         private Category selectedFilterCategory;
         [ObservableProperty]
+        private DateTime filterDate;
+
+        partial void OnFilterDateChanged(DateTime value)
+        {
+
+           
+        }
+
+        private RelayCommand resetData;
+        public RelayCommand ResetData
+        {
+            get
+            {
+                return resetData ?? new RelayCommand(async () =>
+                {
+                    FilterDate = DateTime.MinValue;
+                }
+
+                );
+
+            }
+
+        }
+
+
+        [ObservableProperty]
         private string searchText;
 
         partial void OnSearchTextChanged(string value)
         {
-            Search();
+            if (value.IsNullOrEmpty())
+                SearchReset();
         }
 
-        private async Task Search()
+        private async Task SearchReset()
         {
-           
+           await  FillData();
         }
         [ObservableProperty]
         private ObservableCollection<MissionSuggestionDto> suggestions = new();
@@ -56,10 +83,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private CancellationTokenSource? _searchCts;
         private bool SelectSearchMission = false;
 
-        // 1. Метод вызывается при каждом изменении текста
         public async void OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            // Нам нужен поиск только если печатает человек
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 string query = sender.Text;
@@ -70,29 +95,25 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     return;
                 }
 
-                // --- ЛОГИКА ОТМЕНЫ И ЗАДЕРЖКИ (Debounce) ---
-                _searchCts?.Cancel(); // Останавливаем прошлый поиск
+                
+                //_searchCts?.Cancel(); 
                 _searchCts = new CancellationTokenSource();
                 var token = _searchCts.Token;
 
                 try
                 {
-                    // Ждем 300 мс. Если пользователь нажмет еще клавишу, 
-                    // этот поток прервется на строчке выше (_searchCts?.Cancel())
                     await System.Threading.Tasks.Task.Delay(300, token);
-
-                    // --- ЗАПРОС К АПИ ---
                     var results = await APIHost.GetInstance().GetSuggestions(query);
-
-                    // Если за это время мы не отменили поиск - обновляем список
-                    if (!token.IsCancellationRequested)
-                    {
-                        Suggestions.Clear();
-                        foreach (var item in results)
-                        {
-                            Suggestions.Add(item); // Вот здесь данные попадают в интерфейс!
-                        }
-                    }
+ 
+                    //if (!token.IsCancellationRequested)
+                    //{
+                        //Suggestions.Clear();
+                        //foreach (var item in results)
+                        //{
+                        //    Suggestions.Add(item);
+                        //}
+                        Suggestions = results;
+                    //}
                 }
                 catch (OperationCanceledException)
                 {
@@ -101,7 +122,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
         }
 
-        // 2. Когда нажали на подсказку в списке
         public async Task OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             var selected = args.SelectedItem as MissionSuggestionDto;
@@ -109,7 +129,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.Id);
         }
 
-        // 3. Когда нажали Enter или лупу
         public async Task OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (SelectSearchMission)
@@ -119,7 +138,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
             string finalQuery = args.QueryText;
             Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
-            // Тут выполняем глобальный поиск
         }
 
 
@@ -575,6 +593,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             foreach (Mission submission in mission.InverseIdUpMissionNavigation)
             {
                 submission.IsDelete = true;
+                if (submission.InverseIdUpMissionNavigation.Count != 0)
+                {
+                    DeleteSubtasks(submission);
+                }
             }
         
         }

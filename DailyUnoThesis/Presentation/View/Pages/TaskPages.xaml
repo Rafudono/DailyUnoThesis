@@ -230,17 +230,28 @@
                                                             <MenuFlyoutSubItem.Icon>
                                                                 <SymbolIcon Symbol="Delete" />
                                                             </MenuFlyoutSubItem.Icon>
-                                                            <MenuFlyoutItem Text="Удалить только эту категорию" 
+                                                            <MenuFlyoutItem Text="Удалить только категорию" 
                                                                             Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" />
-                                                            <MenuFlyoutItem Text="Удалить только эту категорию с задачами(сейчас в разработке)" 
+                                                            <!--<MenuFlyoutItem Text="Удалить только эту категорию с задачами(сейчас в разработке)" 
                                                                             
-                                                                            CommandParameter="{Binding}" />
+                                                                            CommandParameter="{Binding}" />-->
+                                                           
+                                                            <!--<MenuFlyoutItem Text="Удалить только категории" 
+                                                                            Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}" />-->
+                                                            <MenuFlyoutSubItem Text="Удалить c вложеннотями"  Foreground="Red">
+                                                                <MenuFlyoutItem Text="Удалить только категории" 
+                                                                                Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
+                                                                                CommandParameter="{Binding}" />
+
+                                                                <MenuFlyoutItem Text="Удалить с задачами(сейчас в разработке)" 
+                                                                            
+                                                                                CommandParameter="{Binding}" />
+                                                            </MenuFlyoutSubItem>
+                                                            
                                                             <MenuFlyoutItem Text="Удалить всё" 
                                                                             Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
-                                                                            CommandParameter="{Binding}" />
-                                                            <MenuFlyoutItem Text="Удалить только категории" 
-                                                                            Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" />
 
                                                         </MenuFlyoutSubItem>
