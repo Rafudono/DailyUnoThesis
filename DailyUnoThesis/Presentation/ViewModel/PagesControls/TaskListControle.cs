@@ -38,13 +38,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         [ObservableProperty]
         private Category selectedFilterCategory;
         [ObservableProperty]
-        private DateTime filterDate;
+        private string filterDate;
 
-        partial void OnFilterDateChanged(DateTime value)
-        {
-
-           
-        }
 
         private RelayCommand resetData;
         public RelayCommand ResetData
@@ -53,7 +48,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return resetData ?? new RelayCommand(async () =>
                 {
-                    FilterDate = DateTime.MinValue;
+                    //FilterDate = DateTime.MinValue;
                 }
 
                 );
@@ -457,6 +452,22 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
+        private RelayCommand<Mission> applyDateFilter;
+        public RelayCommand<Mission> ApplyDateFilter
+        {
+            get
+            {
+                return applyDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+                    if (FilterStartDate != null)
+                        FilterDate = FilterStartDate.Value.ToString("d") + "-";
+                    FilterDate += FilterEndDate.Value.ToString("d");
+                }
+                );
+            }
+        }
+
+
         public TaskListControle()
         {
             AuthPerson = AuthorizedUser.GetInstance().AuthUser;
@@ -600,6 +611,67 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
         
         }
+
+
+        [ObservableProperty]
+        private DateTimeOffset? filterStartDate;
+
+        [ObservableProperty]
+        private DateTimeOffset? filterEndDate;
+        private bool isProcessing = false;
+
+        public void OnCalendarDatesChanged(CalendarView sender, CalendarViewSelectedDatesChangedEventArgs args)
+        {
+            if (isProcessing) return;
+
+            var selected = sender.SelectedDates;
+
+            if (selected.Count == 2)
+            {
+                var start = selected.Min();
+                var end = selected.Max();
+
+                isProcessing = true;
+
+                for (var dt = start.AddDays(1); dt < end; dt = dt.AddDays(1))
+                {
+                    if (!sender.SelectedDates.Contains(dt))
+                    {
+                        sender.SelectedDates.Add(dt);
+                    }
+                }
+
+                FilterStartDate = start;
+                FilterEndDate = end;
+                isProcessing = false;
+                return;
+            }
+            else if (selected.Count == 1)
+            {
+                FilterStartDate = null;
+                FilterEndDate = selected[0];
+                return;
+            }
+
+            if (args.RemovedDates.Count > 0 || (selected.Count > 2 && args.AddedDates.Count > 0))
+            {
+                isProcessing = true;
+
+                var nextDate = args.AddedDates.Count > 0
+                               ? args.AddedDates[0]
+                               : args.RemovedDates[0];
+
+                sender.SelectedDates.Clear();
+                
+                isProcessing = false;
+
+                sender.SelectedDates.Add(nextDate);
+                return;
+            }
+           
+        }
+
+
 
         internal void SetControl(TaskListPage pass)
         {
