@@ -151,13 +151,13 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                          Text="{Binding Title, Mode=TwoWay}"
                          PlaceholderText="Новая подзадача"
                          FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
-                                        <Button Grid.Column="2" Content="D"
+                                        <Button Grid.Column="2"
                                                 Visibility="{Binding Id, Converter={StaticResource LevelVisibilityConverter}}"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
                                                 Style="{StaticResource TextButtonStyle}">
                                             <ut:ControlExtensions.Icon>
-                                                <PathIcon  Data="M3,3H18V18H3V3M19,19H21V21H19V19M19,16H21V18H19V16M19,13H21V15H19V13M19,10H21V12H19V10M19,7H21V9H19V7M16,19H18V21H16V19M13,19H15V21H13V19M10,19H12V21H10V19M7,19H9V21H7V19Z"/>
+                                                <SymbolIcon Symbol="Delete"/>
                                             </ut:ControlExtensions.Icon>
 
                                         </Button>
@@ -174,13 +174,13 @@ IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
                         <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
                     </StackPanel>
                 </ScrollViewer>
-                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="D"
+                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right"
         Visibility="{Binding Task.Id, Converter={StaticResource LevelVisibilityConverter}}"
         CommandParameter="{Binding Task}"
         Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
         Style="{StaticResource TextButtonStyle}">
                     <ut:ControlExtensions.Icon>
-                        <PathIcon  Data="M3,3H18V18H3V3M19,19H21V21H19V19M19,16H21V18H19V16M19,13H21V15H19V13M19,10H21V12H19V10M19,7H21V9H19V7M16,19H18V21H16V19M13,19H15V21H13V19M10,19H12V21H10V19M7,19H9V21H7V19Z"/>
+                        <SymbolIcon Symbol="Delete"/>
                     </ut:ControlExtensions.Icon>
 
                 </Button>

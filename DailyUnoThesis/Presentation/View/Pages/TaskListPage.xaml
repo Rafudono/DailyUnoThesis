@@ -88,9 +88,11 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                             <Button.Flyout>
                                 <Flyout Placement="BottomEdgeAlignedRight">
                                     <StackPanel Spacing="10" Padding="10" Background="White">
-                                        <TextBlock Text="Поиск по дедлайну" FontWeight="Bold" FontSize="16"/>
+                                        <TextBlock Text="Поиск по дате и времени" FontWeight="Bold" FontSize="16"/>
 
-                                        <TextBlock Text="Дата:" Style="{StaticResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Text="Дата:" Style="{StaticResource CaptionTextBlockStyle}">
+                                        </TextBlock>
+
 
                                         <CalendarView SelectionMode="Multiple" SelectedDatesChanged="{x:Bind ViewModel.OnCalendarDatesChanged}"/>
 

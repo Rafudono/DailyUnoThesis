@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -359,18 +360,20 @@ namespace DailyUnoThesis.Models
             return new ObservableCollection<MissionSuggestionDto>();
         }
 
-        public async Task<ObservableCollection<Mission>> GetSearchMission(string query, int id)
+        public async Task<ObservableCollection<Mission>> GetSearchMission(MissionSuggestionDto missionSuggestion)
         {
-            var resp = await client.GetAsync($"Missions/GetSearchMission?searchText={query}&&id={id}&&userId={1}");
+            missionSuggestion.UserId = 1;
+            var arg = JsonSerializer.Serialize(missionSuggestion, options);
+            var res = await client.PostAsync($"Missions/GetSearchMission", new StringContent(arg, Encoding.UTF8, "application/json"));
 
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            if (res.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                string Error = await resp.Content.ReadAsStringAsync();
+                string Error = await res.Content.ReadAsStringAsync();
                 //MessageBox.Show(Error);
             }
             else
             {
-                var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<Mission>>(options);
+                var result = await res.Content.ReadFromJsonAsync<ObservableCollection<Mission>>(options);
                 return result ?? new ObservableCollection<Mission>();
             }
 

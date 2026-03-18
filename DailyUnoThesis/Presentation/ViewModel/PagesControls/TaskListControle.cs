@@ -39,6 +39,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private Category selectedFilterCategory;
         [ObservableProperty]
         private string filterDate;
+        [ObservableProperty]
+        private MissionSuggestionDto missionSuggestion;
 
 
         private RelayCommand resetData;
@@ -121,18 +123,31 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             var selected = args.SelectedItem as MissionSuggestionDto;
             SelectSearchMission = true;
-            Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.Id);
+            MissionSuggestion.IdMission = selected.IdMission;
+            MissionSuggestion.Title = selected.Title;
+            await SubmitFilters();
+            //Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.IdMission);
         }
 
         public async Task OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            var query = sender.Text;
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            {
+                Suggestions.Clear();
+                return;
+            }
+
             if (SelectSearchMission)
             {
                 SelectSearchMission = false;
                 return;
             }
             string finalQuery = args.QueryText;
-            Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
+            MissionSuggestion.IdMission = 0;
+            MissionSuggestion.Title = finalQuery;
+            await SubmitFilters();
+            //Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
         }
 
 
@@ -459,9 +474,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return applyDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
                 {
+                    FilterDate = null;
                     if (FilterStartDate != null)
                         FilterDate = FilterStartDate.Value.ToString("d") + "-";
                     FilterDate += FilterEndDate.Value.ToString("d");
+                    await  SubmitFilters();
                 }
                 );
             }
@@ -640,16 +657,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         sender.SelectedDates.Add(dt);
                     }
                 }
-
-                FilterStartDate = start;
-                FilterEndDate = end;
+                MissionSuggestion.Start = start.Date;
+                MissionSuggestion.End = end.Date;
+                //FilterStartDate = start;
+                //FilterEndDate = end;
                 isProcessing = false;
                 return;
             }
             else if (selected.Count == 1)
             {
-                FilterStartDate = null;
-                FilterEndDate = selected[0];
+                MissionSuggestion.Start = null;
+                MissionSuggestion.End = selected[0].Date;
+                //FilterStartDate = null;
+                //FilterEndDate = selected[0];
                 return;
             }
 
@@ -669,6 +689,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return;
             }
            
+        }
+
+        private async Task SubmitFilters()
+        {
+            Missions = await APIHost.GetInstance().GetSearchMission(MissionSuggestion);
         }
 
 
