@@ -14,6 +14,7 @@ using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Uno.Extensions;
 using Windows.UI.Core;
@@ -71,7 +72,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         private async Task SearchReset()
         {
-           await  FillData();
+            MissionSuggestion.IdMission = 0;
+            MissionSuggestion.Title = null;
+               await SubmitFilters();
         }
         [ObservableProperty]
         private ObservableCollection<MissionSuggestionDto> suggestions = new();
@@ -475,15 +478,32 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return applyDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
                 {
                     FilterDate = null;
-                    if (FilterStartDate != null)
-                        FilterDate = FilterStartDate.Value.ToString("d") + "-";
-                    FilterDate += FilterEndDate.Value.ToString("d");
-                    await  SubmitFilters();
+                    if (MissionSuggestion.Start != null)
+                        FilterDate = MissionSuggestion.Start.Value.ToString("d") + "-";
+                    FilterDate += MissionSuggestion.End.Value.ToString("d");
+                    await SubmitFilters();
                 }
                 );
             }
         }
 
+
+        private RelayCommand<Mission> deleteDateFilter;
+        public RelayCommand<Mission> DeleteDateFilter
+        {
+            get
+            {
+                return deleteDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
+                {
+
+                    FilterDate = null;
+                    MissionSuggestion.End = null;
+                    MissionSuggestion.Start = null;
+                    SubmitFilters();
+                }
+                );
+            }
+        }
 
         public TaskListControle()
         {
@@ -492,6 +512,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             SelectedCategory = new();
             FillData();
             Task = new() { LevelUp = 1 };
+            MissionSuggestion = new();
             //ViewModelStore.GetInstance().AllTasks = this;
         }
 
@@ -693,8 +714,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         private async Task SubmitFilters()
         {
+            if (MissionSuggestion.IsEmpty())
+                FillData();
             Missions = await APIHost.GetInstance().GetSearchMission(MissionSuggestion);
+
+            MissionSuggestion.UserId = 0;
         }
+
+       
 
 
 

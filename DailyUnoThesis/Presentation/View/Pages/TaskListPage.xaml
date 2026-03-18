@@ -26,6 +26,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
         <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
         <con:NullToVisibilityConverterTextBoxCategory x:Key="ConverterTextBoxVisibility"/>
+        <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
 
 
         <Style TargetType="Grid" x:Key="OldPaper">
@@ -74,16 +75,32 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                               DisplayMemberPath="Title"
                               SelectedItem="{Binding SelectedFilterCategory}"
                               ItemsSource="{Binding Categories}"/> <!--как сдлелать визуально прикольный чекбокс для фильтров категорий-->
-                        <Button Padding="5" VerticalAlignment="Center" Margin="10,0" Style="{StaticResource OutlinedButtonStyle}">
+                        <Button Padding="5 0 0 0"  VerticalAlignment="Center" Margin="10,0" Style="{StaticResource OutlinedButtonStyle}">
                             <ut:ControlExtensions.Icon>
                                 <SymbolIcon Symbol="Calendar" Margin="0" />
                             </ut:ControlExtensions.Icon>
-                            <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0" Padding="0">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="VisibleButton">
+                                        <VisualState x:Name="Removing">
+                                            <VisualState.StateTriggers>
+                                                <StateTrigger IsActive="{Binding AllTasks.FilterDate, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="ClearBut.Visibility" Value="Visible"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
                                 <!-- Встроенная иконка календаря -->
                                 <!--<SymbolIcon Symbol="Calendar" />-->
-                                <TextBox Header="Дедлайн" Margin="0 -10 0 -20" Padding="0"
+                                <TextBox Header="Дедлайн" Margin="0 -5 0 -20" Padding="0"
                   Text="{Binding AllTasks.FilterDate, Source={StaticResource GlobalStore}, Mode=TwoWay}"  IsReadOnly="True" IsHitTestVisible="False" Background="Transparent"
-                  BorderThickness="0" HorizontalAlignment="Stretch"></TextBox>
+                  BorderThickness="0" VerticalAlignment="Center"></TextBox>
+
+                                <Button Visibility="Collapsed" x:Name="ClearBut" Command="{Binding AllTasks.DeleteDateFilter, Source={StaticResource GlobalStore}}" Style="{StaticResource IconButtonStyle}" Margin="0">
+                                    <SymbolIcon Symbol="Clear" />
+                                </Button>
                             </StackPanel>
                             <Button.Flyout>
                                 <Flyout Placement="BottomEdgeAlignedRight">

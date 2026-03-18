@@ -364,7 +364,7 @@ namespace DailyUnoThesis.Models
         {
             missionSuggestion.UserId = 1;
             var arg = JsonSerializer.Serialize(missionSuggestion, options);
-            var res = await client.PostAsync($"Missions/GetSearchMission", new StringContent(arg, Encoding.UTF8, "application/json"));
+            var res = await client.PostAsync($"Missions/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
 
             if (res.StatusCode != System.Net.HttpStatusCode.OK)
             {
