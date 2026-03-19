@@ -8,7 +8,6 @@ namespace DailyUnoThesis.Models.MainClasses;
 
 public partial class Mission: INotifyPropertyChanged
 {
-    // Событие, которое ищет CheckBox и TreeView
     public event PropertyChangedEventHandler PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -20,21 +19,6 @@ public partial class Mission: INotifyPropertyChanged
     public string? Description { get; set; }
 
     public string Title { get; set; } = null!;
-
-    //public bool? IsComplete { get; set; } = false;
-    private bool? _isComplete = false;
-    public bool? IsComplete
-    {
-        get => _isComplete;
-        set
-        {
-            if (_isComplete != value)
-            {
-                _isComplete = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 
     public DateTime? StartDate { get; set; }
 
@@ -71,6 +55,21 @@ public partial class Mission: INotifyPropertyChanged
     //{
     //    throw new NotImplementedException();
     //}
+
+    private bool? _isComplete = false;
+    public bool? IsComplete
+    {
+        get => _isComplete;
+        set
+        {
+            if (_isComplete != value)
+            {
+                _isComplete = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     private bool _isRemoving = false;
     public bool IsRemoving
     {

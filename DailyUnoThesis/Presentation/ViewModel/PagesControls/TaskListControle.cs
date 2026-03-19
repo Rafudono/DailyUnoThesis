@@ -33,7 +33,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private TaskListPage TaskPages;
         //[ObservableProperty]
         //private ObservableCollection<Category> categories;
-        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
+        public ObservableCollection<Category> Categories => CategoryService.Instance.FilterCategories;
         [ObservableProperty]
         private Category selectedCategory;
         [ObservableProperty]
@@ -478,9 +478,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return applyDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
                 {
                     FilterDate = null;
-                    if (MissionSuggestion.Start != null)
-                        FilterDate = MissionSuggestion.Start.Value.ToString("d") + "-";
-                    FilterDate += MissionSuggestion.End.Value.ToString("d");
+                    if (MissionSuggestion.End != null && MissionSuggestion.End != DateTime.MinValue)
+                    {
+                        if (MissionSuggestion.Start != null)
+                            FilterDate = MissionSuggestion.Start.Value.ToString("d") + "-";
+                        FilterDate += MissionSuggestion.End.Value.ToString("d");
+                    }
+                    List<int> categories = new List<int>();
+                    categories.AddRange(Categories.Where(s => s.IsCheack == true).Select(s => s.Id));
+                    MissionSuggestion.CateroriesId = categories;
                     await SubmitFilters();
                 }
                 );
@@ -488,18 +494,48 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
-        private RelayCommand<Mission> deleteDateFilter;
-        public RelayCommand<Mission> DeleteDateFilter
+        private RelayCommand<object> deleteDateFilter;
+        public RelayCommand<object> DeleteDateFilter
         {
             get
             {
-                return deleteDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
+                return deleteDateFilter ?? new RelayCommand<object>(async (parameter) =>
                 {
-
+                    if (parameter is CalendarView calendar)
+                    {
+                        calendar.SelectedDates.Clear();
+                    }
                     FilterDate = null;
                     MissionSuggestion.End = null;
                     MissionSuggestion.Start = null;
                     SubmitFilters();
+                }
+                );
+            }
+        }
+
+
+        private RelayCommand<object> deleteFilter;
+        public RelayCommand<object> DeleteFilter
+        {
+            get
+            {
+                return deleteFilter ?? new RelayCommand<object>(async (parameter) =>
+                {
+                    if (parameter is CalendarView calendar)
+                    {
+                        calendar.SelectedDates.Clear();
+                    }
+                    FilterDate = null;
+                    SearchText = null;
+                    foreach (var item in Categories)
+                    {
+                        item.IsCheack = false;
+                    }
+                    MissionSuggestion = new();
+
+
+                   await FillData();
                 }
                 );
             }
@@ -663,6 +699,18 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             if (isProcessing) return;
 
             var selected = sender.SelectedDates;
+            if (args.AddedDates.Count == 0)
+            {
+
+                if (MissionSuggestion.End != null )
+                   if( args.RemovedDates[0].Date == MissionSuggestion.End.Value)
+                {
+                    sender.SelectedDates.Clear();
+                    MissionSuggestion.Start = null;
+                    MissionSuggestion.End = null;
+                    return;
+                }
+            }
 
             if (selected.Count == 2)
             {
@@ -703,10 +751,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                                : args.RemovedDates[0];
 
                 sender.SelectedDates.Clear();
-                
-                isProcessing = false;
 
-                sender.SelectedDates.Add(nextDate);
+                isProcessing = false;
+                if (args.RemovedDates.Count > 0)
+                {
+                    if (args.RemovedDates[0].Date == MissionSuggestion.Start.Value)
+                    {
+                        sender.SelectedDates.Clear();
+                        MissionSuggestion.Start = null;
+                        MissionSuggestion.End = null;
+                    }
+                }
+                else
+                    sender.SelectedDates.Add(nextDate);
                 return;
             }
            

@@ -7,9 +7,10 @@ public class MissionSuggestionDto()
 {
     public int IdMission { get; set; }
     public string? Title { get; set; }
-    public DateTime? Start { get; set; }
-    public DateTime? End { get; set; }
+    public DateTime? Start { get; set; } 
+    public DateTime? End { get; set; } 
     public int UserId { get; set; }
+    public List<int>?  CateroriesId { get; set; } = new List<int>();
 
 
     public bool IsEmpty()

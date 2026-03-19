@@ -14,7 +14,7 @@ namespace DailyUnoThesis.Models.DobleClasses
         // Эта коллекция создается ОДИН раз за всё время жизни приложения
         public ObservableCollection<Category> Categories { get; } = new();
         public ObservableCollection<Category> NavCategories { get; } = new();
-
+        public ObservableCollection<Category> FilterCategories { get; } = new();
         private CategoryService() { }
 
         // Метод для обновления данных из БД
@@ -25,21 +25,22 @@ namespace DailyUnoThesis.Models.DobleClasses
             Categories.Clear();
             NavCategories.Clear();
             var data = await APIHost.GetInstance().GetCategories();
-            Categories.AddRange(data);
+            Categories.AddRange(data.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
             Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             //data.AddRange(s => s.IdUpCategory != null);
-            //NavCategories.AddRange(data);
+            NavCategories.AddRange(data.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
+            FilterCategories.AddRange(data);
             //NavCategories.RemoveAll(s => s.IdUpCategory != null);
 
             // 2. Очищаем текущую коллекцию
             //Categories.Clear();
 
             // 3. Заполняем её новыми данными
-            foreach (var item in data.Where(s=>s.IdUpCategory == null || s.IdUpCategory == 0))
-            {
+            //foreach (var item in data.Where(s=>s.IdUpCategory == null || s.IdUpCategory == 0))
+            //{
                 
-                NavCategories.Add(item);
-            }
+            //    NavCategories.Add(item);
+            //}
         }
 
         private async Task<List<Category>> GetCategoriesFromApi()

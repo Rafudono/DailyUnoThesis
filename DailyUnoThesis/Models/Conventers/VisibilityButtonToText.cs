@@ -12,10 +12,10 @@ namespace DailyUnoThesis.Models.Conventers
             if (value is string text)
             {
                 if(text.IsNullOrEmpty())
-                    return false;
-                return true;
+                    return Visibility.Collapsed;
+                return Visibility.Visible;
             }
-            return false;
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
