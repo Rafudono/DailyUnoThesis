@@ -18,8 +18,8 @@ using Microsoft.Extensions.Options;
 //using Tmds.DBus.Protocol;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace DailyUnoThesis.Models
-{
+namespace DailyUnoThesis.Models;
+
     public class APIHost
     {
         public APIHost()
@@ -382,4 +382,3 @@ namespace DailyUnoThesis.Models
 
 
     }
-}
