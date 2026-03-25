@@ -365,6 +365,50 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         }
     }
 
+    private RelayCommand<Category> deleteCategoryEmptyOnly;
+    public RelayCommand<Category> DeleteCategoryEmptyOnly
+    {
+        get
+        {
+            return deleteCategoryEmptyOnly ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    await DeleteCategory(category, CategoryDeleteMode.EmptyOnlyDelete);
+                }
+            });
+        }
+    }
+
+    private RelayCommand<Category> deleteCategoryWithMissions;
+    public RelayCommand<Category> DeleteCategoryWithMissions
+    {
+        get
+        {
+            return deleteCategoryWithMissions ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    await DeleteCategory(category, CategoryDeleteMode.DeleteWithMissions);
+                }
+            });
+        }
+    }
+
+    private RelayCommand<Category> clearСategory;
+    public RelayCommand<Category> СlearСategory
+    {
+        get
+        {
+            return clearСategory ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    await APIHost.GetInstance().СlearСategory(category);
+                }
+            });
+        }
+    }
 
     private async Task DeleteCategory(Category category, CategoryDeleteMode deleteMode)
     {

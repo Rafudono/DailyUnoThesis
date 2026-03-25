@@ -45,340 +45,406 @@ namespace DailyUnoThesis.Models;
         public List<Tag> Tags { get; set; }
 
         public List<User> Users { get; set; }
-        public async Task<List<User>> GetUsers()
+
+
+
+
+
+
+    //надоел безрорядок 
+
+    #region User
+    public async Task<List<User>> GetUsers()
+    {
+        var res = await client.GetAsync($"Users");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            var res = await client.GetAsync($"Users");
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            ContentDialog contentDialog = new ContentDialog()
             {
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = "невозможно получить данные пользователей"
-                };
-                return null;
-            }
-            else
-            {
-                Users = await res.Content.ReadFromJsonAsync<List<User>>(options);
-            }
-                return Users;
+                Content = "невозможно получить данные пользователей"
+            };
+            return null;
         }
-        public async Task<bool> AuthUser(string password, string emailOrusername)
+        else
         {
-            AuthUserData userData = new AuthUserData() { EmailOrLogin = emailOrusername, Password= password}; 
-            var arg = JsonSerializer.Serialize(userData, options);
-            var res = await client.PostAsync($"Users/AuthUser", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = "не удалось авторизоваться \t  {Error}"
-                };
-                return false;
-            }
-            else
-            {
-                var user = await res.Content.ReadFromJsonAsync<User>(options);
-                AuthorizedUser.GetInstance().AuthUser = user;
-                return true;
-            }
+            Users = await res.Content.ReadFromJsonAsync<List<User>>(options);
         }
-        public async Task<bool> RegUser(string password, string email, string username)
+        return Users;
+    }
+    public async Task<bool> AuthUser(string password, string emailOrusername)
+    {
+        AuthUserData userData = new AuthUserData() { EmailOrLogin = emailOrusername, Password = password };
+        var arg = JsonSerializer.Serialize(userData, options);
+        var res = await client.PostAsync($"Users/AuthUser", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            AuthUserData userData = new AuthUserData() { Email = email, Password = password, Login = username };
-            var arg = JsonSerializer.Serialize(userData, options);
-            var res = await client.PostAsync($"Users", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось зарегистрироваться \t  {Error} "
-                };
-                return false;
-            }
-            else
-            {
-                var user = await res.Content.ReadFromJsonAsync<User>(options);
-                AuthorizedUser.GetInstance().AuthUser = user;
-                return true;
-            }
+                Content = "не удалось авторизоваться \t  {Error}"
+            };
+            return false;
         }
-        public async Task<List<Mission>> GetMissions()
+        else
         {
-
-            var res = await client.GetAsync($"Missions?id={1}");
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить миссии \t  {Error} "
-                };
-                var dialog = new ContentDialog { Title = "Ошибка", Content = Error, CloseButtonText = "Закрыть" };
-                await dialog.ShowAsync();
-            }
-            else
-                Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+            var user = await res.Content.ReadFromJsonAsync<User>(options);
+            AuthorizedUser.GetInstance().AuthUser = user;
+            return true;
         }
-
-        public async Task<List<Mission>> GetTodayList()
+    }
+    public async Task<bool> RegUser(string password, string email, string username)
+    {
+        AuthUserData userData = new AuthUserData() { Email = email, Password = password, Login = username };
+        var arg = JsonSerializer.Serialize(userData, options);
+        var res = await client.PostAsync($"Users", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-
-            var res = await client.GetAsync($"Missions/GetToday");
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить список заданий на сегодня \t  {Error} "
-                };
-            }
-            else
-                Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+                Content = $"не удалось зарегистрироваться \t  {Error} "
+            };
+            return false;
         }
-
-
-        public async Task<List<Mission>> GetMCompleteList()
+        else
         {
-
-            var res = await client.GetAsync($"Missions/GetComplete");
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить список заданий на сегодня \t  {Error} "
-                };
-            }
-            else
-                Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+            var user = await res.Content.ReadFromJsonAsync<User>(options);
+            AuthorizedUser.GetInstance().AuthUser = user;
+            return true;
         }
+    }
 
-
-        public async Task<List<Mission>> GetMyMissions()
+    public async Task SendApproval(string Email)
+    {
+        var resp = await client.GetAsync($"Users/Approval?email={Email}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            int id = AuthorizedUser.GetInstance().AuthUser.Id;
-            var req=JsonSerializer.Serialize(id, options);
-            var resp = await client.GetAsync($"Missions/GetMyMissions?id={id}");
-            //?id={AuthorizedUser.GetInstance().AuthUser.Id}
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить список заданий \t  {Error} "
-                };
-            }
-            else
-                Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
         }
+        else
+            ;
+    }
+    #endregion
 
+    #region Missions
 
-        public async Task<List<Mission>> GetMissionCategiry(int id)
+    #region Get
+    //получения списка всех задач пользователя (не забыть поменять, чтоб разные пользователи получали свои задачи)
+    public async Task<List<Mission>> GetMissions()
+    {
+        var res = await client.GetAsync($"Missions?id={1}");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            //int id = AuthorizedUser.GetInstance().AuthUser.Id;
-            var req = JsonSerializer.Serialize(id, options);
-            var resp = await client.GetAsync($"Missions/GetMissionCategiry?id={id}");
-            //?id={AuthorizedUser.GetInstance().AuthUser.Id}
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить список категорий заданий \t  {Error} "
-                };
-            }
-            else
-                Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+                Content = $"не удалось получить миссии \t  {Error} "
+            };
+            var dialog = new ContentDialog { Title = "Ошибка", Content = Error, CloseButtonText = "Закрыть" };
+            await dialog.ShowAsync();
         }
+        else
+            Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
 
-
-        public async Task CreateMission(Mission mission)
+    // получение списка заданий на сегодня (тоже не забыть указывать пользователя)
+    public async Task<List<Mission>> GetTodayList()
+    {
+        var res = await client.GetAsync($"Missions/GetToday");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-            mission.UserId = 1;
-            //mission.User = AuthorizedUser.GetInstance().AuthUser;
-            var arg = JsonSerializer.Serialize(mission, options);
-            var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось создать миссию \t  {Error} "
-                };
-            }
-
+                Content = $"не удалось получить список заданий на сегодня \t  {Error} "
+            };
         }
+        else
+            Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
 
-        public async Task EditMission(Mission mission)
+    //  получение списка просроченных заданий 
+    internal async Task<List<Mission>> GetOverdue()
+    {
+
+        int id = 1;
+        var resp = await client.GetAsync($"Missions/GetOverdue?id={id}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-            //mission.UserId = 1;
-            //mission.User = AuthorizedUser.GetInstance().AuthUser;
-            var arg = JsonSerializer.Serialize(mission, options);
-            var resp = await client.PutAsync($"Missions", new StringContent (arg, Encoding.UTF8, "application/json"));
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось редактировать миссию \t  {Error} " };
-            }
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось overdue \t  {Error} " };
         }
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
 
-        internal async Task<ObservableCollection<Category>> GetCategories()
+    // получение списка выполненных заданий
+    public async Task<List<Mission>> GetMCompleteList()
+    {
+
+        var res = await client.GetAsync($"Missions/GetComplete");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            //int id = AuthorizedUser.GetInstance().AuthUser.Id;
-            int id = 1;
-            ObservableCollection<Category> categories = new ObservableCollection<Category>();
-            var req = JsonSerializer.Serialize(id, options);
-            var resp = await client.GetAsync($"Categories/GetMyCategory?id={id}");
-            //?id={AuthorizedUser.GetInstance().AuthUser.Id}
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = $"не удалось получить категориии \t  {Error} "
-                };
-            }
-            else
-                categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
-            return categories;
+                Content = $"не удалось получить список заданий на сегодня \t  {Error} "
+            };
         }
+        else
+            Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
 
-        internal async Task CreateCategory(Category category)
+    // получение списка задач категории (тоже надо передавать пльзователя)
+    public async Task<List<Mission>> GetMissionCategiry(int id)
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missions/GetMissionCategiry?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-            category.IdBigBoss = 1;
-            //mission.User = AuthorizedUser.GetInstance().AuthUser;
-            var arg = JsonSerializer.Serialize(category, options);
-            var res = await client.PostAsync($"Categories", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
             {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось создать категорию \t  {Error} " };
-            }
+                Content = $"не удалось получить список категорий заданий \t  {Error} "
+            };
         }
-        public async Task SendApproval(string Email)
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
+
+    // получение изменённого или созданного задания
+    public async Task<Mission> GetLastMission(int id, string title)
+    {
+
+        var resp = await client.GetAsync($"Missions/GetLastMission?id={id}&title={title}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            var resp = await client.GetAsync($"Users/Approval?email={Email}");
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
-            }
-            else
-                ;
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
         }
-
-        internal async Task<List<Mission>> GetOverdue()
+        else
         {
-
-            int id = 1;
-            var resp = await client.GetAsync($"Missions/GetOverdue?id={id}");
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось overdue \t  {Error} " };
-            }
-            else
-                Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
-            return Missions;
+            var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
+            if (mission.IdUpMission == null || mission.IdUpMission == 0)
+                mission.LevelUp = 1;
+            return mission;
         }
-
-        public async Task<Mission> GetLastMission(int id, string title)
-        {
-            
-            var resp = await client.GetAsync($"Missions/GetLastMission?id={id}&title={title}");
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                //MessageBox.Show(Error);
-            }
-            else
-            {
-                var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
-                if (mission.IdUpMission == null || mission.IdUpMission == 0)
-                    mission.LevelUp = 1;
-                return mission;
-            }
-           return new Mission();
-
-        }
-
-        public async Task DeleteMission(Mission mission)
-        {
-            //var resp = await client.GetAsync($"Missions/DeletedMission");
-            //if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            //{
-            //    string Error = await resp.Content.ReadAsStringAsync();
-            //    ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
-            //}
-
-            var arg = JsonSerializer.Serialize(mission, options);
-            var res = await client.PostAsync($"Missions/DeletedMission", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await res.Content.ReadAsStringAsync();
-                ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось удалить task \t  {Error} " };
-            }
-
-        }
-
-        public async Task DeleteCategories(int id, CategoryDeleteMode deleteMode)
-        {
-            //var arg = JsonSerializer.Serialize(category, options);
-            var res = await client.DeleteAsync($"Categories/DeleteCategory/{id}?mode={deleteMode}");
-            if (res.StatusCode != System.Net.HttpStatusCode.NoContent)
-            {
-                string Error = await res.Content.ReadAsStringAsync();
-                Debug.WriteLine($"Ошибка удаления: {Error}");
-            }
-        
-        }
-
-        public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(string query)
-        {
-            var resp = await client.GetAsync($"Missions/SearchSuggestions?searchText={query}&&id={1}");
-
-            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await resp.Content.ReadAsStringAsync();
-                //MessageBox.Show(Error);
-            }
-            else
-            {
-                var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
-                return result ?? new ObservableCollection<MissionSuggestionDto>();
-            }
-
-            return new ObservableCollection<MissionSuggestionDto>();
-        }
-
-        public async Task<ObservableCollection<Mission>> GetSearchMission(MissionSuggestionDto missionSuggestion)
-        {
-            missionSuggestion.UserId = 1;
-            var arg = JsonSerializer.Serialize(missionSuggestion, options);
-            var res = await client.PostAsync($"Missions/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
-
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                string Error = await res.Content.ReadAsStringAsync();
-                //MessageBox.Show(Error);
-            }
-            else
-            {
-                var result = await res.Content.ReadFromJsonAsync<ObservableCollection<Mission>>(options);
-                return result ?? new ObservableCollection<Mission>();
-            }
-
-            return new ObservableCollection<Mission>();
-        }
-
+        return new Mission();
 
     }
+
+    //получение подсказки задач в строке поиска
+    public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(string query)
+    {
+        var resp = await client.GetAsync($"Missions/SearchSuggestions?searchText={query}&&id={1}");
+
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
+            return result ?? new ObservableCollection<MissionSuggestionDto>();
+        }
+
+        return new ObservableCollection<MissionSuggestionDto>();
+    }
+
+
+    #endregion
+
+    #region Post
+
+    //создание задачи
+    public async Task CreateMission(Mission mission)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        mission.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(mission, options);
+        var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось создать миссию \t  {Error} "
+            };
+        }
+
+    }
+
+    // удаление задачи (надо поменять с post на delete)
+    public async Task DeleteMission(Mission mission)
+    {
+        var arg = JsonSerializer.Serialize(mission, options);
+        var res = await client.PostAsync($"Missions/DeletedMission", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось удалить task \t  {Error} " };
+        }
+
+    }
+
+    // получение фильтрованных задач
+    public async Task<ObservableCollection<Mission>> GetSearchMission(MissionSuggestionDto missionSuggestion)
+    {
+        missionSuggestion.UserId = 1;
+        var arg = JsonSerializer.Serialize(missionSuggestion, options);
+        var res = await client.PostAsync($"Missions/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await res.Content.ReadFromJsonAsync<ObservableCollection<Mission>>(options);
+            return result ?? new ObservableCollection<Mission>();
+        }
+
+        return new ObservableCollection<Mission>();
+    }
+    #endregion
+
+    #region Put
+
+    // редактирование задачи
+    public async Task EditMission(Mission mission)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        //mission.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(mission, options);
+        var resp = await client.PutAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось редактировать миссию \t  {Error} " };
+        }
+    }
+    #endregion
+
+        #region Delete
+        #endregion
+    #endregion
+
+    #region Categories
+
+    #region Get
+    // получение списка категорий
+    internal async Task<ObservableCollection<Category>> GetCategories()
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        int id = 1;
+        ObservableCollection<Category> categories = new ObservableCollection<Category>();
+        var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Categories/GetMyCategory?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить категориии \t  {Error} "
+            };
+        }
+        else
+            categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
+        return categories;
+    }
+    #endregion
+
+    #region Post
+
+    //Создание категории
+    internal async Task CreateCategory(Category category)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        category.IdBigBoss = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(category, options);
+        var res = await client.PostAsync($"Categories", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось создать категорию \t  {Error} " };
+        }
+    }
+
+    //удаление всех задач в категории
+    public async Task СlearСategory(Category category)
+    {
+
+        var arg = JsonSerializer.Serialize(category, options);
+        var res = await client.PostAsync($"Categories/СlearСategory", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+
+    }
+    #endregion
+
+    #region Put
+    #endregion
+
+    #region Delete
+
+    // множественное удаление категорий
+    public async Task DeleteCategories(int id, CategoryDeleteMode deleteMode)
+    {
+        //var arg = JsonSerializer.Serialize(category, options);
+        var res = await client.DeleteAsync($"Categories/DeleteCategory/{id}?mode={deleteMode}");
+        if (res.StatusCode != System.Net.HttpStatusCode.NoContent)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            Debug.WriteLine($"Ошибка удаления: {Error}");
+        }
+
+    }
+    #endregion
+    #endregion
+
+    #region Possibly Trash
+    // пустой
+    public async Task<List<Mission>> GetMyMissions()
+    {
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missions/GetMyMissions?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить список заданий \t  {Error} "
+            };
+        }
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
+    #endregion
+
+
+       
+
+
+    
+
+}

@@ -60,9 +60,40 @@
     </Page.Resources>
 
     <Grid x:Name="maingrid" Background="BlueViolet" uen:Region.Attached="True" >
-       
-       
-            <Grid  uen:Region.Attached="True">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="AdaptiveStates">
+
+                <!-- ШИРОКИЙ ЭКРАН (от 500 и выше) -->
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="700" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!-- Возвращаем размеры колонке -->
+                        <Setter Target="MenuTask.Width" Value="0.2*" />
+                        <Setter Target="MenuTask.MinWidth" Value="160" />
+                        <!-- Показываем контент (если у него есть x:Name="MenuContent") -->
+                        <!--<Setter Target="MenuContent.Visibility" Value="Visible" />-->
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- УЗКИЙ ЭКРАН (от 0 до 499) -->
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="MenuTask.Width" Value="0" />
+                        <Setter Target="MenuTask.MinWidth" Value="0" />
+                        <!-- Скрываем контент полностью, чтобы он не забирал фокус и отступы -->
+                        <!--<Setter Target="MenuContent.Visibility" Value="Collapsed" />-->
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!--<Grid  uen:Region.Attached="True">-->
 
             <Grid Background="AliceBlue" uen:Region.Attached="True">
                     <Grid.RowDefinitions>
@@ -70,14 +101,15 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.2*" x:Name="MenuTask" MinWidth="160" MaxWidth="220"></ColumnDefinition>
+                        <ColumnDefinition Width="0" x:Name="MenuTask" MinWidth="0" MaxWidth="220"></ColumnDefinition>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition x:Name="PaneColumn" Width="0" />
                 </Grid.ColumnDefinitions>
 
                 <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup x:Name="PaneStates">
-                         <!--СОСТОЯНИЕ: ПАНЕЛЬ ЗАКРЫТА--> 
+                <VisualStateGroup x:Name="PaneStates">
+
+                    <!--СОСТОЯНИЕ: ПАНЕЛЬ ЗАКРЫТА--> 
                         <VisualState x:Name="Closed">
                             <VisualState.StateTriggers>
                                 <StateTrigger IsActive="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolConverter}}" />
@@ -101,10 +133,15 @@
                                 <!--<Setter Target="DetailsPane.Visibility" Value="Visible" />-->
                             </VisualState.Setters>
                         </VisualState>
-                    </VisualStateGroup>
+
+                 
+
+                </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
 
-                <Border  Grid.Row="1" Background="#ecf1ff" BorderThickness="1,0,1,0" BorderBrush="#311a11" uen:Region.Attached="True">
+                
+
+                <Border x:Name="MenuBorder"  Grid.Row="1" Background="#ecf1ff" BorderThickness="1,0,1,0" BorderBrush="#311a11" uen:Region.Attached="True">
                     <Border.Transitions>
                         <TransitionCollection>
                             <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
@@ -115,45 +152,8 @@
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollMode="Enabled" 
               VerticalScrollMode="Enabled">
-                        <!--<NavigationView PaneDisplayMode="Left"  OpenPaneLength="200" IsPaneToggleButtonVisible="False" IsBackButtonVisible="Collapsed" IsPaneOpen="True" MenuItemsSource="{Binding MenuItemsNav}"
-             MenuItemTemplateSelector="{StaticResource TaskMenuSelector}"
-             uen:Region.Attached="True"
-             IsSettingsVisible="False"  Grid.Row="1">
-                        <NavigationView.Style>
-                            <Style TargetType="NavigationView">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <RadialGradientBrush Center="0.5,0.8" RadiusX="1" RadiusY="0.9" GradientOrigin="0.5,0.8">
-                                            --><!-- Первый цвет: занимает 60% площади (Offset 0.6) --><!--
-                                                <GradientStop Color="#f1f1ed" Offset="0.02" />
-                                            --><!-- Второй цвет: плавный переход --><!--
-                                                <GradientStop Color="#f1f1ed" Offset="0.88" />
-                                            --><!-- Третий цвет: темная кайма на самом краю --><!--
-                                                <GradientStop Color="#dfbba9" Offset="1.0" />
-                                        </RadialGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </NavigationView.Style>
-                        --><!--Контент страницы подгружается сюда автоматически--><!--
-                    </NavigationView>-->
-
+                       
                         <StackPanel>
-
-                            
-                            <!--<Button Height="30" Margin="0 5 0 0" Content="Все задания"  Command="{Binding OpenAllList}"/>
-                            <Button Height="30" Margin="0 5 0 0" Content="На сегодня" Command="{Binding OpenTodayList}"/>
-                            <Button Height="30" Margin="0 5 0 0" Content="Выполненные" Command="{Binding OpenCompleteList}"/>
-                            <Button Height="30" Margin="0 5 0 0" Content="Просроченные" Command="{Binding OpenOverdueList}"/>
-                            <Button Height="40" Margin="0 5 0 0">
-                                <TextBlock TextAlignment="Center"> Фильтры и метки <LineBreak/> (а как работает?)</TextBlock>
-                            </Button>-->
-
-
-
-
-
-
 
                             <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="SelectedAndVisible" uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
 
@@ -170,31 +170,14 @@
                                 <TextBlock Text="#Категории" Margin="0,10" />
                                 <Button Content="+" Command="{Binding CloseAndOpenAddCategoryPanel}" />
                             </StackPanel>
-                            
-
-                            <!-- 
-            Используем ItemsRepeater как в Chefs.
-            Он не ломает логику навигации, так как у него нет внутреннего SelectionModel.
-        -->
-                            <!--<muxc:ItemsRepeater  ItemsSource="{Binding Categories}" >
-                                <muxc:ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="mod:Category">
-                                        <Button Content="{Binding Title}" Foreground="Black" 
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Background="Transparent" 
-                            Padding="20,10"    Command="{Binding DataContext.SelectCategoryCommand, ElementName=CategoriesRepeater}"
-                    CommandParameter="{Binding}"/>
-                                    </DataTemplate>
-                                </muxc:ItemsRepeater.ItemTemplate>
-                            </muxc:ItemsRepeater>-->
+                           
 
                             <TreeView x:Name="CategoriesRepeater" ItemsSource="{Binding Categories}" 
           SelectionMode="Single"  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
                                 <TreeView.ItemTemplate>
                                     <DataTemplate x:DataType="mod:Category">
                                         <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" >
-                                            <Grid  Width="Auto" MinWidth="300" MaxWidth="700">
+                                            <Grid  Width="Auto" MinWidth="50" MaxWidth="700">
 
                                                 <Grid.ContextFlyout>
                                                     <MenuFlyout>
@@ -214,9 +197,10 @@
                                                                 <SymbolIcon Symbol="List" />
                                                             </MenuFlyoutItem.Icon>
                                                         </MenuFlyoutItem>
+                                                        СlearСategory
 
                                                         <MenuFlyoutItem Text="Очистить содержимое"
-                                                                        Command="{Binding DataContext.DeleteMissionCommand, ElementName=MyTreeView}"
+                                                                        Command="{Binding  PanelTask.СlearСategory, Source={StaticResource GlobalStore}}"
                                                                         CommandParameter="{Binding}">
                                                             <MenuFlyoutItem.Icon>
                                                                 <SymbolIcon Symbol="List" />
@@ -226,34 +210,42 @@
                                                         <MenuFlyoutSeparator />
 
 
-                                                        <MenuFlyoutSubItem Text="Удалить"  Foreground="Red">
+                                                        <MenuFlyoutItem Text="Удалить категорию" Foreground="Red"
+                                                                        Command="{Binding PanelTask.DeleteCategoryEmptyOnly, Source={StaticResource GlobalStore}}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Visibility="{Binding IsEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                            <MenuFlyoutItem.Icon>
+                                                                <SymbolIcon Symbol="List" />
+                                                            </MenuFlyoutItem.Icon>
+                                                        </MenuFlyoutItem>
+                                                        
+                                                        
+                                                        <MenuFlyoutSubItem Text="Удалить"  Foreground="Red"
+                                                                           Visibility="{Binding HasAnyContent, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                                             <MenuFlyoutSubItem.Icon>
                                                                 <SymbolIcon Symbol="Delete" />
                                                             </MenuFlyoutSubItem.Icon>
                                                             <MenuFlyoutItem Text="Удалить только категорию" 
                                                                             Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
-                                                                            CommandParameter="{Binding}" />
-                                                            <!--<MenuFlyoutItem Text="Удалить только эту категорию с задачами(сейчас в разработке)" 
-                                                                            
-                                                                            CommandParameter="{Binding}" />-->
-                                                           
-                                                            <!--<MenuFlyoutItem Text="Удалить только категории" 
-                                                                            Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
-                                                                            CommandParameter="{Binding}" />-->
-                                                            <MenuFlyoutSubItem Text="Удалить c вложеннотями"  Foreground="Red">
-                                                                <MenuFlyoutItem Text="Удалить только категории" 
-                                                                                Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
-                                                                                CommandParameter="{Binding}" />
-
-                                                                <MenuFlyoutItem Text="Удалить с задачами(сейчас в разработке)" 
-                                                                            
-                                                                                CommandParameter="{Binding}" />
-                                                            </MenuFlyoutSubItem>
+                                                                            CommandParameter="{Binding}"/>
                                                             
                                                             <MenuFlyoutItem Text="Удалить всё" 
                                                                             Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
-                                                                            CommandParameter="{Binding}" />
+                                                                            CommandParameter="{Binding}" IsEnabled="{Binding HasAllContent, Mode=OneWay}"/>
 
+                                                            <MenuFlyoutSubItem Text="Удалить c вложеннотями"  Foreground="Red" >
+                                                                
+                                                                <MenuFlyoutItem Text="Удалить только категории" 
+                                                                                Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                IsEnabled="{Binding HasSubCategories, Mode=OneWay}" />
+
+                                                                <MenuFlyoutItem Text="Удалить с задачами" 
+                                                                                Command="{Binding PanelTask.DeleteCategoryWithMissions, Source={StaticResource GlobalStore}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                IsEnabled="{Binding HasMissions, Mode=OneWay}"/>
+                                                            </MenuFlyoutSubItem>
+                                                            
                                                         </MenuFlyoutSubItem>
 
                                                        
@@ -293,43 +285,16 @@
                                 </utu:Card.SubHeaderContentTemplate>
                             </utu:Card>
 
-
-
-
-                            <!--Панель категорий--> 
-                            <!--<utu:TabBar ItemsSource="{Binding Categories}"
-            Orientation="Vertical"
-            Background="Transparent"
-            uen:Region.Attached="True">
-
-                                <utu:TabBar.ItemTemplate>
-                                    <DataTemplate x:DataType="mod:Category">
-
-                                        <utu:TabBarItem Content="{Binding Title}"
-                            uen:Navigation.Request="Category"
-                                                        uen:Region.Name="Category"
-                            Foreground="Black"   utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" uen:Navigation.Data="{Binding }" >
-                                            <utu:TabBarItem.Icon>
-                                                <SymbolIcon Symbol="Tag" />
-                                            </utu:TabBarItem.Icon>
-                                        </utu:TabBarItem>
-                                    </DataTemplate>
-                                </utu:TabBar.ItemTemplate>
-                            </utu:TabBar>-->
-
-
-
-
-
+                            
                             <TextBlock Text="#Проекты" Margin="0,10" />
                             
-                            <TextBlock Text="#Проекты" Height="100" Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Width="200" Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
+                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
                                                                      Width="200"
 
                             <Button Grid.Column="1" Content="Filters" 
@@ -337,103 +302,6 @@
 HorizontalAlignment="Right" 
 VerticalAlignment="Top" 
 Margin="10"/>
-                            <!-- Аналогично для проектов -->
-                            <!--<ListView ItemsSource="{Binding Projects}"
-                          utu:SelectorExtensions.SelectionChangeNavigation="True"
-                          utu:NavigationExtensions.Target="{Binding ElementName=TaskContentGrid}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="mod:Project">
-                                        <TextBlock Text="{Binding Name}" 
-                                       uen:Region.Name="ProjectDetails" />
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>-->
-                            <!--</ListView>-->
-
-
-
-
-
-
-
-
-
-                            <!---->
-                            <!--<TextBlock TextAlignment="Center" Margin="5 30" TextWrapping="Wrap"/>
-
-                            <ListView x:Name="BaseListView" ItemsSource="{Binding ListNavigations}" SelectedItem="{Binding SelectedBaseCategory, Mode=TwoWay}" >
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        --><!--Предположим, в списке просто строки или объекты с полем Name--><!--
-                                        <TextBlock Text="{Binding }" VerticalAlignment="Center" Height="40" Padding="20,10,0,0"/>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-
-                            <Line X1="0" Y1="50" X2="100" Y2="50"
-      Stroke="Black" StrokeThickness="1" />
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="#Категории"/>
-                                <Button Content="+" Margin="10 0 0 0" Click="OpenCatBanner"/>
-                            </StackPanel>
-
-                            <ListView x:Name="CategoriesListView" 
-                      Background="Transparent"  ItemsSource="{Binding Categories}" MinHeight="30" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}" 
-                      BorderThickness="0">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="mod:Category">
-                                         --><!--Предположим, в списке просто строки или объекты с полем Name--><!-- 
-                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Height="40" Padding="20,10,0,0"/>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>-->
-                            <!---->
-
-
-
-
-
-
-
-                            
-
-                            <!--<ListBox ItemsSource="{Binding Categories}" MinHeight="30" SelectedItem="{Binding SelectedCategory}" >
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type mod:Category}">
-                                        <Grid>
-                                            <Label Content="{Binding Title}" HorizontalAlignment="Center"/>
-                                            <Button DataContext="{StaticResource Control}" Command="{Binding OpenCategoryList}" Background="Transparent"  MinWidth="168" MinHeight="20"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="IsSelected" Value="True"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>-->
-
-                            <!--<Line X1="0" Y1="50" X2="100" Y2="50"-->
-<!--Stroke="Black" StrokeThickness="1" />-->
-
-
-
-
-
-
-                            <!--=-->
-                            <!--<Rectangle Height="1"  Fill="Black"  Opacity="0.2"  Margin="0,8,0,0"  HorizontalAlignment="Stretch"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="#Проекты"/>
-                                <Button Content="+" Margin="10 0 0 0"/>
-                            </StackPanel>
-                            <Button Height="30" Margin="0 5 0 0" Content="Все задания"/>
-                            <Button Height="30" Margin="0 5 0 0" Content="Все задания"/>
-                            <Button Height="30" Margin="0 5 0 0" Content="Все задания"/>-->
-                            <!--=-->
 
                         </StackPanel>
                     </ScrollViewer>
@@ -517,7 +385,7 @@ uen:Region.Name="Overdue" />
 
 
 
-                <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane">
+                <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane" >
                     <!--<VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="PaneStates">
                             <VisualState x:Name="Open">
@@ -568,7 +436,7 @@ uen:Region.Name="Overdue" />
                 </Grid>
 
 
-            </Grid>
+            <!--</Grid>-->
 
             <!--<Grid Grid.Column="2" Grid.Row="1">-->
           

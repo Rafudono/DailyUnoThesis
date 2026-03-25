@@ -38,4 +38,27 @@ public partial class Category: INotifyPropertyChanged
             }
         }
     }
+
+
+    // 1. Есть ли подкатегории?
+    public bool HasSubCategories => InverseIdUpCategoryNavigation.Any();
+
+    // 2. Есть ли задачи?
+    public bool HasMissions => Missions.Any();
+
+    // 3. Есть ли ВООБЩЕ хоть что-то?
+    public bool HasAnyContent => HasSubCategories || HasMissions;
+    public bool HasAllContent => HasSubCategories && HasMissions;
+
+    // 4. Категория абсолютно пуста? (Для обычного удаления)
+    public bool IsEmpty => !HasAnyContent;
+
+    // Метод для обновления всех флагов (вызывать при загрузке или изменениях)
+    public void RefreshDeleteMenu()
+    {
+        OnPropertyChanged(nameof(HasSubCategories));
+        OnPropertyChanged(nameof(HasMissions));
+        OnPropertyChanged(nameof(HasAnyContent));
+        OnPropertyChanged(nameof(IsEmpty));
+    }
 }

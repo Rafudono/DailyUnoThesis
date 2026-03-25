@@ -248,7 +248,7 @@ Height="600">
 
 
 
-                    <TreeView  ItemsSource="{Binding Missions, Mode=TwoWay}" 
+                    <TreeView  ItemsSource="{Binding Missions, Mode=TwoWay}" ItemInvoked="{x:Bind ViewModel.OnItemInvoked}"
           SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}" HorizontalAlignment="Left">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">

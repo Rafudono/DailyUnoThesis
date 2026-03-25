@@ -246,12 +246,21 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     Subtasks = missions;
                 }
                 ViewModelStore.GetInstance().ChangeSelected(Task);
-                if (Task.Id != 0)
-                    ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
+                //if (Task.Id != 0)
+                //    ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
             }
         }
 
+        public void OnItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
+        {
+            // args.InvokedItem — это объект задачи или категории, на который кликнули
+            var clickedItem = args.InvokedItem as Mission;
 
+            // Открываем панель подробностей
+            if (Task.Id != 0)
+                ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
+
+        }
 
 
 
@@ -593,8 +602,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             Task = new() { LevelUp = 1};
             List<Mission> missions = new List<Mission>();
             missions = await APIHost.GetInstance().GetMissions();
+            Missions = new();
+            Missions.AddRange(missions);
             //GetCategories();
-            await UpdateLists(mission, missions);
+            //await UpdateLists(mission, missions);
       
                
         }
