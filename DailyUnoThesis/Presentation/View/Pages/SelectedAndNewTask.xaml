@@ -123,6 +123,7 @@
                                 </ut:ControlExtensions.Icon>-->
 
                             </Button>
+                            <Button Grid.Row="2" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Center" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
 
                             <ScrollViewer Grid.Row="1">
                                 <StackPanel Spacing="10"  Padding="10 5 10 15" >
@@ -309,13 +310,13 @@ HorizontalAlignment="Stretch" />
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
-                                        <Button Content="добавить подзадачу +"
+                                    <Button Content="добавить подзадачу" Style="{StaticResource TextsIconButtonStyle}" Foreground="{StaticResource InkBlueLightBrush}" Margin="10 -10 0 0" Tag="{StaticResource AccentBlueLightBrush}"
             Command="{Binding CreateSubtask}"
             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
 
 
 
-                                        <Button Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Right" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+                                       
 
                                         <!-- Место для подзадач, дат и т.д. -->
                                                 </StackPanel>

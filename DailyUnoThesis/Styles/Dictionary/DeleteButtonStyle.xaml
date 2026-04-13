@@ -121,6 +121,86 @@
         </Setter>
     </Style>
 
+    <Style x:Key="TextsIconButtonStyle" TargetType="Button" BasedOn="{StaticResource TextButtonStyle}">
+        <!-- По умолчанию текст красный -->
+        <Setter Property="FontFamily" Value="Segoe Print" />
+
+        <!-- Переопределяем поведение VisualStateManager, чтобы текст оставался красным -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <!-- Цвет текста при наведении: останется красным -->
+                                        <Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>
+                                        <!-- Можно добавить легкий фон, если хочется -->
+                                        <Setter Target="RootGrid.Background" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                                        <Setter Target="BorderAdd.BorderThickness" Value="0 0 0 1"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <!-- Цвет текста при нажатии: останется красным -->
+                                        <Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>
+                                        <!-- Можно добавить более темный фон -->
+                                        <Setter Target="RootGrid.Background" Value="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SystemControlDisabledForegroundBrush}"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <!-- Другие группы состояний (FocusStates) можно оставить как есть,
+                       если не нужно их менять -->
+                        </VisualStateManager.VisualStateGroups>
+
+                        <!-- ContentPresenter отображает текст или иконку кнопки -->
+                        <!--<ContentPresenter x:Name="ContentPresenter"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>-->
+
+
+                        <Border VerticalAlignment="Bottom" BorderBrush="Black" x:Name="BorderAdd" Margin="15 0 15 6" BorderThickness="0 0 0 0">
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Padding="{TemplateBinding Padding}">
+
+                            <!-- Иконка пишущей машинки (Векторная) -->
+                            <SymbolIcon x:Name="Icon" 
+Symbol="Add" 
+Foreground="{Binding Foreground, ElementName=ContentPresenter}"/>
+
+                            <!-- Текст -->
+                            <ContentPresenter x:Name="ContentPresenter"
+           Content="{TemplateBinding Content}"
+           ContentTemplate="{TemplateBinding ContentTemplate}"
+           Padding="{TemplateBinding Padding}"
+           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              FontFamily="Segoe Print"/>
+                        </StackPanel>
+                     
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
     <Style x:Key="OutlinedTextsButtonStyle" TargetType="Button" BasedOn="{StaticResource OutlinedButtonStyle}">
         <!-- По умолчанию текст красный -->
