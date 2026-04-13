@@ -175,27 +175,25 @@ public partial class MonthCalendarViewModel : ObservableObject
         foreach (var day in Days)
         {
             if (day.Tasks == null)
-            {
                 day.Tasks = new ObservableCollection<Mission>();
-            }
             else
-            {
                 day.Tasks.Clear();
-            }
 
-            // Берем задачи ТОЛЬКО из PlannedMissions
+            // Показываем:
+            // 1. Подзадачи (есть IdUpMission)
+            // 2. Миссии-одиночки (нет IdUpMission и нет подзадач)
             var dayTasks = PlannedMissions
-                .Where(t => t.StartDate.HasValue && t.StartDate.Value.Date == day.Date.Date)
+                .Where(t => t.StartDate.HasValue &&
+                            t.StartDate.Value.Date == day.Date.Date &&
+                            (t.IdUpMission != null && t.IdUpMission != 0 ||  // подзадача
+                             (t.IdUpMission == null || t.IdUpMission == 0) &&
+                             t.InverseIdUpMissionNavigation.Count == 0))  // одиночка
                 .OrderBy(t => t.StartDate)
                 .ToList();
 
             foreach (var task in dayTasks)
-            {
                 day.Tasks.Add(task);
-            }
-
         }
-
         OnPropertyChanged(nameof(Days));
     }
 
