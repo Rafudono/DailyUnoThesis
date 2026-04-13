@@ -106,4 +106,18 @@ public partial class Mission: INotifyPropertyChanged
             return string.Empty;
         }
     }
+
+    private bool _isExpanded = false;
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded != value)
+            {
+                _isExpanded = value;
+                OnPropertyChanged(); // Уведомляем об изменении
+            }
+        }
+    }
 }

@@ -10,6 +10,25 @@ public class StringFormatConverter : IValueConverter
     {
         if (value == null) return null;
         if (parameter == null) return value;
+        if (value is DateTime date)
+        {
+            DateTime stringDate = date;
+            if (date.Date == DateTimeOffset.Now.Date)
+            {
+                return "Сегодня";
+            }
+            else if (date.Date == DateTimeOffset.Now.AddDays(1).Date)
+            {
+                return "Завтра";
+            }
+            else
+            {
+                if (date.Year == DateTimeOffset.Now.Year)
+                    return stringDate.ToString("d MMM");
+                else
+                    return stringDate.ToString("d MMM yyyy");
+            }
+        }
 
         return string.Format((string)parameter, value);
     }

@@ -16,6 +16,7 @@ using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.VisualBasic;
 using Uno.Extensions;
 using Windows.UI.Core;
 
@@ -42,7 +43,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private string filterDate;
         [ObservableProperty]
         private MissionSuggestionDto missionSuggestion;
-
+        [ObservableProperty]
+        private bool isFilter = false;
+        [ObservableProperty]
+        private bool isSearchFilter = false;
 
         private RelayCommand resetData;
         public RelayCommand ResetData
@@ -66,7 +70,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         partial void OnSearchTextChanged(string value)
         {
-            if (value.IsNullOrEmpty())
+            if (value.IsNullOrEmpty() && IsSearchFilter == true)
                 SearchReset();
         }
 
@@ -74,6 +78,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             MissionSuggestion.IdMission = 0;
             MissionSuggestion.Title = null;
+            IsSearchFilter =false;
                await SubmitFilters();
         }
         [ObservableProperty]
@@ -128,6 +133,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             SelectSearchMission = true;
             MissionSuggestion.IdMission = selected.IdMission;
             MissionSuggestion.Title = selected.Title;
+            IsSearchFilter = true;
             await SubmitFilters();
             //Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.IdMission);
         }
@@ -149,6 +155,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             string finalQuery = args.QueryText;
             MissionSuggestion.IdMission = 0;
             MissionSuggestion.Title = finalQuery;
+            IsSearchFilter = true;
             await SubmitFilters();
             //Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
         }
@@ -251,7 +258,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
         }
 
-        public void OnItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
+        public async void OnItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
         {
             // args.InvokedItem — это объект задачи или категории, на который кликнули
             var clickedItem = args.InvokedItem as Mission;
@@ -479,19 +486,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
-        private RelayCommand<Mission> applyDateFilter;
-        public RelayCommand<Mission> ApplyDateFilter
+        private RelayCommand applyDateFilter;
+        public RelayCommand ApplyDateFilter
         {
             get
             {
-                return applyDateFilter ?? new RelayCommand<Mission>(async (Mission) =>
+                return applyDateFilter ?? new RelayCommand(async () =>
                 {
                     FilterDate = null;
+                    IsFilter = true;
                     if (MissionSuggestion.End != null && MissionSuggestion.End != DateTime.MinValue)
                     {
                         if (MissionSuggestion.Start != null)
-                            FilterDate = MissionSuggestion.Start.Value.ToString("d") + "-";
-                        FilterDate += MissionSuggestion.End.Value.ToString("d");
+                        {
+                            FilterDate = ConversionToText((DateTime)MissionSuggestion.Start) + "-";
+                            FilterDate += ConversionToText((DateTime)MissionSuggestion.End);
+                        }
+                        else
+                            FilterDate = ConversionToText((DateTime)MissionSuggestion.End);
                     }
                     List<int> categories = new List<int>();
                     categories.AddRange(Categories.Where(s => s.IsCheack == true).Select(s => s.Id));
@@ -502,6 +514,31 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
         }
 
+
+        private string ConversionToText(DateTime date)
+        {
+            if (date == null || date == DateTime.MinValue)
+                return "";
+
+           
+            if (date.Date == DateTime.Now.Date)
+            {
+                return "Сегодня";
+            }
+            else if (date.Date == DateTime.Now.AddDays(1).Date)
+            {
+                return "Завтра";
+            }
+            else
+            {
+                if (date.Year == DateTime.Now.Year)
+                    return date.ToString("d MMM");
+                else
+                    return date.ToString("d MMM yyyy");
+            }
+
+
+        }
 
         private RelayCommand<object> deleteDateFilter;
         public RelayCommand<object> DeleteDateFilter
@@ -518,6 +555,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     MissionSuggestion.End = null;
                     MissionSuggestion.Start = null;
                     SubmitFilters();
+                    
                 }
                 );
             }
@@ -531,6 +569,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return deleteFilter ?? new RelayCommand<object>(async (parameter) =>
                 {
+                    
                     if (parameter is CalendarView calendar)
                     {
                         calendar.SelectedDates.Clear();
@@ -542,9 +581,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         item.IsCheack = false;
                     }
                     MissionSuggestion = new();
-
-
-                   await FillData();
+                   
+                    if(IsFilter != false || IsSearchFilter ==true)
+                        await FillData();
+                    IsFilter = false;
+                    IsSearchFilter = false;
                 }
                 );
             }
@@ -782,6 +823,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         private async Task SubmitFilters()
         {
+            //IsFilter = true;
             if (MissionSuggestion.IsEmpty())
                 FillData();
             Missions = await APIHost.GetInstance().GetSearchMission(MissionSuggestion);

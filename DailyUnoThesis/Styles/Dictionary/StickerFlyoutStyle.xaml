@@ -1,0 +1,92 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <Style x:Key="StickerFlyoutStyle" TargetType="FlyoutPresenter">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <!-- Мы нарисуем свой фон внутри -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="FlyoutPresenter">
+                    <!-- Контейнер с небольшим отступом для тени -->
+                    <Grid x:Name="RootGrid" Margin="10">
+                        <!--<VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WindowHeightStates">
+                                 --><!--1. Если высота окна большая (600+)--><!-- 
+                                <VisualState x:Name="LargeWindow">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowHeight="600" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentContainer.MaxHeight" Value="550" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                 --><!--2. Если высота окна средняя (450 - 600)--><!-- 
+                                <VisualState x:Name="MediumWindow">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowHeight="350" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentContainer.MaxHeight" Value="350" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                 --><!--3. Если высота окна маленькая (меньше 450)--><!-- 
+                                <VisualState x:Name="SmallWindow">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowHeight="320" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentContainer.MaxHeight" Value="200" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>-->
+                        <!-- 1. Слой тени (имитация) -->
+                        <Border Background="#A3B1C6" 
+                            Opacity="0.4" 
+                            CornerRadius="2" 
+                            Margin="2,2,-2,-2">
+                            <Border.RenderTransform>
+                                <SkewTransform AngleX="1" AngleY="1"/>
+                                <!-- Легкий перекос для естественности -->
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- 2. Основное тело стикера (бумага) -->
+                        <Border x:Name="StickerPaper"
+                            Background="#FEF9E7" 
+                            BorderBrush="#E6E0B0" 
+                            BorderThickness="1" 
+                            Padding="0"
+                            CornerRadius="1">
+                            
+
+                            <!-- 3. Элемент "Канцелярская скрепка" или "Скотч" (сверху) -->
+                            <Grid>
+                                <Grid Background="LightGray" Opacity="0.35"/>
+                                <!-- Контент самого Flyout -->
+
+                                <!--<ScrollView  x:Name="ContentContainer"  Padding="20 20" Margin=" 0 20"   MaxHeight="600">-->
+                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Padding="0 0 0 0"/>
+                                <!--</ScrollView>-->
+                               
+                            </Grid>
+                        </Border>
+                        <Rectangle Height="30" Width="50"  Fill="Red" Opacity="0.3"  VerticalAlignment="Top"  Margin="0 -10 0 0" HorizontalAlignment="Center">
+                            <Rectangle.RenderTransform>
+                                <RotateTransform Angle="-2"/>
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

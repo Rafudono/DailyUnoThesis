@@ -24,7 +24,7 @@ namespace DailyUnoThesis.Models;
     {
         public APIHost()
         {
-            client.BaseAddress = new Uri("http://localhost:5114/api/");
+            client.BaseAddress = new Uri("http://localhost:5092/api/"); //5114
             options = new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         }
         private static APIHost instance;

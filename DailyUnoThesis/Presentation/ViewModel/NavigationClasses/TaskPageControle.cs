@@ -128,9 +128,48 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         [ObservableProperty]
         private double splitViewCompactPaneLength;
         [ObservableProperty]
-        private bool isSplitViewPaneOpen;
+        private bool isSplitViewPaneOpen = false;
         [ObservableProperty]
         private bool isVisibleCat;
+
+    [ObservableProperty]
+    private bool isMenuOpen = true;
+
+    [ObservableProperty]
+    private bool isVisibilityTabBar = true;
+    [ObservableProperty]
+    private bool isVisibilityFrame = false;
+
+    public async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
+    {
+        //if (sender.Visibility == Visibility.Visible)
+        //{
+        //    return;
+        //}
+        if (IsVisibilityTabBar == true)
+        {
+            return;
+        }
+        await Task.Delay(100);
+        SelectedCategory = null;
+        IsVisibilityFrame = false;
+        IsVisibilityTabBar = true;
+
+    }
+
+    public void CollapsedStaticTabBar()
+    {
+        if (TaskPages?.TabBar?.Items != null)
+        {
+            foreach (var item in TaskPages.TabBar.Items.OfType<TabBarItem>().Where(s => s.IsSelected == true))
+            {
+                item.IsSelected = false;
+            }
+            TaskPages.TabBar.SelectedIndex = -1;
+            TaskPages.TabBar.SelectedItem = null;
+        }
+    }
+
 
     //public SplitViewDisplayMode SplitViewDisplayMode
     //{
@@ -163,7 +202,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
     [ObservableProperty]
         private GridLength dynamicColumnWidth;
-        //public IState<GridLength> DynamicColumnWidth { get; private set; }
+    //public IState<GridLength> DynamicColumnWidth { get; private set; }
 
 
 
@@ -172,17 +211,30 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 
 
+    [ObservableProperty]
+    private string currentViewState;
 
-
-        private RelayCommand openTodayList;
-        public RelayCommand OpenTodayList
+    partial void OnCurrentViewStateChanged(string value)
+    {
+        if (CurrentViewState == "NarrowState")
         {
+            IsMenuOpen = false;
+            return;
+        }
+        IsMenuOpen = true;
+    }
+
+    private RelayCommand closeMenuCommand;
+        public RelayCommand CloseMenuCommand
+    {
             get
             {
-                return openTodayList ?? new RelayCommand(async () =>
+                return closeMenuCommand ?? new RelayCommand(async () =>
                 {
-                    await GetListTodayPage();
-
+                    //if (IsMenuOpen)
+                    //    IsMenuOpen = false;
+                    //IsMenuOpen = true;
+                    IsMenuOpen = IsMenuOpen ? false : true; 
                 }
 
                 );
@@ -191,7 +243,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         }
 
-        private RelayCommand openAllList;
+    private RelayCommand openTodayList;
+    public RelayCommand OpenTodayList
+    {
+        get
+        {
+            return openTodayList ?? new RelayCommand(async () =>
+            {
+                await GetListTodayPage();
+
+            }
+
+            );
+
+        }
+
+    }
+
+    private RelayCommand openAllList;
         public RelayCommand OpenAllList
         {
             get
@@ -316,6 +385,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     public void CloseCategoryPanel()
     {
         IsVisibleCat = false; 
+    }
+
+    public void CloseMenu()
+    {
+        IsMenuOpen = false;
     }
 
 
@@ -526,6 +600,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             if (ViewModelStore.GetInstance().PanelTask == null)
             {
                 //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+                return;
             }
             if (ViewModelStore.GetInstance().Category != null)
             {
@@ -535,15 +610,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
                 await CategotyControle.GetIdCategory(category.Id);
             }
             TaskPages.GridStatic.Visibility = Visibility.Collapsed;
-            TaskPages.CollapsedStaticTabBar();
+            //TaskPages.CollapsedStaticTabBar();
             TaskPages.framePage.Visibility = Visibility.Visible;
 
-
-           
-            //await _navigator.NavigateRouteAsync(this, "Category", data: category);
-            //await _navigator.NavigateRouteAsync(this, "TaskContentRegion/Category", data: category);
-
+        if (CurrentViewState == "NarrowState")
+        {
+            IsMenuOpen = false;
         }
+
+
+        //await _navigator.NavigateRouteAsync(this, "Category", data: category);
+        //await _navigator.NavigateRouteAsync(this, "TaskContentRegion/Category", data: category);
+
+    }
 
 
     //partial void OnSelectedBaseCategoryChanged(string value)
@@ -581,27 +660,32 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 
     partial void OnSelectedCategoryChanged(Category value)
+    {
+        if (value != null && value.Id != 0)
         {
-            if (value != null && value.Id != 0)
+            //if (PageNavigation.GetInstance().PageCategory == null)
+            //{
+            //    //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
+
+            //}
+            if (ViewModelStore.GetInstance().Category != null)
             {
-                //if (PageNavigation.GetInstance().PageCategory == null)
-                //{
-                //    //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
-
-                //}
-                if (ViewModelStore.GetInstance().Category != null)
+                GoToSelectCategory(value);
+                IsVisibilityTabBar = false;
+                CollapsedStaticTabBar();
+                IsVisibilityFrame = true;
+                if (CurrentViewState == "NarrowState")
                 {
-                    GoToSelectCategory(value);
-                    TaskPages.GridStatic.Visibility = Visibility.Collapsed;
-                    TaskPages.CollapsedStaticTabBar();
-                    TaskPages.framePage.Visibility = Visibility.Visible;
-
+                    IsMenuOpen = false;
                 }
-               
 
-                //TaskPages.framePage.Navigate(typeof(TaskCategotyControle));
+
             }
+
+
+            //TaskPages.framePage.Navigate(typeof(TaskCategotyControle));
         }
+    }
 
         private async void GoToSelectCategory(Category value)
         {

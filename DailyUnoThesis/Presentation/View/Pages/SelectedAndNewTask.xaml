@@ -30,6 +30,9 @@
         <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
         <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+        <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
+        <con:BoolToCompletedConverter x:Key="BoolToCompletedConverter"/>
+        <con:DateTextToDateConverter x:Key="DateTextToDateConverter"/>
 
 
         <Style TargetType="Grid" x:Key="OldPaper">
@@ -52,140 +55,480 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+
+
+      
     </Page.Resources>
 
-    <Grid>
-        <Border   BorderThickness="1,0,0,0" CornerRadius="8 0 0 8" BorderBrush="#311a11">
-            <Grid  Background="#ecf1ff">
-                <!--<Grid.Style>
+    <Grid Background="{StaticResource DividerLightBrush}">
+        
+                    
+                    <!--<StackPanel Spacing="30">-->
+                        <Grid x:Name="MissionDetailsColumn" Margin="0,0,0,0">
+
+                            <!-- 1. Кожаная обложка (Бордер с тремя сторонами) -->
+                            <!-- Используем ваш кофейный #5F4B3F или еще темнее #3D2B1F -->
+                            <Border Background="#3D2B1F" 
+            CornerRadius="10,4,4,10" 
+            BorderThickness="2,2,0,2" 
+            BorderBrush="#2A1D15">
+                                
+
+                                <Grid>
+                        <Grid Background="LightGray" Opacity="0.15"/>
+                        <!-- 2. Стежки (Нитки) -->
+                                    <!-- Вертикальная пунктирная линия вдоль левого края -->
+                                    <Rectangle Width="1" 
+                       Stroke="#8B7355" 
+                       StrokeThickness="2" 
+                       StrokeDashArray="2,2" 
+                       HorizontalAlignment="Left" 
+                       Margin="10,10,0,10" 
+                       VerticalAlignment="Stretch" 
+                       Opacity="0.6"/>
+
+                                    <!-- 3. Стопка бумаги (Эффект нескольких листов) -->
+                                    <!-- Сдвинутый белый лист создает эффект объема -->
+                                    <Border Background="White" Opacity="0.5" Margin="20,7,2,4" CornerRadius="5"/>
+
+                                    <!-- Основной лист (Досье) -->
+                                    <Border x:Name="PaperSheet" 
+                    Background="#ecf1ff" 
+                    Margin="25,10,3,4" 
+                   
+                    CornerRadius="2"
+                    BorderBrush="#E6E0B0" 
+                    BorderThickness="1">
+
+                                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="45"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="45"/>
+                            </Grid.RowDefinitions>
+
+                            <!--<Grid Width="60" HorizontalAlignment="Left">-->
+                            <CheckBox HorizontalAlignment="Left"  Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}" Height="35" Width="168" Margin="10 3" FontSize="30" Content="{Binding Task.IsComplete, Converter={StaticResource BoolToCompletedConverter}}"
+           CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
+                            <!--</Grid>-->
+                            <Button Grid.Row="2" Content="&#xE932;" FontSize="20" HorizontalAlignment="Left" Padding="0" CornerRadius="0" Style="{StaticResource OutlinedTextsButtonStyle}" Command="{Binding NewTask}"
+                                    Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
+                            <Button Grid.Row="2" FontSize="20" Content="&#xE74D;" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontFamily="Segoe MDL2 Assets" Background="Transparent"  BorderBrush="Transparent"
+                                     Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextButtonStyle}"
+                                    Visibility="{Binding Task.Id, Converter={StaticResource LevelVisibilityConverter}}" CommandParameter="{Binding Task}"
+                                    Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}">
+                                <!--<ut:ControlExtensions.Icon>
+                                    <SymbolIcon Symbol="Delete"/>
+                                </ut:ControlExtensions.Icon>-->
+
+                            </Button>
+
+                            <ScrollViewer Grid.Row="1">
+                                <StackPanel Spacing="10"  Padding="10 5 10 15" >
+                                    
+
+
+                                    <!-- Заголовок Дела -->
+                                                    <!--<StackPanel HorizontalAlignment="Left" Spacing="8" Orientation="Horizontal">
+                                                        --><!--<TextBlock Text="ДАННЫЕ ОБЪЕКТА" 
+                                           FontSize="12" 
+                                           FontWeight="Bold" 
+                                           Foreground="#651620" 
+                                           Opacity="0.8"/>
+                                                        <TextBlock Text="{Binding Task.Title, Mode=TwoWay}" 
+                                           FontSize="28" 
+                                           FontFamily="Segoe Print" 
+                                           Foreground="#00224d" 
+                                           TextWrapping="Wrap"/>--><!--
+                                            <CheckBox CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
+                                                      IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" Tag="&#xE73E;"/>
+
+                                            <TextBox Text="{Binding Task.Title, Mode=TwoWay}" MinWidth="150" Grid.Column="1" Header="Заголовок" MinHeight="30" FontSize="18" TextWrapping="Wrap"/>
+                                            <Rectangle Height="2" Fill="#00224d" Opacity="0.3" Margin="0,1,0,0"/>
+                                                    </StackPanel>-->
+
+                                    <!--<Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.08*"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox HorizontalAlignment="Left" Margin="0 0 0 0" Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}"
+                                                  CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />-->
+
+                                        <TextBox Margin="0 5 0 0" Text="{Binding Task.Title, Mode=TwoWay}" MinWidth="150" Grid.Column="1" Header="Название" MinHeight="30" FontSize="18" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
+                                    <!--</Grid>-->
+
+                                    <!-- Статус (Штамп) -->
+                                                    <!--<Border BorderBrush="#651620" 
+                                    BorderThickness="3" 
+                                    CornerRadius="4" 
+                                    Padding="10,5" 
+                                    HorizontalAlignment="Right" 
+                                    RenderTransformOrigin="0.5,0.5">
+                                                        <Border.RenderTransform>
+                                                            <RotateTransform Angle="-15"/>
+                                                            --><!-- Наклон штампа --><!--
+                                                        </Border.RenderTransform>
+                                                        <TextBlock Text="СЕКРЕТНО" 
+                                           Foreground="#651620" 
+                                           FontWeight="ExtraBold" 
+                                           FontSize="18"/>
+                                                    </Border>-->
+
+                                                    <!-- Описание -->
+                                                    <!--<TextBlock Text="{Binding Task.Description}" 
+                                       FontSize="16" 
+                                       FontFamily="Segoe Print" 
+                                       Foreground="#00224d" 
+                                       LineHeight="24"/>-->
+                                    <TextBox Text="{Binding Task.Description, Mode=TwoWay}" MinWidth="150" Header="Описание" MinHeight="50" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"
+                                             FontSize="15" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+                                    <Button Style="{StaticResource FilterButtonStyle}" MaxHeight="40">
+                                            <ut:ControlExtensions.Icon>
+                                                <SymbolIcon Symbol="Calendar" Margin="0" />
+                                            </ut:ControlExtensions.Icon>
+                                            <StackPanel Orientation="Horizontal">
+
+
+                                            <TextBlock 
+           Text="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore}, Mode=TwoWay, Converter={StaticResource DateTextToDateConverter}}"
+           IsHitTestVisible="False" Background="Transparent"
+            HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                            <Button  Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"
+              x:Name="ClearBut" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"
+          Style="{StaticResource IconButtonStyle}" Margin="0" CommandParameter="{Binding ElementName=CalendarView}">
+                                                    <SymbolIcon Symbol="Clear" />
+                                                </Button>
+
+                                            </StackPanel>
+
+                                            <Button.Flyout>
+                                            <Flyout FlyoutPresenterStyle="{StaticResource StickerFlyoutStyle}" Placement="Bottom">
+                                                    <Border Background="Transparent" BorderThickness="1" CornerRadius="10" BorderBrush="Black">
+                                                        <ScrollView Padding="10 20" MaxHeight="500" >
+                                                            <StackPanel Background="Transparent">
+
+                                                                <!--<Button Content="Сегодня">
+                                                <ut:ControlExtensions.Icon>
+                                                    <SymbolIcon Symbol="CalendarDay" Margin="0" />
+                                                </ut:ControlExtensions.Icon>
+                                            </Button>-->
+
+                                                                <RadioButton Content="Сегодня"  GroupName="DateGroup" Style="{StaticResource DateRadioButtonStyle}"
+                                                     IsChecked="{Binding DetailedTask.IsTodaySelected, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                     Command="{Binding DetailedTask.SetPresetDateToday, Source={StaticResource GlobalStore}}"
+                                                     CommandParameter="{Binding ElementName=CalendarView}" Tag="GoToToday">
+
+                                                                </RadioButton>
+
+                                                                <RadioButton Content="Завтра"  GroupName="DateGroup" Style="{StaticResource DateRadioButtonStyle}"
+                                                     IsChecked="{Binding DetailedTask.IsTomorrowSelected, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                     Command="{Binding DetailedTask.SetPresetDateTomorrow, Source={StaticResource GlobalStore}}"
+                                                     CommandParameter="{Binding ElementName=CalendarView}" Tag="CalendarDay" >
+
+                                                                </RadioButton>
+
+                                                                <MenuFlyoutSeparator/>
+
+                                                            <CalendarView Name="CalendarView" FontFamily="Comic Sans MS"  SelectedDatesChanged="{x:Bind ViewModel.OnCalendarDatesChanged}"
+                                                                         Background="{StaticResource ClueRedDarkLightBrush}"
+                                                          TodaySelectedBackground="{StaticResource SelectedTodayRingBrush}"  TodayBackground="{StaticResource TodayRingBrush}" TodayFontWeight="Bold"
+                                                          SelectedBackground="{StaticResource SelectedDayBrush}" DayItemFontFamily="Comic Sans MS"/>
+
+                                                                <MenuFlyoutSeparator/>
+                                                                <TextBlock Text="Другие настройки"/>
+
+                                                                <CheckBox Content="Учитывать время" x:Name="UseTimeCheck" IsChecked="{Binding DetailedTask.UseTime, Source={StaticResource GlobalStore}, Mode=TwoWay}"/>
+                                                                <TimePicker Visibility="{Binding ElementName=UseTimeCheck, Path=IsChecked}"
+                                                        Time="{Binding DetailedTask.SelectedTime, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                        ClockIdentifier="24HourClock" HorizontalAlignment="Stretch" />
+                                                                <Button Visibility="{Binding ElementName=UseRepeatCheck, Path=IsChecked}" Content="Повтор"
+HorizontalAlignment="Stretch"/>
+
+                                                                <MenuFlyoutSeparator/>
+
+                                                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                                                                    <Button Content="Применить" Command="{Binding DetailedTask.ApplyDateSettings, Source={StaticResource GlobalStore}}"
+HorizontalAlignment="Stretch" />
+                                                                    <Button Content="Сбросить"  CommandParameter="{Binding ElementName=CalendarView}" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"/>
+                                                                </StackPanel>
+
+                                                            </StackPanel>
+                                                        </ScrollView >
+                                                    </Border>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                        <TextBlock Text="список папок" />
+
+                                        <Grid>
+                                            <TextBlock Text="{Binding SelectedCategory.Title}"
+                   FontSize="20"
+                   Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelTextBoxVisibilityConverter}, ConverterParameter={Binding SelectedCategory.Id}}" />
+
+                                            <ComboBox FontSize="20" Height="30"
+                  DisplayMemberPath="Title"
+                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                  ItemsSource="{Binding Categories, Mode=TwoWay}"
+                  Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelComboBoxVisibilityConverter}}" />
+                                        </Grid>
+
+                                        <ListView Margin="0 10 0 0" Background="Transparent"
+             ItemsSource="{Binding Subtasks, Mode=TwoWay}"
+             MinHeight="10"
+             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
+
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="mod:Mission">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.15*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox CommandParameter="{Binding}"
+          Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
+          IsChecked="{Binding IsComplete, Mode=TwoWay}" />
+                                                        <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,3" Padding="3"
+                         Text="{Binding Title, Mode=TwoWay}"
+                         PlaceholderText="Новая подзадача"
+                         FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                                                        <Button Grid.Column="2"
+                                                Visibility="{Binding Id, Converter={StaticResource LevelVisibilityConverter}}"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
+                                                Style="{StaticResource TextButtonStyle}">
+                                                            <ut:ControlExtensions.Icon>
+                                                                <SymbolIcon Symbol="Delete"/>
+                                                            </ut:ControlExtensions.Icon>
+
+                                                        </Button>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                        <Button Content="добавить подзадачу +"
+            Command="{Binding CreateSubtask}"
+            Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
+
+
+
+                                        <Button Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Right" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+
+                                        <!-- Место для подзадач, дат и т.д. -->
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+
+
+
+            <!--<Border   BorderThickness="1,0,0,0" CornerRadius="8 0 0 8" BorderBrush="#311a11">
+                <Grid  Background="#ecf1ff">
+                    --><!--<Grid.Style>
     <Style TargetType="Grid">
         <Setter Property="Background">
             <Setter.Value>
                 <RadialGradientBrush Center="0.5,0.1" RadiusX="1" RadiusY="0.9" GradientOrigin="0.5,0.1">
                     -->
-                <!-- Первый цвет: занимает 60% площади (Offset 0.6) -->
-                <!--
+                    <!-- Первый цвет: занимает 60% площади (Offset 0.6) -->
+                    <!--
                     <GradientStop Color="#f2eff5" Offset="0.02" />
                     -->
-                <!-- Второй цвет: плавный переход -->
-                <!--
+                    <!-- Второй цвет: плавный переход -->
+                    <!--
                     <GradientStop Color="#f2eff5" Offset="0.88" />
                     -->
-                <!-- Третий цвет: темная кайма на самом краю -->
-                <!--
+                    <!-- Третий цвет: темная кайма на самом краю -->
+                    <!--
                     <GradientStop Color="#dfbba9" Offset="1.0" />
                 </RadialGradientBrush>
             </Setter.Value>
         </Setter>
     </Style>
-</Grid.Style>-->
-                <ScrollViewer>
-                    <StackPanel Margin="10">
-                        <!--<Button Click="CloseFilters_Click" Content="Cancel"/>-->
-                        <Button Content="новый"
+</Grid.Style>--><!--
+                    <ScrollViewer>
+                        <StackPanel Margin="10">
+                            --><!--<Button Click="CloseFilters_Click" Content="Cancel"/>--><!--
+                            <Button Content="новый"
             HorizontalAlignment="Right"
             Command="{Binding NewTask}" />
-                        
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.1*"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox CommandParameter="{Binding Task}"
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.1*"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox CommandParameter="{Binding Task}"
 Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
 IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />
-                       
-                        <TextBox Text="{Binding Task.Title, Mode=TwoWay}"
+
+                                <TextBox Text="{Binding Task.Title, Mode=TwoWay}"
              MinWidth="150" Grid.Column="1"
              Header="Введите название"
              MinHeight="30" FontSize="18" TextWrapping="Wrap"/>
-                        </Grid>
+                            </Grid>
 
-                        <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
+                            <TextBox Text="{Binding Task.Description, Mode=TwoWay}"
              MinWidth="150"
              Header="Введите описание"
              MinHeight="50" TextWrapping="Wrap" FontSize="15" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 
-                        <Ellipse Width="30" Height="30" Fill="Blue" Margin="5" HorizontalAlignment="Left" />
+                            <Ellipse Width="30" Height="30" Fill="Blue" Margin="5" HorizontalAlignment="Left" />
 
-                        <StackPanel Orientation="Horizontal">
+                            --><!--<StackPanel Orientation="Horizontal">
                             <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.StartDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
     Padding="0" VerticalContentAlignment="Center"  Header="Выберите конечную дату"/>
-                            <TextBlock Text="---" Margin="10,0,10,0" />
+                            <TextBlock Text="-" Margin="10,0,10,0" />
                             <CalendarDatePicker Height="40" Width="Auto" DateFormat="{}{day.integer}.{month.integer}.{year.full}" Date="{Binding Task.EndDate,  Mode=TwoWay, Converter={StaticResource DateTimeToOffsetConverter} }"
                             Padding="0" VerticalContentAlignment="Center"  Header="Выберите конечную дату"/>
                         </StackPanel>
-                        <TextBlock Text="список папок" />
+                        <TextBlock Text="Дата"/>--><!--
 
-                        <Grid>
-                            <TextBlock Text="{Binding SelectedCategory.Title}"
+                            <Button>
+                                <ut:ControlExtensions.Icon>
+                                    <SymbolIcon Symbol="Calendar" Margin="0" />
+                                </ut:ControlExtensions.Icon>
+                                <StackPanel Orientation="Horizontal">
+
+
+                                    <TextBox Header="Дата" IsEnabled="False"
+           Text="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+           IsReadOnly="True" IsHitTestVisible="False" Background="Transparent"
+           BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Center"></TextBox>
+                                    <Button  Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"
+              Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"
+          Style="{StaticResource IconButtonStyle}" Margin="0" CommandParameter="{Binding ElementName=CalendarView}">
+                                        <SymbolIcon Symbol="Clear" />
+                                    </Button>
+
+                                </StackPanel>
+
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <Border Background="AliceBlue" BorderThickness="3" CornerRadius="10" BorderBrush="Black">
+                                            <ScrollView Padding="10 20" MaxHeight="500" >
+                                                <StackPanel Background="AliceBlue">
+
+                                                    --><!--<Button Content="Сегодня">
+                                                <ut:ControlExtensions.Icon>
+                                                    <SymbolIcon Symbol="CalendarDay" Margin="0" />
+                                                </ut:ControlExtensions.Icon>
+                                            </Button>--><!--
+
+                                                    <RadioButton Content="Сегодня"  GroupName="DateGroup" Style="{StaticResource DateRadioButtonStyle}"
+                                                     IsChecked="{Binding DetailedTask.IsTodaySelected, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                     Command="{Binding DetailedTask.SetPresetDateToday, Source={StaticResource GlobalStore}}"
+                                                     CommandParameter="{Binding ElementName=CalendarView}" Tag="GoToToday">
+
+                                                    </RadioButton>
+
+                                                    <RadioButton Content="Завтра"  GroupName="DateGroup" Style="{StaticResource DateRadioButtonStyle}"
+                                                     IsChecked="{Binding DetailedTask.IsTomorrowSelected, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                     Command="{Binding DetailedTask.SetPresetDateTomorrow, Source={StaticResource GlobalStore}}"
+                                                     CommandParameter="{Binding ElementName=CalendarView}" Tag="CalendarDay" >
+
+                                                    </RadioButton>
+
+                                                    <MenuFlyoutSeparator/>
+
+                                                    <CalendarView Name="CalendarView"  SelectedDatesChanged="{x:Bind ViewModel.OnCalendarDatesChanged}"/>
+
+                                                    <MenuFlyoutSeparator/>
+                                                    <TextBlock Text="Другие настройки"/>
+
+                                                    <CheckBox Content="Учитывать время"  IsChecked="{Binding DetailedTask.UseTime, Source={StaticResource GlobalStore}, Mode=TwoWay}"/>
+                                                    <TimePicker Visibility="{Binding ElementName=UseTimeCheck, Path=IsChecked}"
+                                                        Time="{Binding DetailedTask.SelectedTime, Source={StaticResource GlobalStore}, Mode=TwoWay}"
+                                                        ClockIdentifier="24HourClock" HorizontalAlignment="Stretch" />
+                                                    <Button Visibility="{Binding ElementName=UseRepeatCheck, Path=IsChecked}" Content="Повтор"
+HorizontalAlignment="Stretch"/>
+
+                                                    <MenuFlyoutSeparator/>
+
+                                                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                                                        <Button Content="Применить" Command="{Binding DetailedTask.ApplyDateSettings, Source={StaticResource GlobalStore}}"
+HorizontalAlignment="Stretch" />
+                                                        <Button Content="Сбросить"  CommandParameter="{Binding ElementName=CalendarView}" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"/>
+                                                    </StackPanel>
+
+                                                </StackPanel>
+                                            </ScrollView >
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            <TextBlock Text="список папок" />
+
+                            <Grid>
+                                <TextBlock Text="{Binding SelectedCategory.Title}"
                    FontSize="20"
                    Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelTextBoxVisibilityConverter}, ConverterParameter={Binding SelectedCategory.Id}}" />
 
-                            <ComboBox FontSize="20" Height="30"
+                                <ComboBox FontSize="20" Height="30"
                   DisplayMemberPath="Title"
                   SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                   ItemsSource="{Binding Categories, Mode=TwoWay}"
                   Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelComboBoxVisibilityConverter}}" />
-                        </Grid>
+                            </Grid>
 
-                        <ListView Margin="0 10 0 0" Background="Transparent"
+                            <ListView Margin="0 10 0 0" Background="Transparent"
              ItemsSource="{Binding Subtasks, Mode=TwoWay}"
              MinHeight="10"
              Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
 
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="mod:Mission">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.15*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <CheckBox CommandParameter="{Binding}"
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="mod:Mission">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.15*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox CommandParameter="{Binding}"
           Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}"
           IsChecked="{Binding IsComplete, Mode=TwoWay}" />
-                                        <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,3" Padding="3"
+                                            <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,3" Padding="3"
                          Text="{Binding Title, Mode=TwoWay}"
                          PlaceholderText="Новая подзадача"
                          FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
-                                        <Button Grid.Column="2"
+                                            <Button Grid.Column="2"
                                                 Visibility="{Binding Id, Converter={StaticResource LevelVisibilityConverter}}"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
                                                 Style="{StaticResource TextButtonStyle}">
-                                            <ut:ControlExtensions.Icon>
-                                                <SymbolIcon Symbol="Delete"/>
-                                            </ut:ControlExtensions.Icon>
+                                                <ut:ControlExtensions.Icon>
+                                                    <SymbolIcon Symbol="Delete"/>
+                                                </ut:ControlExtensions.Icon>
 
-                                        </Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <Button Content="добавить подзадачу +"
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Button Content="добавить подзадачу +"
             Command="{Binding CreateSubtask}"
             Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
-                        
 
 
-                        <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
-                    </StackPanel>
-                </ScrollViewer>
-                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right"
-        Visibility="{Binding Task.Id, Converter={StaticResource LevelVisibilityConverter}}"
-        CommandParameter="{Binding Task}"
-        Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}"
-        Style="{StaticResource TextButtonStyle}">
-                    <ut:ControlExtensions.Icon>
-                        <SymbolIcon Symbol="Delete"/>
-                    </ut:ControlExtensions.Icon>
 
-                </Button>
-            </Grid>
-        </Border>
+                            <Button Height="30" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </StackPanel>-->
+               
+               
+           
 
     </Grid>
 </Page>

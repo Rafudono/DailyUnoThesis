@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
+//using AndroidX.Collection;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
@@ -12,7 +13,7 @@ using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
-    public partial class TaskViewModel: ObservableObject
+    public partial class TaskViewModel : ObservableObject
     {
 
         private CoreDispatcher dispatcher { get; set; }
@@ -40,6 +41,164 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         [ObservableProperty]
         private Mission task;
 
+        [ObservableProperty]
+        private string taskDateSettings;
+
+
+
+
+
+        // Свойство: Выбрано ли именно "Сегодня"?
+        [ObservableProperty]
+        // Говорим: "Когда меняется дата, уведомь интерфейс, что эти свойства тоже изменились"
+        [NotifyPropertyChangedFor(nameof(IsTodaySelected))]
+        [NotifyPropertyChangedFor(nameof(IsTomorrowSelected))]
+        [NotifyPropertyChangedFor(nameof(IsCustomDateSelected))]
+        // Основная дата задачи
+        private DateTimeOffset? selectedDate;
+
+        //[ObservableProperty]
+        //private string textDate;
+
+        public bool IsTodaySelected => SelectedDate?.Date == DateTime.Today;
+
+        // Свойство: Выбрано ли именно "Завтра"?
+        public bool IsTomorrowSelected => SelectedDate?.Date == DateTime.Today.AddDays(1).Date;
+
+        // Свойство: Выбрана ли какая-то другая дата в календаре?
+        public bool IsCustomDateSelected => SelectedDate != null && !IsTodaySelected && !IsTomorrowSelected;
+
+        // Метод для установки даты из кнопок
+        //[RelayCommand]
+        //public void SetPresetDate(string type, CalendarView calendar)
+        //{
+        //    if (calendar != null)
+        //    {
+        //        calendar.SelectedDates.Clear(); // Сброс календаря
+        //    }
+        //    if (type == "Today") SelectedDate = DateTimeOffset.Now;
+        //    else if (type == "Tomorrow") SelectedDate = DateTimeOffset.Now.AddDays(1);
+        //    // Уведомляем интерфейс, что наши "флаги" изменились
+        //    //RefreshSelection();
+        //}
+        private RelayCommand<object> setPresetDateToday;
+        public RelayCommand<object> SetPresetDateToday
+        {
+            get
+            {
+                return setPresetDateToday ?? new RelayCommand<object>(async (parameter) =>
+                {
+                    
+                        if (parameter != null)
+                        {
+                            if (parameter is CalendarView calendar)
+                            {
+                                calendar.SelectedDates.Clear();
+                            }
+                        }
+                        if (IsTodaySelected)
+                        {
+                            SelectedDate = DateTimeOffset.MinValue;
+                            return;
+                        }
+                        SelectedDate = DateTimeOffset.Now;
+                    ConversionToText();
+
+
+
+                    // Уведомляем интерфейс, что наши "флаги" изменились
+                    //RefreshSelection();
+                }
+                );
+            }
+        }
+
+        private RelayCommand<object> setPresetDateTomorrow;
+        public RelayCommand<object> SetPresetDateTomorrow
+        {
+            get
+            {
+                return setPresetDateTomorrow ?? new RelayCommand<object>(async (parameter) =>
+                {
+                    if (parameter != null)
+                    {
+                        if (parameter is CalendarView calendar)
+                        {
+                            calendar.SelectedDates.Clear();
+                        }
+                    }
+                    if (IsTomorrowSelected)
+                    {
+                        SelectedDate = DateTimeOffset.MinValue;
+                        return;
+                    }
+                    SelectedDate = DateTimeOffset.Now.AddDays(1);
+                    ConversionToText();
+
+
+                    // Уведомляем интерфейс, что наши "флаги" изменились
+                    //RefreshSelection();
+                }
+                );
+            }
+        }
+
+
+        public void OnCalendarDatesChanged(CalendarView sender, CalendarViewSelectedDatesChangedEventArgs args)
+        {
+
+            // Обновляем дату во ViewModel при клике на календарь
+            SelectedDate = args.AddedDates.FirstOrDefault();
+            ConversionToText();
+
+        }
+
+
+        [ObservableProperty]
+        private TimeSpan selectedTime = DateTime.Now.TimeOfDay; // По умолчанию текущее время
+        [ObservableProperty]
+        private bool useTime = false;
+
+        partial void OnSelectedTimeChanged(TimeSpan value)
+        {
+            if ((SelectedDate == DateTimeOffset.MinValue || SelectedDate == null) && UseTime)
+            {
+               SelectedDate = DateTimeOffset.Now.Date;
+            }
+            ConversionToText();
+        }
+
+
+        private void ConversionToText()
+        {
+            if (SelectedDate == DateTimeOffset.MinValue || SelectedDate == null)
+                return;
+            if (SelectedDate.Value.Date == DateTimeOffset.Now.Date)
+            {
+                TaskDateSettings = "Сегодня";
+            }
+            else if (SelectedDate.Value.Date == DateTimeOffset.Now.AddDays(1).Date)
+            {
+                TaskDateSettings = "Завтра";
+            }
+            else
+            {
+                if(SelectedDate.Value.Year == DateTimeOffset.Now.Year)
+                TaskDateSettings = SelectedDate.Value.ToString("d MMM");
+                else
+                    TaskDateSettings = SelectedDate.Value.ToString("d MMM yyyy");
+            }
+            if (UseTime)
+            {
+                TaskDateSettings += ", " + SelectedTime.ToString("hh\\:mm");
+            }
+
+           
+        }
+
+
+        // Когда меняется дата (в том числе через календарь)
+
         //public Mission Task
         //{
         //    get => task; set
@@ -59,7 +218,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             if (SelectedCategory == null)
             {
-                SelectedCategory = new Category();  
+                SelectedCategory = new Category();
             }
             if (SelectedCategory != null && Task != null)
             {
@@ -87,6 +246,52 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 }
             }
         }
+
+
+
+        private RelayCommand<object> deleteDateSettings;
+        public RelayCommand<object> DeleteDateSettings
+        {
+            get
+            {
+                return deleteDateSettings ?? new RelayCommand<object>(async (parameter) =>
+                {
+                    if (parameter is CalendarView calendar)
+                    {
+                        calendar.SelectedDates.Clear();
+                    }
+                    //Task.EndDate = DateTime.MinValue;
+                    SelectedDate = DateTimeOffset.MinValue;
+                    SelectedTime = TimeSpan.Zero;
+                    UseTime = false;
+                    TaskDateSettings = null;
+                }
+                );
+            }
+        }
+
+        private RelayCommand applyDateSettings;
+        public RelayCommand ApplyDateSettings
+        {
+            get
+            {
+                return applyDateSettings ?? new RelayCommand(async () =>
+                {
+
+                }
+                );
+            }
+        }
+
+
+      
+
+        private bool ExceedsTheDeadline()
+        {
+
+            return false;
+        }
+
 
         private RelayCommand createSubtask;
         public RelayCommand CreateSubtask
@@ -251,7 +456,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 Subtasks = new(Subtasks);
             }
             await ViewModelStore.GetInstance().FillDataViewModels();
-           
+
 
         }
 
@@ -307,11 +512,22 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 {
                     Task.CategoryId = SelectedCategory.Id;
                 }
+                //Task.EndDat
                 //foreach (var mis in Subtasks)
                 //{
                 //    mis.UserId = 1;
                 //    mis.CategoryId = Task.CategoryId;
                 //}
+                if (SelectedDate != DateTimeOffset.MinValue && SelectedDate != null)
+                {
+                    if(!UseTime)
+                    Task.EndDate = SelectedDate.Value.Date;
+                    else
+                        Task.EndDate = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day,
+                              SelectedTime.Hours, SelectedTime.Minutes, 0);
+
+                }
+                
                 if (Subtasks != null)
                 {
                     Task.InverseIdUpMissionNavigation = Subtasks;
@@ -326,14 +542,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 {
                     await APIHost.GetInstance().EditMission(Task);
                 }
-                
+
                 if (Task == null)
                     Task = new();
                 else
                 {
                     Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
                     Subtasks = (List<Mission>?)Task.InverseIdUpMissionNavigation;
-                    
+
                 }
                 await ViewModelStore.GetInstance().FillDataViewModels();
                 //await PageNavigation.GetInstance().CurPage.FillData();
@@ -348,7 +564,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 mis.UserId = 1;
                 mis.CategoryId = Task.CategoryId;
-               await EditSubtasksCategory(mis);
+                await EditSubtasksCategory(mis);
             }
         }
 
@@ -357,7 +573,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //this.Navigation = PageNavigation.GetInstance().;
             if (Page == null)
                 Page = pass;
-            
+
         }
 
 

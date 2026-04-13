@@ -26,6 +26,46 @@
 
     <SolidColorBrush x:Key="cs_TextColor" Color="#FF333333"/>
 
+    <Style x:Key="NoirSeparatorStyle" TargetType="MenuFlyoutSeparator">
+        <Setter Property="Background" Value="Black"/>
+        <!--<Setter Property="Opacity" Value="0.4"/>-->
+        <!--<Setter Property="Height" Value="2"/>
+        --><!-- Толщина линии --><!--
+        <Setter Property="Margin" Value="0,8"/>-->
+        <!-- Отступы сверху и снизу -->
+        <!-- Если нужно сделать линию короче (не на всю ширину), используйте Margin="20,8" -->
+    </Style>
+
+
+
+    <!--<Style x:Key="NoirCalendarStyle" TargetType="CalendarView">
+        --><!-- МЕНЯЕМ ШРИФТ НА ВЕСЬ КАЛЕНДАРЬ --><!--
+        <Setter Property="FontFamily" Value="Segoe Print"/>
+        <Setter Property="Foreground" Value="{ThemeResource InkBlueBrush}"/>
+
+        <Setter Property="Resources">
+            <ResourceDictionary>
+                --><!-- 1. Убираем "фиолетовый" (Акцентный цвет) --><!--
+                <StaticResource x:Key="CalendarViewAccentBrush" ResourceKey="InkBlueBrush" />
+
+                --><!-- 2. Цвет выделенного дня --><!--
+                <StaticResource x:Key="CalendarViewSelectedAssetBrush" ResourceKey="InkBlueBrush" />
+
+                --><!-- 3. Цвет "Сегодняшнего" числа --><!--
+                <SolidColorBrush x:Key="CalendarViewTodayForeground" Color="{ThemeResource ClueRedBrush}" />
+
+                --><!-- 4. Фон заголовка (месяц/год) и дней недели --><!--
+                <StaticResource x:Key="CalendarViewNavigationButtonForeground" ResourceKey="InkBlueBrush" />
+                <StaticResource x:Key="CalendarViewHeaderForeground" ResourceKey="InkBlueBrush" />
+
+                --><!-- 5. Цвет при наведении на дату --><!--
+                <SolidColorBrush x:Key="CalendarViewHoverBackground" Color="#A3B1C6" Opacity="0.2" />
+
+                --><!-- Если фиолетовый всё еще вылезает в шапке (WinUI/Uno специфично): --><!--
+                <StaticResource x:Key="SystemControlHighlightAccentBrush" ResourceKey="InkBlueBrush"/>
+            </ResourceDictionary>
+        </Setter>
+    </Style>-->
 
     <!--#endregion-->
     

@@ -27,6 +27,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
         PageNavigation Navigation;
         TaskPages pass;
         public Grid GridStatic;
+        public TabBar TabBar;
         public TaskPageControle ViewModel;
         double acpanel;
 
@@ -40,6 +41,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             framePage = ContentFrame;
             GridStatic = TaskContentGrid;
             framePageTask = ContentFrameTask;
+            TabBar = StaticTabBar;
             //acpanel = FilterSplitView.ActualWidth;
             //BaseList = BaseListView;
             //CategoriesList = CategoriesListView;
@@ -65,6 +67,8 @@ namespace DailyUnoThesis.Presentation.View.Pages
                     vm.OnWindowSizeChanged(e.NewSize.Width);
                 }
             };
+
+          
         }
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -83,6 +87,11 @@ namespace DailyUnoThesis.Presentation.View.Pages
 
                 //BindingProxy.GetInstance().TaskPageControle = viewModel;
                 ViewModelStore.GetInstance().PanelTask = viewModel;
+                AdaptiveStates.CurrentStateChanged += (s, e) =>
+                {
+                    // Передаем во ViewModel название текущего состояния
+                    ViewModel.CurrentViewState = e.NewState.Name;
+                };
                 //BaseList.SelectedItem = BaseList.IndexOf(1);
                 //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 //{
@@ -141,75 +150,45 @@ namespace DailyUnoThesis.Presentation.View.Pages
 
         }
 
-        private async void SelectorBar_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
-        {
-            INavigator _navigator = null;
-            var en =DataContext as TaskPageControle;
-            if ( en is TaskPageControle viewModel)
-            {
-                
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    _navigator = en._navigator;
-                });
-            }
-
-
-            var selectedItem = sender.SelectedItem;
-            // Предположим, в Tag у вас лежит объект Category или ваш NavMenuItem
-            if (selectedItem is NavMenuItem navItem )
-            {
-                if (navItem.Data is Category)
-                {
-                    await _navigator.NavigateRouteAsync(this, "ContentRegion/CategoryTasks", data: navItem.Data);
-                }
-                else
-                {
-                    await _navigator.NavigateRouteAsync(this, $"ContentRegion/{navItem.Route}");
-                }
-                // Явно вызываем навигатор и передаем данные (selectedCategory)
-                // 'this' указывает, что навигация должна быть ВНУТРИ текущего региона (контентной области)
-                
-            }
-
-        }
+      
 
         private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
-        {
-            if (GridStatic.Visibility == Visibility.Visible)
-            {
-                return;
-            }
-            await Task.Delay(100);
-            CategoriesRepeater.SelectedItem = null;
-            framePage.Visibility = Visibility.Collapsed;
-            GridStatic.Visibility = Visibility.Visible;
-
-
-        }
-        public void CollapsedStaticTabBar()
-        {
-
-            //StaticTabBar.SelectedIndex = -1;
-            //StaticTabBar.SelectedItem = null;
-            //StaticTabBar.SelectedIndex = -1;
-            //StaticTabBar.UpdateLayout();
-            foreach (var item in StaticTabBar.Items.OfType<TabBarItem>())
-            {
-                item.IsSelected = false;
-            }
-            StaticTabBar.SelectedIndex = -1;
-            StaticTabBar.SelectedItem = null;
-        }
+        //private async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
+        //{
+        //    if (GridStatic.Visibility == Visibility.Visible)
+        //    {
+        //        return;
+        //    }
+        //    await Task.Delay(100);
+        //    CategoriesRepeater.SelectedItem = null;
+        //    framePage.Visibility = Visibility.Collapsed;
+        //    GridStatic.Visibility = Visibility.Visible;
+        //}
+        //public void CollapsedStaticTabBar()
+        //{
+        //    foreach (var item in StaticTabBar.Items.OfType<TabBarItem>().Where(s => s.IsSelected == true))
+        //    {
+        //        item.IsSelected = false;
+        //    }
+        //    StaticTabBar.SelectedIndex = -1;
+        //    StaticTabBar.SelectedItem = null;
+        //}
 
         private void novcat(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void HamburgerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //MenuBorder.Visibility = Visibility.Visible;
+            ////LightDismissLayer.Visibility = Visibility.Visible;  
+            //Visibility n = LightDismissLayer.Visibility;
+            RootSplitView.IsPaneOpen = !RootSplitView.IsPaneOpen;
         }
 
         //private void OpenFilters_Click(object sender, RoutedEventArgs e)

@@ -64,84 +64,74 @@
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveStates">
 
-                <!-- ШИРОКИЙ ЭКРАН (от 500 и выше) -->
                 <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="700" />
+                        <AdaptiveTrigger MinWindowWidth="1300" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <!-- Возвращаем размеры колонке -->
-                        <Setter Target="MenuTask.Width" Value="0.2*" />
-                        <Setter Target="MenuTask.MinWidth" Value="160" />
-                        <!-- Показываем контент (если у него есть x:Name="MenuContent") -->
-                        <!--<Setter Target="MenuContent.Visibility" Value="Visible" />-->
+                        <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="220" />
                     </VisualState.Setters>
                 </VisualState>
 
-                <!-- УЗКИЙ ЭКРАН (от 0 до 499) -->
-                <VisualState x:Name="NarrowState">
+                <VisualState x:Name="AverageState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
+                        <AdaptiveTrigger MinWindowWidth="1000" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="MenuTask.Width" Value="0" />
-                        <Setter Target="MenuTask.MinWidth" Value="0" />
-                        <!-- Скрываем контент полностью, чтобы он не забирал фокус и отступы -->
-                        <!--<Setter Target="MenuContent.Visibility" Value="Collapsed" />-->
+                        <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="160" />
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="100" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+
+                        <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />-->
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="220" />
+                        <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
+                        <Setter Target="HamburgerBtn.Visibility" Value="Visible" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
+
+
+            <VisualStateGroup x:Name="MenuOpenStates">
+                <VisualState x:Name="MenuOpen">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding IsMenuOpen}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="220" />
+                    </VisualState.Setters>
+                </VisualState>
+                
+                <VisualState x:Name="MenuClose">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding IsMenuOpen, Converter={StaticResource InverseBoolConverter}}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="False" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="MenuClosed" />
+            </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <!--<Grid  uen:Region.Attached="True">-->
+        <!--<Grid Canvas.ZIndex="100">
+            
+        </Grid>-->
 
-            <Grid Background="AliceBlue" uen:Region.Attached="True">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.1" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0" x:Name="MenuTask" MinWidth="0" MaxWidth="220"></ColumnDefinition>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition x:Name="PaneColumn" Width="0" />
-                </Grid.ColumnDefinitions>
-
-                <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="PaneStates">
-
-                    <!--СОСТОЯНИЕ: ПАНЕЛЬ ЗАКРЫТА--> 
-                        <VisualState x:Name="Closed">
-                            <VisualState.StateTriggers>
-                                <StateTrigger IsActive="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolConverter}}" />
-                            </VisualState.StateTriggers>
-                            <VisualState.Setters>
-                                <Setter Target="PaneColumn.Width" Value="0" />
-                                <Setter Target="PaneColumn.MinWidth" Value="0" />
-                                <!--<Setter Target="DetailsPane.Visibility" Value="Collapsed" />-->
-                            </VisualState.Setters>
-                        </VisualState>
-
-                         <!--СОСТОЯНИЕ: ПАНЕЛЬ ОТКРЫТА--> 
-                        <VisualState x:Name="Open">
-                            <VisualState.StateTriggers>
-                                <StateTrigger IsActive="{Binding IsSplitViewPaneOpen}" />
-                            </VisualState.StateTriggers>
-                            <VisualState.Setters>
-                                <Setter Target="PaneColumn.Width" Value="0.5*" />
-                                <Setter Target="PaneColumn.MinWidth" Value="350" />
-                                <Setter Target="PaneColumn.MaxWidth" Value="850" />
-                                <!--<Setter Target="DetailsPane.Visibility" Value="Visible" />-->
-                            </VisualState.Setters>
-                        </VisualState>
-
-                 
-
-                </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-
-                
-
-                <Border x:Name="MenuBorder"  Grid.Row="1" Background="#ecf1ff" BorderThickness="1,0,1,0" BorderBrush="#311a11" uen:Region.Attached="True">
+        <SplitView x:Name="RootSplitView" OpenPaneLength="220"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}"
+                   CompactPaneLength="0" CornerRadius="0,8,8,0" >
+            <SplitView.Pane MaxWidth="220">
+                <Border x:Name="MenuBorder" MaxWidth="220"  Background="#ecf1ff" BorderThickness="1,0,1,0" BorderBrush="#311a11" uen:Region.Attached="True">
                     <Border.Transitions>
                         <TransitionCollection>
                             <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
@@ -152,25 +142,32 @@
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollMode="Enabled" 
               VerticalScrollMode="Enabled">
-                       
+
                         <StackPanel>
 
-                            <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="SelectedAndVisible" uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
+                            <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}"
+                                        uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
 
                                 <utu:TabBarItem Content="Все задания" 
                                     uen:Region.Name="TaskList"
                                     utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
-                                    
+
                                 <utu:TabBarItem Content="На сегодня" 
      uen:Region.Name="Today"
      utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
+                                <!--<utu:TabBarItem Content="Выполненные" 
+    uen:Region.Name="Complete"
+    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
+                                <utu:TabBarItem Content="Просроченные" 
+    uen:Region.Name="Overdue"
+    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />-->
                             </utu:TabBar>
 
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="#Категории" Margin="0,10" />
                                 <Button Content="+" Command="{Binding CloseAndOpenAddCategoryPanel}" />
                             </StackPanel>
-                           
+
 
                             <TreeView x:Name="CategoriesRepeater" ItemsSource="{Binding Categories}" 
           SelectionMode="Single"  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
@@ -218,8 +215,8 @@
                                                                 <SymbolIcon Symbol="List" />
                                                             </MenuFlyoutItem.Icon>
                                                         </MenuFlyoutItem>
-                                                        
-                                                        
+
+
                                                         <MenuFlyoutSubItem Text="Удалить"  Foreground="Red"
                                                                            Visibility="{Binding HasAnyContent, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                                             <MenuFlyoutSubItem.Icon>
@@ -228,13 +225,13 @@
                                                             <MenuFlyoutItem Text="Удалить только категорию" 
                                                                             Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}"/>
-                                                            
+
                                                             <MenuFlyoutItem Text="Удалить всё" 
                                                                             Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" IsEnabled="{Binding HasAllContent, Mode=OneWay}"/>
 
                                                             <MenuFlyoutSubItem Text="Удалить c вложеннотями"  Foreground="Red" >
-                                                                
+
                                                                 <MenuFlyoutItem Text="Удалить только категории" 
                                                                                 Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
                                                                                 CommandParameter="{Binding}"
@@ -245,13 +242,13 @@
                                                                                 CommandParameter="{Binding}"
                                                                                 IsEnabled="{Binding HasMissions, Mode=OneWay}"/>
                                                             </MenuFlyoutSubItem>
-                                                            
+
                                                         </MenuFlyoutSubItem>
 
-                                                       
+
                                                     </MenuFlyout>
                                                 </Grid.ContextFlyout>
-                                                
+
 
                                                 <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
                                                 <!--<Button x:Name="DelButton" Grid.Column="1" Content="Del" 
@@ -264,7 +261,7 @@
                                 </TreeView.ItemTemplate>
                             </TreeView>
 
-                            
+
                             <utu:Card HeaderContent="Outlined card"
           SubHeaderContent="With title and subtitle only"
           AutomationProperties.AutomationId="Outlined_Card"
@@ -285,17 +282,10 @@
                                 </utu:Card.SubHeaderContentTemplate>
                             </utu:Card>
 
-                            
+
                             <TextBlock Text="#Проекты" Margin="0,10" />
-                            
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                            <TextBlock Text="#Проекты" Height="100"  Margin="0,10" />
-                                                                     Width="200"
+
+                            Width="200"
 
                             <Button Grid.Column="1" Content="Filters" 
  Command="{Binding CloseAndOpenDetailedSplitView}"
@@ -306,13 +296,79 @@ Margin="10"/>
                         </StackPanel>
                     </ScrollViewer>
                 </Border>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid Background="AliceBlue" uen:Region.Attached="True">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.1" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0*" x:Name="MenuTask" MinWidth="0" MaxWidth="220"></ColumnDefinition>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition x:Name="PaneColumn" Width="0" />
+                    </Grid.ColumnDefinitions>
+
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="PaneStates">
+
+                            <!--СОСТОЯНИЕ: ПАНЕЛЬ ЗАКРЫТА-->
+                            <VisualState x:Name="Closed">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolConverter}}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="PaneColumn.Width" Value="0" />
+                                    <Setter Target="PaneColumn.MinWidth" Value="0" />
+                                    <!--<Setter Target="DetailsPane.Visibility" Value="Collapsed" />-->
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!--СОСТОЯНИЕ: ПАНЕЛЬ ОТКРЫТА-->
+                            <VisualState x:Name="Open">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsSplitViewPaneOpen}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="PaneColumn.Width" Value="0.5*" />
+                                    <Setter Target="PaneColumn.MinWidth" Value="350" />
+                                    <Setter Target="PaneColumn.MaxWidth" Value="850" />
+                                    <!--<Setter Target="DetailsPane.Visibility" Value="Visible" />-->
+                                </VisualState.Setters>
+                            </VisualState>
+
+
+                        </VisualStateGroup>
+
+                        <VisualStateGroup x:Name="MenuOpenStates2">
+                            <VisualState x:Name="MenuOpen2">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsMenuOpen}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="MenuBorder.Visibility" Value="Visible" />
+                                    <Setter Target="LightDismissLayer.Visibility" Value="Visible" />
+                                    <Setter Target="MenuBorder.Grid.ColumnSpan" Value="2" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="MenuClosed2" />
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+
+
+
+
+
+                    <!--<Border x:Name="LightDismissLayer" Grid.ColumnSpan="2" Grid.Row="1" Background="#66000000" Canvas.ZIndex="99" Visibility="Collapsed"-->
+                    <!--Tapped="{x:Bind ViewModel.CloseMenu}" />-->
 
 
 
 
 
 
-                    
+
+
                     <!--<Grid uen:Region.Attached="True"                          
 uen:Region.Navigator="Visibility"
 Grid.Row="1"  Grid.Column="1">
@@ -323,25 +379,25 @@ Grid.Row="1"  Grid.Column="1">
 
 
 
-                <!--<Grid x:Name="TaskContentGrid"
+                    <!--<Grid x:Name="TaskContentGrid"
           Grid.Column="1" Grid.Row="1"
           uen:Region.Attached="True"
        uen:Region.Name="TaskContentRegion" 
           uen:Region.Navigator="Visibility" />-->
 
-                <!--<Grid uen:Region.Attached="True" x:Name="TaskContentGrid"
+                    <!--<Grid uen:Region.Attached="True" x:Name="TaskContentGrid"
                                 Grid.Column="1" Grid.Row="1"
                 uen:Region.Name="TaskContentRegion"
                 uen:Region.Navigator="Visibility" />-->
 
 
-                <Grid Padding="1 0 1 0"  x:Name="TaskContentGrid"
+                    <Grid Padding="1 0 1 0"  x:Name="TaskContentGrid"
                        Grid.Column="1" Grid.Row="1"
-uen:Region.Attached="True"
+uen:Region.Attached="True"  Visibility="{Binding IsVisibilityTabBar, Converter={StaticResource BoolToVisibilityConverter}}"
 uen:Region.Navigator="Visibility" />
 
 
-                <!--<Frame x:Name="TaskContentFrame" 
+                    <!--<Frame x:Name="TaskContentFrame" 
            uen:Region.Attached="True"
            uen:Region.Name="TaskContentRegion" 
            HorizontalAlignment="Stretch"
@@ -351,18 +407,20 @@ uen:Region.Navigator="Visibility" />
 
 
 
-                <Frame Visibility="Collapsed"  x:Name="ContentFrame" Grid.Column="1" Grid.Row="1" />
+                    <Frame  Visibility="{Binding IsVisibilityFrame, Converter={StaticResource BoolToVisibilityConverter}}"  x:Name="ContentFrame" Grid.Column="1" Grid.Row="1" />
 
 
 
 
 
-                    
+
 
                     <!--<NavigationView OpenPaneLength="170"  IsBackButtonVisible="Collapsed" uen:Region.Attached="true"
                   Grid.Row="1" IsSettingsVisible="False">
                         <NavigationView.MenuItems>
-                            --><!-- Tag должен совпадать с именами в маршрутах --><!--
+                            -->
+                    <!-- Tag должен совпадать с именами в маршрутах -->
+                    <!--
                             <NavigationViewItem Icon="List" Content="Все задания"
                               uen:Region.Name="TaskList" />
                             <NavigationViewItem Icon="List" Content="На сегодня"
@@ -385,15 +443,18 @@ uen:Region.Name="Overdue" />
 
 
 
-                <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane" >
-                    <!--<VisualStateManager.VisualStateGroups>
+                    
+                    <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane" >
+                        <!--<VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="PaneStates">
                             <VisualState x:Name="Open">
                                 <VisualState.StateTriggers>
                                     <StateTrigger IsActive="{Binding IsSplitViewPaneOpen}" />
                                 </VisualState.StateTriggers>
                                 <Storyboard>
-                                    --><!-- Анимируем ширину Border от 0 до расчетного значения --><!--
+                                    -->
+                        <!-- Анимируем ширину Border от 0 до расчетного значения -->
+                        <!--
                                     <DoubleAnimation Storyboard.TargetName="DetailsPane"
                          Storyboard.TargetProperty="Width"
                          To="{Binding SplitViewOpenPaneLength}" 
@@ -431,19 +492,20 @@ uen:Region.Name="Overdue" />
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>-->
 
-                    <Frame x:Name="ContentFrameTask"/>
-                    <Button Command="{Binding CloseAndOpenDetailedSplitView}" Content="Cancel" VerticalAlignment="Top"/>
-                </Grid>
+                        <Frame x:Name="ContentFrameTask"/>
+                        <Button Command="{Binding CloseAndOpenDetailedSplitView}" Content="&#xE10A;" FontSize="30" FontWeight="ExtraBlack" Foreground="{StaticResource ClueRedLightBrush}"
+                                VerticalAlignment="Top" HorizontalAlignment="Right" Margin=" 0 15 0 0"  Style="{StaticResource RedTextButtonStyle}"/>
+                    </Grid>
 
 
-            <!--</Grid>-->
+                    <!--</Grid>-->
 
-            <!--<Grid Grid.Column="2" Grid.Row="1">-->
-          
-            <!--</Grid>-->
+                    <!--<Grid Grid.Column="2" Grid.Row="1">-->
 
-                
-            <!--<SplitView x:Name="FilterSplitView" DisplayMode="{Binding SplitViewDisplayMode}"
+                    <!--</Grid>-->
+
+
+                    <!--<SplitView x:Name="FilterSplitView" DisplayMode="{Binding SplitViewDisplayMode}"
              PanePlacement="Right" OpenPaneLength="{Binding SplitViewOpenPaneLength}"  IsPaneOpen="{Binding IsSplitViewPaneOpen, Mode=TwoWay}">
 
                 <SplitView.Pane>
@@ -454,7 +516,15 @@ uen:Region.Name="Overdue" />
                 </SplitView.Pane>
             </SplitView>-->
 
-        </Grid>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
+
+
+
+
+
+      
             <!--<Frame Background="AliceBlue"
        Grid.Column="1"
        Grid.ColumnSpan="2"
@@ -535,5 +605,10 @@ uen:Region.Name="Overdue" />
                 </Grid>
             </Border>
         </Grid>
+
+        <!--Click="HamburgerBtn_Click"-->
+        <Button x:Name="HamburgerBtn" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <SymbolIcon Symbol="GlobalNavigationButton" />
+        </Button>
     </Grid>
 </Page>

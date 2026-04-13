@@ -22,12 +22,165 @@
             </ResourceDictionary>
           </utum:MaterialToolkitTheme.FontOverrideDictionary> -->
         </utum:MaterialToolkitTheme>
-      </ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Dictionary/DateRadioButtonStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/CheckBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/TreeViewItemStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/DeleteButtonStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/FilterRadioButtonStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/StickerFlyoutStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/ColorStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/NotebookTextBoxStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
       <!-- Add resources here -->
             <helper:ViewModelStore x:Key="GlobalStore" />
 
-    </ResourceDictionary>
+            <!-- ЦВЕТА ДЛЯ ТЕМЫ "НУАРНЫЙ ДЕТЕКТИВ" -->
+
+            <!-- Основные (фон и границы) -->
+            <SolidColorBrush x:Key="BackgroundLightBrush" Color="#F4F7F6" />
+            <!-- Светлый фон -->
+            <SolidColorBrush x:Key="BackgroundDarkBrush" Color="#1E1E24" />
+            <!-- Темный фон -->
+            <SolidColorBrush x:Key="PanelBackgroundLightBrush" Color="#FFFFFF" />
+            <!-- Фон карточек/панелей в светлой теме -->
+            <SolidColorBrush x:Key="PanelBackgroundDarkBrush" Color="#252526" />
+            <!-- Фон карточек/панелей в темной теме -->
+            <SolidColorBrush x:Key="DividerLightBrush" Color="#E0E5EC" />
+            <!-- Разделители в светлой теме -->
+            <SolidColorBrush x:Key="DividerDarkBrush" Color="#3A3A3A" />
+            <!-- Разделители в темной теме -->
+
+            <!-- Синий (Чернила/Акцент) -->
+            <SolidColorBrush x:Key="InkBlueLightBrush" Color="#00224d" />
+            <SolidColorBrush x:Key="InkBlueLightBrushOver" Color="#051a35" />
+            <!-- Темный синий для светлой темы -->
+            <SolidColorBrush x:Key="InkBlueDarkBrush" Color="#87CEEB" />
+            <!-- Светлый синий для темной темы (контраст) -->
+            <SolidColorBrush x:Key="AccentBlueLightBrush" Color="#3498DB" />
+            <!-- Яркий синий акцент для светлой темы -->
+            <SolidColorBrush x:Key="AccentBlueDarkBrush" Color="#87CEEB" />
+            <!-- Яркий синий акцент для темной темы -->
+
+            <!-- Красный (Важные/Опасные) -->
+            <SolidColorBrush x:Key="ClueRedLightBrush" Color="#B23A48" />
+            <SolidColorBrush x:Key="ClueRedDarkLightBrush" Color="#651620" />
+            <!-- Приглушенный красный для светлой темы -->
+            <SolidColorBrush x:Key="ClueRedDarkBrush" Color="#EF5350" />
+
+            <SolidColorBrush x:Key="DarkGrayBrown" Color="#756C6C" />
+
+            <SolidColorBrush x:Key="StickerBrush" Color="#FEF9E7"/>
+            <SolidColorBrush x:Key="StickerBrush" Color="#E6E0B0"/>
+            <!-- Ярче красный для темной темы -->
+
+            <!--отмеченное в календаре сегодня-->
+            <RadialGradientBrush x:Key="SelectedDayBrush" 
+                     Center="0.5,0.5" 
+                     RadiusX="0.45" RadiusY="0.45" 
+                     GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="{StaticResource DarkGrayBrown}" Offset="0.75"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="Transparent" Offset="0.90"/>-->
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+                <GradientStop Color="Transparent" Offset="1"/>
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <!--<GradientStop Color="Transparent" Offset="1.0"/>-->
+            </RadialGradientBrush>
+
+
+            <RadialGradientBrush x:Key="TodayRingBrush"
+         Center="0.5,0.5" 
+         RadiusX="0.45" RadiusY="0.45" 
+         GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="Transparent" Offset="0.78"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.83"/>
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.90"/>
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <GradientStop Color="Transparent" Offset="1.0"/>
+            </RadialGradientBrush>
+
+            <RadialGradientBrush x:Key="SelectedTodayRingBrush"
+Center="0.5,0.5" 
+RadiusX="0.45" RadiusY="0.45" 
+GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="{StaticResource DarkGrayBrown}" Offset="0.75"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.83"/>
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.90"/>
+                
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <GradientStop Color="Transparent" Offset="1.0"/>
+            </RadialGradientBrush>
+
+            <RadialGradientBrush x:Key="TransparentGridBrush"
+Center="0.5,0.5" 
+RadiusX="0.35" RadiusY="0.45" 
+GradientOrigin="0.3,0.4">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="{StaticResource DividerLightBrush}" Offset="0.95"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.83"/>
+
+                --><!-- 85% до 95% — Сам красный цвет (толщина кольца) --><!--
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.90"/>-->
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <GradientStop Color="Transparent" Offset="1.0"/>
+            </RadialGradientBrush>
+
+            <!-- Создаем динамические ресурсы, чтобы использовать их как ThemeResource -->
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="DividerBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="InkBlueBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="AccentBlueBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="ClueRedBrush" Color="{ThemeResource ClueRedLightBrush}" />
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource BackgroundLightBrush}" />
+                    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundLightBrush}" />
+                    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerLightBrush}" />
+                    <SolidColorBrush x:Key="InkBlueBrush" Color="{StaticResource InkBlueLightBrush}" />
+                    <SolidColorBrush x:Key="AccentBlueBrush" Color="{StaticResource AccentBlueLightBrush}" />
+                    <SolidColorBrush x:Key="ClueRedBrush" Color="{StaticResource ClueRedLightBrush}" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource BackgroundLightBrush}" />
+                    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundLightBrush}" />
+                    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerLightBrush}" />
+                    <SolidColorBrush x:Key="InkBlueBrush" Color="{StaticResource InkBlueLightBrush}" />
+                    <SolidColorBrush x:Key="AccentBlueBrush" Color="{StaticResource AccentBlueLightBrush}" />
+                    <SolidColorBrush x:Key="ClueRedBrush" Color="{StaticResource ClueRedLightBrush}" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource BackgroundDarkBrush}" />
+                    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundDarkBrush}" />
+                    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerDarkBrush}" />
+                    <SolidColorBrush x:Key="InkBlueBrush" Color="{StaticResource InkBlueDarkBrush}" />
+                    <SolidColorBrush x:Key="AccentBlueBrush" Color="{StaticResource AccentBlueDarkBrush}" />
+                    <SolidColorBrush x:Key="ClueRedBrush" Color="{StaticResource ClueRedDarkBrush}" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+        </ResourceDictionary>
   </Application.Resources>
 
 </Application>
