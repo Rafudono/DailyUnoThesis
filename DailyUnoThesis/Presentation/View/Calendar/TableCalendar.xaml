@@ -1,70 +1,179 @@
-﻿<Page
-    x:Class="DailyUnoThesis.Presentation.View.Calendar.TableCalendar"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DailyUnoThesis.Presentation.View.Calendar"
-     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.CalendarControls"
-     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
+﻿<Page x:Class="DailyUnoThesis.Presentation.View.Calendar.TableCalendar"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:DailyUnoThesis.Presentation.View.Calendar"
+      xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.CalendarControls"
+      xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
+      xmlns:con="using:DailyUnoThesis.Models.Conventers"
+      xmlns:pro="using:DailyUnoThesis.Presentation.View.Calendar"
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
-  xmlns:utu="using:Uno.Toolkit.UI"
-  xmlns:um="using:Uno.Material"
-  NavigationCacheMode="Required"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      xmlns:um="using:Uno.Material"
+      NavigationCacheMode="Required"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
     <Page.DataContext>
         <control:MonthCalendarViewModel/>
     </Page.DataContext>
+
+    <Page.Resources>
+        <!-- Конвертеры -->
+        <con:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
+        <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
+
+        <Style x:Key="CalendarDayGridStyle" TargetType="Grid">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush Center="0.5,0.6" RadiusX="1" RadiusY="0.9" GradientOrigin="0.5,0.6">
+                        <GradientStop Color="#f2eff5" Offset="0.02" />
+                        <GradientStop Color="White" Offset="0.88" />
+                        <GradientStop Color="#dfbba9" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для заголовка дня -->
+        <Style x:Key="CalendarDayHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+            <Setter Property="Margin" Value="5,5,0,0"/>
+        </Style>
+
+        <!-- Стиль для номера дня -->
+        <Style x:Key="CalendarDayNumberStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrushOver}"/>
+            <Setter Property="Margin" Value="4,2,0,0"/>
+        </Style>
+
+        <!-- Стиль для ListView внутри дня -->
+        <Style x:Key="CalendarListViewStyle" TargetType="ListView">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+
+        <!-- Стиль для элемента задачи в календаре -->
+        <Style x:Key="CalendarMissionBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
+            <Setter Property="CornerRadius" Value="8,4,8,4"/>
+            <Setter Property="Margin" Value="0,2,0,2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Page.Resources>
+
+
+
     <ScrollViewer IsTabStop="True">
         <Grid utu:SafeArea.Insets="VisibleBounds">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock  Text="{Binding MonthHeader, Mode=OneWay}"  HorizontalAlignment="Center"/>
+                <!-- Заголовок месяца -->
+                <TextBlock Grid.Row="0" Text="{Binding MonthHeader, Mode=OneWay}" HorizontalAlignment="Center" Margin="0,10" FontFamily="Segoe Print" FontSize="18"/>
 
-                <ItemsControl Grid.Row="1" 
-             ItemsSource="{Binding Days, Mode=OneWay}">
+                <!-- Дни недели (7 колонок) -->
+                <Grid Grid.Row="1" Margin="4,0,4,5" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Пн" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="1" Text="Вт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="2" Text="Ср" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="3" Text="Чт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="4" Text="Пт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="5" Text="Сб" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                    <TextBlock Grid.Column="6" Text="Вс" Style="{StaticResource DayOfWeekHeaderStyle}"/>
+                </Grid>
+
+                <!-- Календарь -->
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding Days, Mode=OneWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <pro:CalendarWidthBehavior/>
+                    </interactivity:Interaction.Behaviors>
+
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" 
-               MaxWidth="350"/>
+                            <WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemTemplate >
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="50" Padding="4"
-          Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightGray'}">
+                            <Grid Padding="4" Margin="0,0,0,2"
+                                  Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightGray'}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
+                                <!-- Номер дня (без дня недели, он уже в шапке) -->
                                 <TextBlock Text="{Binding DayNumber}"
-                 FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
-                 Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"/>
+                                           FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
+                                           Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"
+                                           FontSize="12"
+                                           Margin="2,0,0,2"/>
 
-                                <ListView Grid.Row="1"
-                    ItemsSource="{Binding Tasks}"
-                    HorizontalAlignment="Stretch" >
+                                <ListView Grid.Row="1" 
+                                          ItemsSource="{Binding Tasks}" 
+                                          MinHeight="20" 
+                                          HorizontalAlignment="Stretch" 
+                                          SelectedItem="{Binding SelectedMission}" 
+                                          AllowDrop="True" 
+                                          Drop="PlannedListView_Drop"  
+                                          DragOver="PlannedListView_DragOver" 
+                                          DragLeave="PlannedListView_DragLeave" 
+                                          Background="Transparent">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="mod:Mission">
-                                            <ScrollPresenter>
-                                                <StackPanel CanDrag="True" AllowDrop="True" >
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding Title}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
-                                                        <TextBlock Text="{Binding FormattedTime}" FontSize="10" TextTrimming="CharacterEllipsis" Margin="2"/>
-                                                    </StackPanel>
+                                            <Border x:Name="RootBorder" 
+                                                    Background="{StaticResource StickerBrush}" 
+                                                    Margin="0,2,0,2" 
+                                                    CornerRadius="8,4,8,4">
+                                                <StackPanel CanDrag="True" 
+                                                            DragStarting="StackPanel_DragStarting" 
+                                                            IsHitTestVisible="True" 
+                                                            Margin="4">
+                                                    <TextBlock Text="{Binding Title}" 
+                                                               FontSize="10" 
+                                                               FontFamily="Segoe Print"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{StaticResource InkBlueLightBrush}"
+                                                               TextTrimming="CharacterEllipsis" 
+                                                               Margin="2"/>
+                                                    <TextBlock Text="{Binding FormattedTime}" 
+                                                               FontSize="8" 
+                                                               FontFamily="Comic Sans MS"
+                                                               Foreground="{StaticResource ClueRedLightBrush}"
+                                                               TextTrimming="CharacterEllipsis" 
+                                                               Margin="2"/>
                                                 </StackPanel>
-                                            </ScrollPresenter>
+                                            </Border>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
@@ -72,16 +181,33 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
             </Grid>
-            <ListView ItemsSource="{Binding InboxMissions}" Grid.Column="1" Grid.Row="1" CanDragItems="True">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="mod:Mission">
-                        <TextBlock Text="{Binding Title}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
 
+            <!-- Inbox с кнопкой добавления -->
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Row="0" 
+                        Content="+ Добавить задачу" 
+                        Margin="10" 
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource AccentButtonStyle}"/>
+
+                <ListView Grid.Row="1" 
+                          ItemsSource="{Binding InboxMissions}" 
+                          SelectedItem="{Binding SelectedMission}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="mod:Mission">
+                            <StackPanel DragStarting="InboxMission_DragStarting" CanDrag="True">
+                                <TextBlock Text="{Binding Title}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </Page>

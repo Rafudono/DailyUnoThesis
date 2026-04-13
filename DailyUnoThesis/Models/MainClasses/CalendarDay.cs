@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,8 +13,9 @@ public partial class CalendarDay : ObservableObject
     public int DayNumber => Date.Day;
     public bool IsToday { get; set; }
     public bool IsOtherMonth { get; set; }
-    [ObservableProperty]
-    private List<Mission> tasks;
+    public bool IsDragOver { get; set; }
 
+    [ObservableProperty]
+    private ObservableCollection<Mission> _tasks = new ObservableCollection<Mission>();
 }
 
