@@ -18,6 +18,8 @@ namespace DailyUnoThesis.Presentation.View.Pages
     public partial class TaskListPageCategory : Page
     {
         //public TaskCategotyControle ViewModel { get; } = new();
+        public TaskCategotyControle ViewModel;
+        TaskListPageCategory pass;
         private Category Category;
         public TaskListPageCategory()
         {
@@ -34,7 +36,12 @@ namespace DailyUnoThesis.Presentation.View.Pages
             ViewModelStore.GetInstance().GetPageCategory(this);
             //PageNavigation.GetInstance().GetPageCategory(this);
 
+            pass = this;
+           
+
         }
+
+       
 
 
         //protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -56,10 +63,11 @@ namespace DailyUnoThesis.Presentation.View.Pages
             if (args.NewValue is TaskCategotyControle viewModel)
             {
                 // Передаем DispatcherQueue (в WinUI/Uno 5 это DispatcherQueue)
-                viewModel.SetDispatcher(this.DispatcherQueue);
+                viewModel.SetDispatcher(Dispatcher);
 
                 // Передаем саму View
                 viewModel.SetControl(this);
+                ViewModel = viewModel;
                 //PageNavigation.GetInstance().GetPageCategory(this);
 
             }

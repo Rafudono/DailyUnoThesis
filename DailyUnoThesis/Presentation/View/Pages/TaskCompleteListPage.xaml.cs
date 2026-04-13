@@ -1,4 +1,5 @@
 //using DailyThesis.ViewModel.PagesControls;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,13 @@ namespace DailyUnoThesis.Presentation.View.Pages
     /// <summary>
     /// Логика взаимодействия для TaskCompleteListPage.xaml
     /// </summary>
+    /// 
+   
     public partial class TaskCompleteListPage : Page
     {
         //public TaskCompleteControle ViewModel { get; } = new();
-
+        public TaskCompleteControle ViewModel;
+        TaskCompleteListPage pass;
         public TaskCompleteListPage()
         {
             this.InitializeComponent();
@@ -31,6 +35,22 @@ namespace DailyUnoThesis.Presentation.View.Pages
             var en = DataContext as TaskCompleteControle;
             en?.SetDispatcher(Dispatcher);
             en?.SetControl(this);
+
+            pass = this;
+          
+            this.DataContextChanged += OnDataContextChanged;
+
+        }
+
+        private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+
+            if (args.NewValue is TaskCompleteControle viewModel)
+            {
+                ViewModelStore.GetInstance().CompleteTasks = viewModel;
+                ViewModel = viewModel;
+
+            }
         }
     }
 }
