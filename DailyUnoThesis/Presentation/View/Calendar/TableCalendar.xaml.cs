@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using DailyUnoThesis.Models.Conventers;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 using Microsoft.UI.Xaml;
@@ -24,6 +25,7 @@ namespace DailyUnoThesis.Presentation.View.Calendar;
 /// </summary>
 public sealed partial class TableCalendar : Page
 {
+    private Grid _highlightedDayGrid;
     public TableCalendar()
     {
         this.InitializeComponent();
@@ -33,8 +35,21 @@ public sealed partial class TableCalendar : Page
         var stackPanel = sender as StackPanel;
         var mission = stackPanel?.DataContext as Mission;
 
-        if (mission != null)
+        if (mission != null && mission.StartDate.HasValue)
         {
+            // Запрещаем перетаскивание, если задача в прошедшем дне
+            if (mission.StartDate.Value.Date < DateTime.Today.Date)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            e.Data.Properties.Add("DraggedMission", mission);
+            e.Data.RequestedOperation = DataPackageOperation.Move;
+        }
+        else if (mission != null)
+        {
+            // Для задач без даты (Inbox) - разрешаем
             e.Data.Properties.Add("DraggedMission", mission);
             e.Data.RequestedOperation = DataPackageOperation.Move;
         }
@@ -57,6 +72,26 @@ public sealed partial class TableCalendar : Page
 
         var grid = FindParent<Grid>(listView);
         if (grid?.DataContext is not CalendarDay targetDay) return;
+
+        // Сначала сбрасываем фон у всех дней
+        ResetAllDaysBackground();
+
+        // Проверяем, можно ли вообще вставлять в этот день
+        bool isDayAvailable = targetDay.Date.Date >= DateTime.Today.Date && !targetDay.IsOtherMonth;
+
+        if (!isDayAvailable)
+        {
+            // День недоступен - красная подсветка всего дня
+            var dayGrid = FindParent<Grid>(listView);
+            if (dayGrid != null)
+            {
+                _highlightedDayGrid = dayGrid; // Сохраняем ссылку
+                dayGrid.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 255, 100, 100));
+            }
+            viewModel.OnDragOver(-1);
+            e.AcceptedOperation = DataPackageOperation.None;
+            return;
+        }
 
         // Пустой список
         if (listView.Items.Count == 0)
@@ -124,6 +159,29 @@ public sealed partial class TableCalendar : Page
             viewModel.OnDragOver(-1);
         }
     }
+    private void ResetAllDaysBackground()
+    {
+        // Находим ItemsControl с днями
+        var itemsControl = FindParent<ItemsControl>(this.Content as DependencyObject);
+        if (itemsControl == null) return;
+
+        for (int i = 0; i < itemsControl.Items.Count; i++)
+        {
+            var container = itemsControl.ContainerFromIndex(i) as FrameworkElement;
+            if (container != null)
+            {
+                // Сбрасываем фон на оригинальный
+                var day = itemsControl.Items[i] as CalendarDay;
+                if (day != null)
+                {
+                    var converter = new BoolToColorConverter();
+                    container.SetValue(Grid.BackgroundProperty,
+                        converter.Convert(day.IsOtherMonth, typeof(Brush), "LightGray", null));
+                }
+            }
+        }
+    }
+
     private T FindChild<T>(DependencyObject parent, string name) where T : FrameworkElement
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
@@ -146,6 +204,13 @@ public sealed partial class TableCalendar : Page
         if (listView == null) return;
 
         ResetAllMargins(listView);
+
+        // Сбрасываем подсветку дня
+        if (_highlightedDayGrid != null)
+        {
+            _highlightedDayGrid.ClearValue(Grid.BackgroundProperty);
+            _highlightedDayGrid = null;
+        }
 
         var viewModel = this.DataContext as MonthCalendarViewModel;
         viewModel?.OnDragOver(-1);
@@ -201,6 +266,7 @@ public sealed partial class TableCalendar : Page
         }
 
         ResetAllMargins(listView);
+        ResetAllDaysBackground();
         viewModel.OnDragOver(-1);
     }
     private T FindParent<T>(DependencyObject child) where T : DependencyObject
