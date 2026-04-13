@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
+
 //using AndroidX.Collection;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
@@ -171,27 +173,51 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         private void ConversionToText()
         {
-            if (SelectedDate == DateTimeOffset.MinValue || SelectedDate == null)
-                return;
-            if (SelectedDate.Value.Date == DateTimeOffset.Now.Date)
+            if (SelectedDate != null)
             {
-                TaskDateSettings = "Сегодня";
-            }
-            else if (SelectedDate.Value.Date == DateTimeOffset.Now.AddDays(1).Date)
-            {
-                TaskDateSettings = "Завтра";
-            }
-            else
-            {
-                if(SelectedDate.Value.Year == DateTimeOffset.Now.Year)
-                TaskDateSettings = SelectedDate.Value.ToString("d MMM");
+                if (Task.IdUpMissionNavigation != null)
+                {
+                    if (Task.IdUpMissionNavigation.EndDate != null && Task.IdUpMissionNavigation.EndDate != DateTime.MinValue)
+                    {
+                        if (SelectedDate.Value.Date > Task.IdUpMissionNavigation.EndDate)
+                        {
+                            SelectedDate = Task.IdUpMissionNavigation.EndDate;
+                        }
+                    }
+                    else if (Task.IdUpMissionNavigation.IdUpMissionNavigation != null)
+                    {
+                        if (Task.IdUpMissionNavigation.IdUpMissionNavigation.EndDate != null && Task.IdUpMissionNavigation.IdUpMissionNavigation.EndDate != DateTime.MinValue)
+                        {
+                            if (SelectedDate.Value.Date > Task.IdUpMissionNavigation.IdUpMissionNavigation.EndDate)
+                            {
+                                SelectedDate = Task.IdUpMissionNavigation.IdUpMissionNavigation.EndDate;
+                            }
+                        }
+                    }
+                }
+                if (SelectedDate == DateTimeOffset.MinValue || SelectedDate == null)
+                    return;
+                if (SelectedDate.Value.Date == DateTimeOffset.Now.Date)
+                {
+                    TaskDateSettings = "Сегодня";
+                }
+                else if (SelectedDate.Value.Date == DateTimeOffset.Now.AddDays(1).Date)
+                {
+                    TaskDateSettings = "Завтра";
+                }
                 else
-                    TaskDateSettings = SelectedDate.Value.ToString("d MMM yyyy");
+                {
+                    if (SelectedDate.Value.Year == DateTimeOffset.Now.Year)
+                        TaskDateSettings = SelectedDate.Value.ToString("d MMM");
+                    else
+                        TaskDateSettings = SelectedDate.Value.ToString("d MMM yyyy");
+                }
+                if (UseTime)
+                {
+                    TaskDateSettings += ", " + SelectedTime.ToString("hh\\:mm");
+                }
             }
-            if (UseTime)
-            {
-                TaskDateSettings += ", " + SelectedTime.ToString("hh\\:mm");
-            }
+        
 
            
         }
@@ -487,6 +513,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         public void GetTask(Mission mission)
         {
             Task = mission;
+            if (Task.EndDate != DateTime.MinValue)
+            {
+                SelectedDate = Task.EndDate;
+            }
+
+            ConversionToText();
         }
 
         public async Task GetCategories()
@@ -520,12 +552,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 //}
                 if (SelectedDate != DateTimeOffset.MinValue && SelectedDate != null)
                 {
-                    if(!UseTime)
-                    Task.EndDate = SelectedDate.Value.Date;
+                    if (!UseTime)
+                        Task.EndDate = SelectedDate.Value.Date;
                     else
                         Task.EndDate = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day,
                               SelectedTime.Hours, SelectedTime.Minutes, 0);
 
+                }
+                else
+                {
+                    Task.EndDate = DateTime.MinValue;
                 }
                 
                 if (Subtasks != null)
@@ -547,7 +583,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     Task = new();
                 else
                 {
+                    Mission mis = Task;
                     Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
+                    Task.LevelUp = mis.LevelUp;
+                    Task.IdUpMissionNavigation = mis.IdUpMissionNavigation;
                     Subtasks = (List<Mission>?)Task.InverseIdUpMissionNavigation;
 
                 }

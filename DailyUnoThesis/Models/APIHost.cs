@@ -151,7 +151,7 @@ namespace DailyUnoThesis.Models;
     // получение списка заданий на сегодня (тоже не забыть указывать пользователя)
     public async Task<List<Mission>> GetTodayList()
     {
-        var res = await client.GetAsync($"Missions/GetToday");
+        var res = await client.GetAsync($"Missions/GetToday?id={1}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -185,7 +185,7 @@ namespace DailyUnoThesis.Models;
     public async Task<List<Mission>> GetMCompleteList()
     {
 
-        var res = await client.GetAsync($"Missions/GetComplete");
+        var res = await client.GetAsync($"Missions/GetComplete?id={1}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -232,8 +232,6 @@ namespace DailyUnoThesis.Models;
         else
         {
             var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
-            if (mission.IdUpMission == null || mission.IdUpMission == 0)
-                mission.LevelUp = 1;
             return mission;
         }
         return new Mission();

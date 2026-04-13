@@ -138,7 +138,7 @@
                             <RepositionThemeTransition />
                         </TransitionCollection>
                     </Border.Transitions>
-                    <ScrollViewer  Padding="10 5" VerticalAlignment="Top" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
+                    <ScrollViewer  Padding="10 5" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollMode="Enabled" 
               VerticalScrollMode="Enabled">
@@ -146,21 +146,21 @@
                         <StackPanel>
 
                             <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}"
-                                        uen:Region.Attached="True" Orientation="Vertical" Background="Transparent">
+                                        uen:Region.Attached="True" Orientation="Vertical" Background="Transparent" MinHeight="100" >
 
                                 <utu:TabBarItem Content="Все задания" 
                                     uen:Region.Name="TaskList"
-                                    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
+                                    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
 
                                 <utu:TabBarItem Content="На сегодня" 
      uen:Region.Name="Today"
-     utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
-                                <!--<utu:TabBarItem Content="Выполненные" 
+     utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
+                                <utu:TabBarItem Content="Выполненные" 
     uen:Region.Name="Complete"
-    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />
+    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
                                 <utu:TabBarItem Content="Просроченные" 
     uen:Region.Name="Overdue"
-    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" />-->
+    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
                             </utu:TabBar>
 
                             <StackPanel Orientation="Horizontal">
@@ -262,7 +262,7 @@
                             </TreeView>
 
 
-                            <utu:Card HeaderContent="Outlined card"
+                            <!--<utu:Card HeaderContent="Outlined card"
           SubHeaderContent="With title and subtitle only"
           AutomationProperties.AutomationId="Outlined_Card"
           Style="{StaticResource OutlinedCardStyle}">
@@ -280,7 +280,7 @@
                     Style="{ThemeResource BodySmall}" />
                                     </DataTemplate>
                                 </utu:Card.SubHeaderContentTemplate>
-                            </utu:Card>
+                            </utu:Card>-->
 
 
                             <TextBlock Text="#Проекты" Margin="0,10" />

@@ -11,7 +11,7 @@ internal class NullToVisibilityConverterTextBoxCategory : IValueConverter
         //return (value == null || (value is int i && i == 0))
         //       ? Visibility.Collapsed
         //       : Visibility.Visible;
-        if (value == null || (value is int i && i == 0))
+        if (value == null || (value is int i && i == 0) || (value is DateTime date && date == DateTime.MinValue))
         {
             return Visibility.Collapsed;
         }

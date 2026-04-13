@@ -64,6 +64,38 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             set => SetValue(AllTasksProperty, value);
         }
 
+        // сегодня
+        public static readonly DependencyProperty TodayTasksProperty =
+          DependencyProperty.Register("TodayTasks", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+        public TaskTodayControle TodayTasks
+        {
+            get => (TaskTodayControle)GetValue(TodayTasksProperty);
+            set => SetValue(TodayTasksProperty, value);
+        }
+
+
+        // выполненые
+        public static readonly DependencyProperty CompleteTasksProperty =
+          DependencyProperty.Register("CompleteTasks", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+        public TaskCompleteControle CompleteTasks
+        {
+            get => (TaskCompleteControle)GetValue(CompleteTasksProperty);
+            set => SetValue(CompleteTasksProperty, value);
+        }
+
+
+        // просроченные
+        public static readonly DependencyProperty OverdueTasksProperty =
+          DependencyProperty.Register("OverdueTasks", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+        public OverdueTaskControle OverdueTasks
+        {
+            get => (OverdueTaskControle)GetValue(OverdueTasksProperty);
+            set => SetValue(OverdueTasksProperty, value);
+        }
+
+
+        
+
         // Меню подробностей задач
         public static readonly DependencyProperty DetailedTaskProperty =
           DependencyProperty.Register("DetailedTask", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
