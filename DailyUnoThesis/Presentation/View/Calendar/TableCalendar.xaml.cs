@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using DailyUnoThesis.Models.Conventers;
 using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -26,6 +27,7 @@ namespace DailyUnoThesis.Presentation.View.Calendar;
 public sealed partial class TableCalendar : Page
 {
     private Grid _highlightedDayGrid;
+    private bool _isNewTaskFrameInitialized;
     public TableCalendar()
     {
         this.InitializeComponent();
@@ -161,17 +163,15 @@ public sealed partial class TableCalendar : Page
     }
     private void ResetAllDaysBackground()
     {
-        // Находим ItemsControl с днями
-        var itemsControl = FindParent<ItemsControl>(this.Content as DependencyObject);
-        if (itemsControl == null) return;
+        if (CalendarDaysGrid == null) return;
 
-        for (int i = 0; i < itemsControl.Items.Count; i++)
+        for (int i = 0; i < CalendarDaysGrid.Items.Count; i++)
         {
-            var container = itemsControl.ContainerFromIndex(i) as FrameworkElement;
+            var container = CalendarDaysGrid.ContainerFromIndex(i) as FrameworkElement;
             if (container != null)
             {
                 // Сбрасываем фон на оригинальный
-                var day = itemsControl.Items[i] as CalendarDay;
+                var day = CalendarDaysGrid.Items[i] as CalendarDay;
                 if (day != null)
                 {
                     var converter = new BoolToColorConverter();
@@ -291,8 +291,27 @@ public sealed partial class TableCalendar : Page
         if (mission != null)
         {
             args.Data.Properties.Add("DraggedMission", mission);
-            args.Data.Properties.Add("SourceIsInbox", true);
+            bool isInboxMission = !mission.StartDate.HasValue || !mission.EndDate.HasValue;
+            args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
         }
+    }
+
+    private void OpenNewTaskFrame_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_isNewTaskFrameInitialized)
+        {
+            NewTaskFrame.Navigate(typeof(SelectedAndNewTask));
+            _isNewTaskFrameInitialized = true;
+        }
+
+        NewTaskFrameHost.Visibility = Visibility.Visible;
+        InboxTree.Visibility = Visibility.Collapsed;
+    }
+
+    private void CloseNewTaskFrame_Click(object sender, RoutedEventArgs e)
+    {
+        NewTaskFrameHost.Visibility = Visibility.Collapsed;
+        InboxTree.Visibility = Visibility.Visible;
     }
 }

@@ -140,75 +140,74 @@
                 </Grid>
 
                 <!-- Календарь -->
-                <ItemsControl Grid.Row="2" ItemsSource="{Binding Days, Mode=OneWay}">
-                    <interactivity:Interaction.Behaviors>
-                        <pro:CalendarWidthBehavior/>
-                    </interactivity:Interaction.Behaviors>
+                <ItemsControl x:Name="CalendarDaysGrid" Grid.Row="2" ItemsSource="{Binding Days, Mode=OneWay}">
+                        <interactivity:Interaction.Behaviors>
+                            <pro:CalendarWidthBehavior/>
+                        </interactivity:Interaction.Behaviors>
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Padding="4" Margin="0,0,0,2"
-                                  Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightGray'}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="4" Margin="0,0,0,2"
+                                      Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightGray'}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <!-- Номер дня (без дня недели, он уже в шапке) -->
-                                <TextBlock Text="{Binding DayNumber}"
-                                           FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
-                                           Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"
-                                           FontSize="12"
-                                           Margin="2,0,0,2"/>
+                                    <TextBlock Text="{Binding DayNumber}"
+                                               FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
+                                               Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"
+                                               FontSize="12"
+                                               Margin="2,0,0,2"/>
 
-                                <ListView Grid.Row="1" 
-                                          ItemsSource="{Binding Tasks}" 
-                                          MinHeight="20" 
-                                          HorizontalAlignment="Stretch" 
-                                          SelectedItem="{Binding SelectedMission}" 
-                                          AllowDrop="True" 
-                                          Drop="PlannedListView_Drop"  
-                                          DragOver="PlannedListView_DragOver" 
-                                          DragLeave="PlannedListView_DragLeave" 
-                                          Background="Transparent">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="mod:Mission">
-                                            <Border x:Name="RootBorder" 
-                                                    Background="{StaticResource StickerBrush}" 
-                                                    Margin="0,2,0,2" 
-                                                    CornerRadius="8,4,8,4">
-                                                <StackPanel CanDrag="True" 
-                                                            DragStarting="StackPanel_DragStarting" 
-                                                            IsHitTestVisible="True" 
-                                                            Margin="4">
-                                                    <TextBlock Text="{Binding Title}" 
-                                                               FontSize="10" 
-                                                               FontFamily="Segoe Print"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="{StaticResource InkBlueLightBrush}"
-                                                               TextTrimming="CharacterEllipsis" 
-                                                               Margin="2"/>
-                                                    <TextBlock Text="{Binding FormattedTime}" 
-                                                               FontSize="8" 
-                                                               FontFamily="Comic Sans MS"
-                                                               Foreground="{StaticResource ClueRedLightBrush}"
-                                                               TextTrimming="CharacterEllipsis" 
-                                                               Margin="2"/>
-                                                </StackPanel>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                    <ListView Grid.Row="1"
+                                              ItemsSource="{Binding Tasks}"
+                                              MinHeight="20"
+                                              HorizontalAlignment="Stretch"
+                                              SelectedItem="{Binding SelectedMission}"
+                                              AllowDrop="True"
+                                              Drop="PlannedListView_Drop"
+                                              DragOver="PlannedListView_DragOver"
+                                              DragLeave="PlannedListView_DragLeave"
+                                              Background="Transparent">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="mod:Mission">
+                                                <Border x:Name="RootBorder"
+                                                        Background="{StaticResource StickerBrush}"
+                                                        Margin="0,2,0,2"
+                                                        CornerRadius="8,4,8,4">
+                                                    <StackPanel CanDrag="True"
+                                                                DragStarting="StackPanel_DragStarting"
+                                                                IsHitTestVisible="True"
+                                                                Margin="4">
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   FontSize="10"
+                                                                   FontFamily="Segoe Print"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{StaticResource InkBlueLightBrush}"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   Margin="2"/>
+                                                        <TextBlock Text="{Binding FormattedTime}"
+                                                                   FontSize="8"
+                                                                   FontFamily="Comic Sans MS"
+                                                                   Foreground="{StaticResource ClueRedLightBrush}"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   Margin="2"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
             </Grid>
 
             <!-- Inbox с кнопкой добавления -->
@@ -222,19 +221,52 @@
                         Content="+ Добавить задачу" 
                         Margin="10" 
                         HorizontalAlignment="Stretch"
+                        Click="OpenNewTaskFrame_Click"
                         Style="{StaticResource AccentButtonStyle}"/>
 
-                <ListView Grid.Row="1" 
-                          ItemsSource="{Binding InboxMissions}" 
-                          SelectedItem="{Binding SelectedMission}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="mod:Mission">
-                            <StackPanel DragStarting="InboxMission_DragStarting" CanDrag="True">
-                                <TextBlock Text="{Binding Title}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid Grid.Row="1">
+                    <TreeView x:Name="InboxTree"
+                              ItemsSource="{Binding InboxTreeMissions}"
+                              SelectionMode="Single"
+                              SelectedItem="{Binding SelectedMission, Mode=TwoWay}"
+                              MinWidth="260">
+                        <TreeView.ItemTemplate>
+                            <DataTemplate x:DataType="mod:Mission">
+                                <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" IsExpanded="True">
+                                    <StackPanel CanDrag="True"
+                                                DragStarting="InboxMission_DragStarting"
+                                                Margin="2,4">
+                                        <TextBlock Text="{Binding Title}"
+                                                   FontFamily="Segoe Print"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding FormattedTime}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource ClueRedLightBrush}"/>
+                                    </StackPanel>
+                                </TreeViewItem>
+                            </DataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+
+                    <Border x:Name="NewTaskFrameHost"
+                            Visibility="Collapsed"
+                            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                            BorderBrush="{StaticResource DividerLightBrush}"
+                            BorderThickness="1,0,0,0">
+                        <Grid>
+                            <Frame x:Name="NewTaskFrame"/>
+                            <Button Content="&#xE10A;"
+                                    Click="CloseNewTaskFrame_Click"
+                                    FontSize="24"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Margin="0,12,8,0"
+                                    Style="{StaticResource RedTextButtonStyle}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </ScrollViewer>
