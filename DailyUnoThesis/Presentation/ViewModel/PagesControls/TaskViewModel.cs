@@ -517,6 +517,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 SelectedDate = Task.EndDate;
             }
+            else
+            {
+                SelectedDate = null;
+            }
 
             ConversionToText();
         }

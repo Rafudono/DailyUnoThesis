@@ -147,6 +147,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
         {
             await AllTasks.FillData();
             await Category.FillData();
+            //await TodayTasks.GetToday();
+            //await CompleteTasks.GetComplete();
+            //await OverdueTasks.GetOverdue();
+
         }
         #endregion
 
