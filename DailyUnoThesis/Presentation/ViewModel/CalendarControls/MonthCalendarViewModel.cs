@@ -308,7 +308,7 @@ public partial class MonthCalendarViewModel : ObservableObject
 
         foreach (var mission in _taskState.Tasks)
         {
-            if (mission.StartDate != null && mission.EndDate != null)
+            if (IsPlannedMission(mission))
                 PlannedMissions.Add(mission);
             else
                 InboxMissions.Add(mission);
@@ -317,16 +317,29 @@ public partial class MonthCalendarViewModel : ObservableObject
         BuildInboxTreeMissions();
     }
 
+    /// <summary>
+    /// Совпадает с бакетом «запланировано»: обе даты заданы (как в RebuildMissionBuckets).
+    /// </summary>
+    private static bool IsPlannedMission(Mission mission)
+    {
+        return mission.StartDate != null && mission.EndDate != null;
+    }
+
+    /// <summary>
+    /// Inbox: всё, что не полностью запланировано (нет начала и/или конца).
+    /// Должно совпадать с веткой else в RebuildMissionBuckets.
+    /// </summary>
+    private static bool IsInboxMission(Mission mission)
+    {
+        return !IsPlannedMission(mission);
+    }
+
     private void BuildInboxTreeMissions()
     {
-        var roots = _taskState.Tasks
-            .Where(IsRootMission)
-            .Where(root => ContainsMissionWithoutDeadlines(root, new HashSet<int>()))
-            .ToList();
-
-        foreach (var root in roots)
+        foreach (var root in _taskState.Tasks.Where(IsRootMission))
         {
-            InboxTreeMissions.Add(root);
+            if (SubtreeContainsInboxMission(root, new HashSet<int>()))
+                InboxTreeMissions.Add(root);
         }
     }
 
@@ -335,20 +348,24 @@ public partial class MonthCalendarViewModel : ObservableObject
         return mission.IdUpMission == null || mission.IdUpMission == 0;
     }
 
-    private static bool ContainsMissionWithoutDeadlines(Mission mission, HashSet<int> visited)
+    /// <summary>
+    /// Показываем корень, если у него или у потомка есть «inbox»-состояние (не обе даты заданы).
+    /// Так дерево совпадает с коллекцией InboxMissions и учитывает смешанные связки родитель/подзадача.
+    /// </summary>
+    private static bool SubtreeContainsInboxMission(Mission mission, HashSet<int> visited)
     {
-        if (!visited.Add(mission.Id))
+        if (mission.Id > 0 && !visited.Add(mission.Id))
             return false;
 
-        if (!mission.StartDate.HasValue && !mission.EndDate.HasValue)
+        if (IsInboxMission(mission))
             return true;
 
-        if (mission.InverseIdUpMissionNavigation == null)
+        if (mission.InverseIdUpMissionNavigation == null || mission.InverseIdUpMissionNavigation.Count == 0)
             return false;
 
         foreach (var child in mission.InverseIdUpMissionNavigation)
         {
-            if (ContainsMissionWithoutDeadlines(child, visited))
+            if (SubtreeContainsInboxMission(child, visited))
                 return true;
         }
 
