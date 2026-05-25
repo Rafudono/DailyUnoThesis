@@ -4,12 +4,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using DailyUnoThesis.Models;
 using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 
 namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 public partial class MonthCalendarViewModel : ObservableObject
 {
-    private readonly APIHost _api = APIHost.GetInstance();
+    private readonly TaskStateService _taskState = TaskStateService.GetInstance();
     private Mission _draggedMission;
     [ObservableProperty]
     private DateTime _currentMonth = DateTime.Today;
@@ -22,6 +24,20 @@ public partial class MonthCalendarViewModel : ObservableObject
 
     [ObservableProperty]
     private int _dropTargetIndex = -1;
+    [ObservableProperty]
+    private ObservableCollection<Mission> _inboxTreeMissions = new();
+    [ObservableProperty]
+    private int _startHour = 9;
+    [ObservableProperty]
+    private int _endHour = 22;
+    [ObservableProperty]
+    private ObservableCollection<string> _hourLabels = new();
+    [ObservableProperty]
+    private ObservableCollection<int> _weekRows = new() { 0, 1, 2, 3, 4, 5 };
+    [ObservableProperty]
+    private double _hourSlotHeight = 18;
+    [ObservableProperty]
+    private double _dayHeaderHeight = 20;
 
     public void OnDragOver(int index)
     {
@@ -31,9 +47,11 @@ public partial class MonthCalendarViewModel : ObservableObject
     public string MonthHeader => _currentMonth.ToString("Y", new System.Globalization.CultureInfo("ru-RU"));
     public MonthCalendarViewModel()
     {
+        _taskState.TasksChanged += OnTasksChanged;
 
         NavigateToMonth(_currentMonth);
         InitializeDayOfWeekHeaders();
+        RebuildHourLabels();
 
         // Асинхронная загрузка данных
         _ = LoadDataFromApi();
@@ -112,22 +130,18 @@ public partial class MonthCalendarViewModel : ObservableObject
 
     internal async Task MoveMissionToDayWithInsert(CalendarDay targetDay, int insertIndex, Mission draggedMission, bool isFromInbox = false)
     {
-        // Удаляем из источника
-        if (isFromInbox)
-            InboxMissions.Remove(draggedMission);
-        else
-        {
-            PlannedMissions.Remove(draggedMission);
-            foreach (var day in Days)
-                day.Tasks?.Remove(draggedMission);
-        }
+        // Удаляем из локальных коллекций сразу для более плавного UX.
+        if (isFromInbox) InboxMissions.Remove(draggedMission);
+        else PlannedMissions.Remove(draggedMission);
+        foreach (var day in Days) day.Tasks?.Remove(draggedMission);
 
         var realTasks = targetDay.Tasks?
             .Where(t => t != draggedMission)
             .OrderBy(t => t.StartDate)
             .ToList() ?? new List<Mission>();
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(9);
+        DateTime dayStart = targetDay.Date.Date.AddHours(StartHour);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(EndHour);
         TimeSpan duration = (draggedMission.EndDate - draggedMission.StartDate)?.TotalHours > 0
             ? (draggedMission.EndDate - draggedMission.StartDate).Value
             : TimeSpan.FromHours(1);
@@ -157,15 +171,14 @@ public partial class MonthCalendarViewModel : ObservableObject
         }
 
         draggedMission.StartDate = newStartTime;
-        draggedMission.EndDate = newEndTime;
+        draggedMission.EndDate = newEndTime > dayEnd ? dayEnd : newEndTime;
 
-        // Сохраняем в API
         if (draggedMission.Id == 0)
-            await APIHost.GetInstance().CreateMission(draggedMission);
+            await _taskState.AddAsync(draggedMission);
         else
-            await APIHost.GetInstance().EditMission(draggedMission);
+            await _taskState.UpdateAsync(draggedMission);
 
-        PlannedMissions.Add(draggedMission);
+        RebuildMissionBuckets();
         RefreshAllDays();
         SelectedMission = null;
     }
@@ -210,8 +223,8 @@ public partial class MonthCalendarViewModel : ObservableObject
             return insertIndex == 0;
         }
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(9);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(21);
+        DateTime dayStart = targetDay.Date.Date.AddHours(StartHour);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(EndHour);
 
         if (insertIndex == 0)
         {
@@ -272,23 +285,8 @@ public partial class MonthCalendarViewModel : ObservableObject
     {
         try
         {
-            // Загружаем миссии пользователя
-            var missions = await _api.GetMissions();
-            if (missions != null && missions.Any())
-            {
-                PlannedMissions.Clear();
-                InboxMissions.Clear();
-                foreach (var m in missions)
-                {
-                    if(m.StartDate !=null&& m.EndDate !=null)
-                        PlannedMissions.Add(m);
-                    else InboxMissions.Add(m);
-                }
-            }
-
-            // Загружаем категории (если нужны)
-            var categories = await _api.GetCategories();
-
+            await _taskState.LoadAsync();
+            RebuildMissionBuckets();
             RefreshAllDays();
         }
         catch (Exception ex)
@@ -296,6 +294,116 @@ public partial class MonthCalendarViewModel : ObservableObject
             ;
         }
     }
+    private void OnTasksChanged(object? sender, TaskStateChangedEventArgs e)
+    {
+        RebuildMissionBuckets();
+        RefreshAllDays();
+    }
+
+    private void RebuildMissionBuckets()
+    {
+        PlannedMissions.Clear();
+        InboxMissions.Clear();
+        InboxTreeMissions.Clear();
+
+        foreach (var mission in _taskState.Tasks)
+        {
+            if (IsPlannedMission(mission))
+                PlannedMissions.Add(mission);
+            else
+                InboxMissions.Add(mission);
+        }
+
+        BuildInboxTreeMissions();
+    }
+
+    /// <summary>
+    /// Совпадает с бакетом «запланировано»: обе даты заданы (как в RebuildMissionBuckets).
+    /// </summary>
+    private static bool IsPlannedMission(Mission mission)
+    {
+        return mission.StartDate != null && mission.EndDate != null;
+    }
+
+    /// <summary>
+    /// Inbox: всё, что не полностью запланировано (нет начала и/или конца).
+    /// Должно совпадать с веткой else в RebuildMissionBuckets.
+    /// </summary>
+    private static bool IsInboxMission(Mission mission)
+    {
+        return !IsPlannedMission(mission);
+    }
+
+    private void BuildInboxTreeMissions()
+    {
+        foreach (var root in _taskState.Tasks.Where(IsRootMission))
+        {
+            if (SubtreeContainsInboxMission(root, new HashSet<int>()))
+                InboxTreeMissions.Add(root);
+        }
+    }
+
+    private static bool IsRootMission(Mission mission)
+    {
+        return mission.IdUpMission == null || mission.IdUpMission == 0;
+    }
+
+    /// <summary>
+    /// Показываем корень, если у него или у потомка есть «inbox»-состояние (не обе даты заданы).
+    /// Так дерево совпадает с коллекцией InboxMissions и учитывает смешанные связки родитель/подзадача.
+    /// </summary>
+    private static bool SubtreeContainsInboxMission(Mission mission, HashSet<int> visited)
+    {
+        if (mission.Id > 0 && !visited.Add(mission.Id))
+            return false;
+
+        if (IsInboxMission(mission))
+            return true;
+
+        if (mission.InverseIdUpMissionNavigation == null || mission.InverseIdUpMissionNavigation.Count == 0)
+            return false;
+
+        foreach (var child in mission.InverseIdUpMissionNavigation)
+        {
+            if (SubtreeContainsInboxMission(child, visited))
+                return true;
+        }
+
+        return false;
+    }
+
+    partial void OnStartHourChanged(int value)
+    {
+        if (value >= EndHour)
+            EndHour = Math.Min(value + 1, 23);
+
+        RebuildHourLabels();
+    }
+
+    partial void OnEndHourChanged(int value)
+    {
+        if (value <= StartHour)
+            StartHour = Math.Max(value - 1, 0);
+
+        RebuildHourLabels();
+    }
+
+    private void RebuildHourLabels()
+    {
+        HourLabels.Clear();
+        for (int hour = StartHour; hour <= EndHour; hour++)
+        {
+            HourLabels.Add($"{hour:D2}:00");
+        }
+
+        OnPropertyChanged(nameof(DayTimelineHeight));
+        OnPropertyChanged(nameof(DayCellHeight));
+    }
+
+    public double DayTimelineHeight => HourLabels.Count * HourSlotHeight;
+    public double DayCellHeight => DayHeaderHeight + DayTimelineHeight;
+
+    public ObservableCollection<Mission> AllMissions => _taskState.Tasks;
     public ObservableCollection<Mission> PlannedMissions { get; set; } = new ObservableCollection<Mission>();
     public ObservableCollection<Mission> InboxMissions { get; set; } = new ObservableCollection<Mission>();
 }
