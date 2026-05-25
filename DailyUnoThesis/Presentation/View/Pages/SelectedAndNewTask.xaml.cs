@@ -69,5 +69,9 @@ namespace DailyUnoThesis.Presentation.View.Pages
         {
 
         }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+        }
     }
 }

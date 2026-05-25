@@ -1,0 +1,380 @@
+﻿<Page
+    x:Class="DailyUnoThesis.Presentation.View.Calendar.WeekCalendarView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DailyUnoThesis.Presentation.View.Calendar"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.CalendarControls"
+    xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
+    xmlns:con="using:DailyUnoThesis.Models.Conventers"
+    xmlns:pro="using:DailyUnoThesis.Presentation.View.Calendar"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:utu="using:Uno.Toolkit.UI"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <con:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
+        <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
+        <con:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
+
+        <Style x:Key="IconButtonStyleNoHover" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                        CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="DayHeaderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DividerStrokeBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+
+        <Style x:Key="TaskItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="2,1,2,1"/>
+        </Style>
+
+        <!--<DataTemplate x:Key="TaskTemplate" x:DataType="mod:TaskCompletionTime">
+            <Border Style="{StaticResource TaskItemStyle}">
+
+                <StackPanel Margin="4,2">
+                    <TextBlock Text="{Binding IdMissionNavigation.Title}"
+                               FontSize="11" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis"
+                               Foreground="{StaticResource InkBlueLightBrush}"/>
+                    <TextBlock Text="{Binding FormattedTime}" FontSize="9"
+                               Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>-->
+
+        <DataTemplate x:Key="TaskTemplate" x:DataType="mod:TaskCompletionTime">
+            <Border Style="{StaticResource TaskItemStyle}"
+            CanDrag="True"
+            DragStarting="Task_DragStarting">
+                <StackPanel Margin="4,2">
+                    <TextBlock Text="{Binding IdMissionNavigation.Title}"
+                       FontSize="11" FontWeight="SemiBold"
+                       TextTrimming="CharacterEllipsis"
+                       Foreground="{StaticResource InkBlueLightBrush}"/>
+                    <TextBlock Text="{Binding FormattedTime}" FontSize="9"
+                       Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        
+        <Style x:Key="TimeSlotStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{StaticResource DividerStrokeBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Height" Value="60"/>
+        </Style>
+    </Page.Resources>
+
+    <Page.DataContext>
+        <control:WeekCalendarViewModel/>
+    </Page.DataContext>
+    <Grid Margin="0,10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+            <!--месяц и переключение недель-->
+         <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" 
+      Content="&#xE76B;" 
+      FontFamily="Segoe MDL2 Assets" 
+      FontSize="16"  Style="{StaticResource IconButtonStyle}" Command="{Binding PreviousWeekCommand}"
+      Margin="10,0,0,0"/>
+
+            <TextBlock Grid.Column="1" Text="{Binding WeekHeader}"
+         HorizontalAlignment="Center" 
+         VerticalAlignment="Center"
+         FontFamily="Segoe Print" 
+         FontSize="18"/>
+
+            <Button Grid.Column="2" 
+      Content="&#xE76C;" 
+      FontFamily="Segoe MDL2 Assets" 
+      FontSize="16" Style="{StaticResource IconButtonStyle}" Command="{Binding NextWeekCommand}" 
+      Margin="0,0,10,0"/>
+        </Grid>
+
+        <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Заголовки дней -->
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="ПН" FontFamily="Segoe Print" FontSize="14"/>
+                        <TextBlock Text="{Binding MondayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="ВТ" FontFamily="Segoe Print" FontSize="14"/>
+                        <TextBlock Text="{Binding TuesdayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="3" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="СР" FontFamily="Segoe Print" FontSize="14"/>
+                        <TextBlock Text="{Binding WednesdayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="ЧТ" FontFamily="Segoe Print" FontSize="14"/>
+                        <TextBlock Text="{Binding ThursdayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="5" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="ПТ" FontFamily="Segoe Print" FontSize="14"/>
+                        <TextBlock Text="{Binding FridayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="6" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="СБ" FontFamily="Segoe Print" FontSize="14" Foreground="{StaticResource DangerBrush}"/>
+                        <TextBlock Text="{Binding SaturdayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource DangerBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="7" Style="{StaticResource DayHeaderStyle}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="ВС" FontFamily="Segoe Print" FontSize="14" Foreground="{StaticResource DangerBrush}"/>
+                        <TextBlock Text="{Binding SundayDate}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource DangerBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                
+                <!--свернуть-->
+                <Button Command="{Binding ToggleNonWorkingHoursCommand}"  HorizontalAlignment="Center"
+        VerticalAlignment="Bottom" 
+        Background="Transparent"
+        BorderThickness="0"
+        Style="{StaticResource IconButtonStyleNoHover}">
+                    <FontIcon Glyph="{Binding IsNonWorkingHoursExpanded, Converter={StaticResource BoolToChevronConverter}}"
+              Foreground="{StaticResource InkBlueLightBrush}"
+              FontSize="14"/>
+                </Button>
+
+                <!--часы-->
+                <ItemsControl Grid.Row="1" Grid.Column="0" 
+              ItemsSource="{Binding Hours}" 
+              VerticalAlignment="Top">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Height="{Binding Height}" 
+                    BorderBrush="{StaticResource DividerStrokeBrush}" 
+                    BorderThickness="0,0,1,1">
+                                <TextBlock Text="{Binding Label}" 
+                           FontSize="11"
+                           Foreground="{StaticResource OnSurfaceSecondaryBrush}"
+                           HorizontalAlignment="Center" 
+                           Margin="0,2,0,0"
+                           Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <!-- пн -->
+                <ScrollViewer x:Name="MondayScrollViewer" Grid.Row="1" Grid.Column="1"
+              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding MondaySessions}"  x:Name="MondayTimeline" 
+                        ItemTemplate="{StaticResource TaskTemplate}" 
+                        Hours="{Binding Hours}"
+                        StartHour="0" 
+                        EndHour="24" 
+                        HourHeight="60"
+                        Background="Transparent"
+                        AllowDrop="True"
+                       DragOver="Timeline_DragOver"
+                       Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top"  IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+                            BorderBrush="#FFCCCCCC" 
+                            BorderThickness="0,0,1,1" 
+                            Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--вт-->
+                <ScrollViewer x:Name="TuesdayScrollViewer" Grid.Row="1" Grid.Column="2"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding TuesdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="TuesdayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--ср-->
+                <ScrollViewer x:Name="WednesdayScrollViewer" Grid.Row="1" Grid.Column="3"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding WednesdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="WednesdayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--чт-->
+                <ScrollViewer x:Name="ThursdayScrollViewer" Grid.Row="1" Grid.Column="4"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding ThursdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="ThursdayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--пт-->
+                <ScrollViewer x:Name="FridayScrollViewer" Grid.Row="1" Grid.Column="5"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding FridaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="FridayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--сб-->
+                <ScrollViewer x:Name="SaturdayScrollViewer" Grid.Row="1" Grid.Column="6"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding SaturdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="SaturdayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+                <!--вскр-->
+                <ScrollViewer x:Name="SundayScrollViewer" Grid.Row="1" Grid.Column="7"
+VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                         <control:TimelinePanel ItemsSource="{Binding SundaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
+              StartHour="0" EndHour="24" HourHeight="60" x:Name="SundayTimeline"
+              Background="Transparent"
+              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+                        <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="{Binding Height}" 
+              BorderBrush="#FFCCCCCC" 
+              BorderThickness="0,0,1,1" 
+              Background="Transparent"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+
+</Page>

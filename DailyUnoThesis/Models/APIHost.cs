@@ -25,7 +25,7 @@ namespace DailyUnoThesis.Models;
         public APIHost()
         {
             client.BaseAddress = new Uri("http://localhost:5114/api/"); //5114
-            options = new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            options = new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, PropertyNameCaseInsensitive = true };
         }
         private static APIHost instance;
         public static APIHost GetInstance()
@@ -46,7 +46,7 @@ namespace DailyUnoThesis.Models;
 
         public List<User> Users { get; set; }
 
-
+    public List<TaskCompletionTime> Sessions { get; set; }
 
 
 
@@ -254,6 +254,7 @@ namespace DailyUnoThesis.Models;
     {
         //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         mission.UserId = 1;
+        mission.User = null;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
         var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
@@ -340,10 +341,42 @@ namespace DailyUnoThesis.Models;
             ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось редактировать миссию \t  {Error} " };
         }
     }
+
+
+    public async Task NewCreateMission(Mission mission)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        mission.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(mission, options);
+        var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось создать миссию \t  {Error} "
+            };
+        }
+
+    }
+    public async Task NewEditMission(Mission mission)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        //mission.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(mission, options);
+        var resp = await client.PutAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось редактировать миссию \t  {Error} " };
+        }
+    }
     #endregion
 
-        #region Delete
-        #endregion
+    #region Delete
+    #endregion
     #endregion
 
     #region Categories
@@ -743,9 +776,48 @@ namespace DailyUnoThesis.Models;
   
     #endregion
 
+    #region Sessions
+    public async Task<List<TaskCompletionTime>> GetSessions()
+    {
+        var res = await client.GetAsync($"TaskCompletionTimes?id={1}");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = "невозможно получить данные сессий"
+            };
+            return null;
+        }
+        else
+        {
+            Sessions = await res.Content.ReadFromJsonAsync<List<TaskCompletionTime>>(options);
+        }
+        return Sessions;
+    }
+    #endregion
 
 
 
+    //#region TaskCompletion
+
+    //public async Task<List<TaskCompletionTime>> GetTaskCompletionTime()
+    //{
+    //    var res = await client.GetAsync($"TaskCompletionTimes?id={1}");
+    //    if (res.StatusCode != System.Net.HttpStatusCode.OK)
+    //    {
+    //        string Error = await res.Content.ReadAsStringAsync();
+    //        ContentDialog contentDialog = new ContentDialog()
+    //        {
+    //            Content = $"не удалось получить миссии \t  {Error} "
+    //        };
+    //        var dialog = new ContentDialog { Title = "Ошибка", Content = Error, CloseButtonText = "Закрыть" };
+    //        await dialog.ShowAsync();
+    //    }
+    //    else
+    //        Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
+    //    return ;
+    //}
+    //#endregion
 
 
 

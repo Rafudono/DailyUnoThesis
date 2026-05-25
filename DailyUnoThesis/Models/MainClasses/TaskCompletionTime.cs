@@ -13,5 +13,20 @@ public partial class TaskCompletionTime
 
     public DateTime? EndExecution { get; set; }
 
-    public virtual Mission IdMissionNavigation { get; set; } = null!;
+    public virtual Mission? IdMissionNavigation { get; set; } = null!;
+    public string FormattedTime
+    {
+        get
+        {
+            if (StartExecution.HasValue && EndExecution.HasValue)
+            {
+                return $"{StartExecution.Value:HH:mm}-{EndExecution.Value:HH:mm}";
+            }
+            else if (StartExecution.HasValue)
+            {
+                return StartExecution.Value.ToString("HH:mm");
+            }
+            return string.Empty;
+        }
+    }
 }

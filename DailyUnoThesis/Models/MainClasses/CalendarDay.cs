@@ -17,5 +17,8 @@ public partial class CalendarDay : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<Mission> _tasks = new ObservableCollection<Mission>();
+
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _tasksSessions = new ObservableCollection<TaskCompletionTime>();
 }
 

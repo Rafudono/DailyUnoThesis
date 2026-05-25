@@ -7,6 +7,7 @@ using System.Text;
 using DailyUnoThesis.Models;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
+//using Java.Util;
 
 namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 public partial class MonthCalendarViewModel : ObservableObject
@@ -21,8 +22,10 @@ public partial class MonthCalendarViewModel : ObservableObject
 
     [ObservableProperty]
     private Mission _selectedMission;
-
     [ObservableProperty]
+    private TaskCompletionTime _selectedSession;
+
+    [ObservableProperty] 
     private int _dropTargetIndex = -1;
     [ObservableProperty]
     private ObservableCollection<Mission> _inboxTreeMissions = new();
@@ -54,7 +57,7 @@ public partial class MonthCalendarViewModel : ObservableObject
         RebuildHourLabels();
 
         // Асинхронная загрузка данных
-        _ = LoadDataFromApi();
+       // _ = LoadDataFromApi();
 
     }
     public ICommand PreviousMonthCommand => new RelayCommand(() =>
@@ -128,134 +131,218 @@ public partial class MonthCalendarViewModel : ObservableObject
 
     }
 
-    internal async Task MoveMissionToDayWithInsert(CalendarDay targetDay, int insertIndex, Mission draggedMission, bool isFromInbox = false)
+    internal async Task MoveMissionToDayWithInsert(CalendarDay targetDay, int insertIndex, TaskCompletionTime draggedSession, bool isFromInbox = false)
     {
-        // Удаляем из локальных коллекций сразу для более плавного UX.
-        if (isFromInbox) InboxMissions.Remove(draggedMission);
-        else PlannedMissions.Remove(draggedMission);
-        foreach (var day in Days) day.Tasks?.Remove(draggedMission);
+        if (draggedSession?.IdMissionNavigation == null) return;
 
-        var realTasks = targetDay.Tasks?
-            .Where(t => t != draggedMission)
-            .OrderBy(t => t.StartDate)
-            .ToList() ?? new List<Mission>();
+        var mission = draggedSession.IdMissionNavigation;
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(StartHour);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(EndHour);
-        TimeSpan duration = (draggedMission.EndDate - draggedMission.StartDate)?.TotalHours > 0
-            ? (draggedMission.EndDate - draggedMission.StartDate).Value
-            : TimeSpan.FromHours(1);
+        // Сохраняем все сессии миссии (включая другие дни)
+        var allMissionSessions = GetAllMissionSessions(mission);
+
+        // Удаляем эту сессию из всех дней
+        foreach (var day in Days)
+        {
+            var existingSession = day.TasksSessions.FirstOrDefault(s => s.Id == draggedSession.Id);
+            if (existingSession != null)
+                day.TasksSessions.Remove(existingSession);
+        }
+        if (mission.TaskCompletionTimes?.Contains(draggedSession) == true)
+            mission.TaskCompletionTimes.Remove(draggedSession);
+        // Получаем сессии этого дня (кроме перетаскиваемой)
+        var existingSessions = targetDay.TasksSessions
+            .Where(s => s.Id != draggedSession.Id && s.IdMission == mission.Id)
+            .OrderBy(s => s.StartExecution)
+            .ToList();
+
+        DateTime dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+
+        // Длительность из миссии или сессии
+        TimeSpan duration;
+        if (mission.DurationMinutes.HasValue && mission.DurationMinutes.Value > 0)
+            duration = TimeSpan.FromMinutes(mission.DurationMinutes.Value);
+        else if (draggedSession.StartExecution.HasValue && draggedSession.EndExecution.HasValue)
+            duration = draggedSession.EndExecution.Value - draggedSession.StartExecution.Value;
+        else
+            duration = TimeSpan.FromHours(1);
 
         DateTime newStartTime, newEndTime;
 
-        if (realTasks.Count == 0)
+        // Расчет позиции вставки
+        if (existingSessions.Count == 0)
         {
             newStartTime = dayStart;
             newEndTime = newStartTime.Add(duration);
         }
         else if (insertIndex == 0)
         {
-            newStartTime = realTasks[0].StartDate.Value - duration;
+            newStartTime = existingSessions[0].StartExecution.Value - duration;
             if (newStartTime < dayStart) newStartTime = dayStart;
-            newEndTime = realTasks[0].StartDate.Value;
+            newEndTime = existingSessions[0].StartExecution.Value;
         }
-        else if (insertIndex >= realTasks.Count)
+        else if (insertIndex >= existingSessions.Count)
         {
-            newStartTime = realTasks.Last().EndDate.Value;
+            newStartTime = existingSessions.Last().EndExecution.Value;
             newEndTime = newStartTime.Add(duration);
         }
         else
         {
-            newStartTime = realTasks[insertIndex - 1].EndDate.Value;
-            newEndTime = realTasks[insertIndex].StartDate.Value;
+            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
+            newEndTime = existingSessions[insertIndex].StartExecution.Value;
         }
 
-        draggedMission.StartDate = newStartTime;
-        draggedMission.EndDate = newEndTime > dayEnd ? dayEnd : newEndTime;
+        // Корректируем границы дня
+        if (newEndTime > dayEnd) newEndTime = dayEnd;
+        if (newStartTime < dayStart) newStartTime = dayStart;
 
-        if (draggedMission.Id == 0)
-            await _taskState.AddAsync(draggedMission);
-        else
-            await _taskState.UpdateAsync(draggedMission);
+        // Обновляем только эту сессию
+        draggedSession.StartExecution = newStartTime;
+        draggedSession.EndExecution = newEndTime;
 
+        // Обновляем общие даты миссии на основе ВСЕХ сессий
+        var last=UpdateMissionDatesFromSessions(mission);
+
+        // Сохраняем в БД
+        await _taskState.UpdateAsync(last);
+
+        // Обновляем отображение
         RebuildMissionBuckets();
         RefreshAllDays();
-        SelectedMission = null;
+        SelectedSession = null;
     }
+
+    // Вспомогательный метод для обновления дат миссии на основе всех её сессий
+    private Mission UpdateMissionDatesFromSessions(Mission mission)
+    {
+        if (mission.TaskCompletionTimes == null || !mission.TaskCompletionTimes.Any())
+        {
+            mission.StartDate = null;
+            mission.EndDate = null;
+            return mission;
+        }
+
+        // Находим самую раннюю и самую позднюю сессию
+        var minStart = mission.TaskCompletionTimes
+            .Where(s => s.StartExecution.HasValue)
+            .Min(s => s.StartExecution.Value);
+
+        var maxEnd = mission.TaskCompletionTimes
+            .Where(s => s.EndExecution.HasValue)
+            .Max(s => s.EndExecution.Value);
+
+        mission.StartDate = minStart;
+        mission.EndDate = maxEnd;
+        return mission;
+    }
+
+    // Получение всех сессий миссии (из всех дней)
+    private List<TaskCompletionTime> GetAllMissionSessions(Mission mission)
+    {
+        var sessions = new List<TaskCompletionTime>();
+
+        // Собираем из всех дней календаря
+        foreach (var day in Days)
+        {
+            var daySessions = day.TasksSessions
+                .Where(s => s.IdMission == mission.Id)
+                .ToList();
+            sessions.AddRange(daySessions);
+        }
+
+        // Если в днях не нашли, берем из самой миссии
+        if (!sessions.Any() && mission.TaskCompletionTimes != null)
+            sessions.AddRange(mission.TaskCompletionTimes);
+
+        return sessions;
+    }
+
     // метод для обновления всех дней
-    private void RefreshAllDays()
+    public void RefreshAllDays()
     {
         foreach (var day in Days)
         {
             if (day.Tasks == null)
-                day.Tasks = new ObservableCollection<Mission>();
+                day.TasksSessions = new ObservableCollection<TaskCompletionTime>();
             else
-                day.Tasks.Clear();
+                day.TasksSessions.Clear();
 
             // Показываем:
             // 1. Подзадачи (есть IdUpMission)
             // 2. Миссии-одиночки (нет IdUpMission и нет подзадач)
             var dayTasks = PlannedMissions
                 .Where(t => t.StartDate.HasValue &&
-                            t.StartDate.Value.Date == day.Date.Date &&
+                            t.IsProject is not true &&                        //проекты не отображаю на календаре
                             (t.IdUpMission != null && t.IdUpMission != 0 ||  // подзадача
                              (t.IdUpMission == null || t.IdUpMission == 0) &&
                              t.InverseIdUpMissionNavigation.Count == 0))  // одиночка
                 .OrderBy(t => t.StartDate)
                 .ToList();
+            var allSessions = new List<TaskCompletionTime>();
 
-            foreach (var task in dayTasks)
-                day.Tasks.Add(task);
+            foreach (var task in dayTasks)      //добаввляю в день сессии выполнения задач
+                if (task.TaskCompletionTimes != null && task.TaskCompletionTimes.Any())
+                {
+                    var sessionsForDay = task.TaskCompletionTimes
+                        .Where(session => session.StartExecution.HasValue &&
+                                          session.StartExecution.Value.Date == day.Date.Date)
+                        .ToList();
+                    allSessions.AddRange(sessionsForDay);
+                }
+
+            foreach (var session in allSessions.OrderBy(s => s.StartExecution))     //сортирую сессии внутри дня по времени начала
+                day.TasksSessions.Add(session);
         }
         OnPropertyChanged(nameof(Days));
     }
 
-    /*public bool CanInsertAt(CalendarDay targetDay, int insertIndex, Mission draggedMission)
+     internal bool CanInsertSessionAt(CalendarDay targetDay, int insertIndex, TaskCompletionTime draggedSession)
     {
-        var realTasks = targetDay.Tasks?
-            .Where(t => t != draggedMission)
-            .OrderBy(t => t.StartDate)
-            .ToList() ?? new List<Mission>();
-
-        // Пустой день - всегда можно вставить в начало (индекс 0)
-        if (realTasks.Count == 0)
-        {
-            return insertIndex == 0;
-        }
-
-        DateTime dayStart = targetDay.Date.Date.AddHours(StartHour);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(EndHour);
-
-        if (insertIndex == 0)
-        {
-            var firstTask = realTasks[0];
-            return firstTask.StartDate.Value > dayStart;
-        }
-        if (insertIndex >= realTasks.Count)
-        {
-            var lastTask = realTasks[realTasks.Count - 1];
-            return lastTask.EndDate.Value < dayEnd;
-        }
-
-        var taskBefore = realTasks[insertIndex - 1];
-        var taskAfter = realTasks[insertIndex];
-        return taskAfter.StartDate.Value > taskBefore.EndDate.Value;
-    } */
-
-    public bool CanInsertAt(CalendarDay targetDay, int insertIndex, Mission draggedMission)
-    {
-        // Запрещаем вставку в прошедшие дни (дата меньше сегодняшней)
         if (targetDay.Date.Date < DateTime.Today.Date)
             return false;
 
-        // Запрещаем вставку в дни других месяцев
-        if (targetDay.IsOtherMonth)
+        var mission = draggedSession.IdMissionNavigation;
+        var duration = draggedSession.EndExecution.Value - draggedSession.StartExecution.Value;
+
+        var realTasks = targetDay.TasksSessions?
+            .Where(t => t != draggedSession)
+            .OrderBy(t => t.StartExecution)
+            .ToList() ?? new List<TaskCompletionTime>();
+
+        DateTime dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
+
+        // Пустой день
+        if (realTasks.Count == 0)
+        {
+            return insertIndex == 0 && duration <= (dayEnd - dayStart);
+        }
+
+        if (insertIndex == 0)
+        {
+            var availableTime = realTasks[0].StartExecution.Value - dayStart;
+            return duration <= availableTime;
+        }
+
+        if (insertIndex >= realTasks.Count)
+        {
+            var availableTime = dayEnd - realTasks.Last().EndExecution.Value;
+            return duration <= availableTime;
+        }
+
+        var gap = realTasks[insertIndex].StartExecution.Value - realTasks[insertIndex - 1].EndExecution.Value;
+        return duration <= gap;
+    }
+
+    internal bool CanInsertMissionAt(CalendarDay targetDay, int insertIndex, Mission draggedMission)
+    {
+
+        if (targetDay.Date.Date < DateTime.Today.Date)
             return false;
 
-        var realTasks = targetDay.Tasks?
-            .Where(t => t != draggedMission)
-            .OrderBy(t => t.StartDate)
-            .ToList() ?? new List<Mission>();
+        var realTasks = targetDay.TasksSessions?
+            .OrderBy(t => t.StartExecution)
+            .ToList() ?? new List<TaskCompletionTime>();
 
         // Пустой день - можно вставить только в начало (индекс 0)
         if (realTasks.Count == 0)
@@ -263,24 +350,26 @@ public partial class MonthCalendarViewModel : ObservableObject
             return insertIndex == 0;
         }
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(9);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(21);
+        DateTime dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
+
+        var duration = draggedMission.DurationMinutes > 0
+            ? TimeSpan.FromMinutes(draggedMission.DurationMinutes.Value)
+            : TimeSpan.FromHours(1);
 
         if (insertIndex == 0)
         {
-            var firstTask = realTasks[0];
-            return firstTask.StartDate.Value > dayStart;
+            return realTasks[0].StartExecution.Value - duration >= dayStart;
         }
         if (insertIndex >= realTasks.Count)
         {
-            var lastTask = realTasks[realTasks.Count - 1];
-            return lastTask.EndDate.Value < dayEnd;
+            return realTasks.Last().EndExecution.Value + duration <= dayEnd;
         }
 
-        var taskBefore = realTasks[insertIndex - 1];
-        var taskAfter = realTasks[insertIndex];
-        return taskAfter.StartDate.Value > taskBefore.EndDate.Value;
+        var gap = realTasks[insertIndex].StartExecution.Value - realTasks[insertIndex - 1].EndExecution.Value;
+        return gap >= duration;
     }
+ 
     public async Task LoadDataFromApi()
     {
         try
@@ -294,13 +383,13 @@ public partial class MonthCalendarViewModel : ObservableObject
             ;
         }
     }
-    private void OnTasksChanged(object? sender, TaskStateChangedEventArgs e)
+    internal void OnTasksChanged(object? sender, TaskStateChangedEventArgs e)
     {
         RebuildMissionBuckets();
         RefreshAllDays();
     }
 
-    private void RebuildMissionBuckets()
+    public void RebuildMissionBuckets()
     {
         PlannedMissions.Clear();
         InboxMissions.Clear();
@@ -320,9 +409,20 @@ public partial class MonthCalendarViewModel : ObservableObject
     /// <summary>
     /// Совпадает с бакетом «запланировано»: обе даты заданы (как в RebuildMissionBuckets).
     /// </summary>
-    private static bool IsPlannedMission(Mission mission)
+    private static bool IsPlannedMission(Mission mission)       //запланирована ли миссия
     {
-        return mission.StartDate != null && mission.EndDate != null;
+        if (mission.StartDate != null && mission.EndDate != null&& mission.StartDate!= DateTime.MinValue&& mission.EndDate!= DateTime.MinValue)  //назначили дедлайн
+        {
+            if (mission.StartDate.Value.Date == mission.EndDate.Value.Date)  //можно ли выполнить задачу за 1 день
+                return true;
+            else if (mission.TaskCompletionTimes is not null&&mission.TaskCompletionTimes.Count() > 0)  
+                //если нет нужно проверить расплнирована ли она полностью на разные даты (1 запись TaskCompletionTimes создается при планировании на 1 сессию выполнения)
+                return true;
+            else                //если окажется, что нет, то нужно дать пользователю ее раскидать по дням в календаре => можно в inbox
+                return false;
+        }
+        else
+            return false;
     }
 
     /// <summary>
@@ -348,10 +448,6 @@ public partial class MonthCalendarViewModel : ObservableObject
         return mission.IdUpMission == null || mission.IdUpMission == 0;
     }
 
-    /// <summary>
-    /// Показываем корень, если у него или у потомка есть «inbox»-состояние (не обе даты заданы).
-    /// Так дерево совпадает с коллекцией InboxMissions и учитывает смешанные связки родитель/подзадача.
-    /// </summary>
     private static bool SubtreeContainsInboxMission(Mission mission, HashSet<int> visited)
     {
         if (mission.Id > 0 && !visited.Add(mission.Id))
@@ -400,10 +496,203 @@ public partial class MonthCalendarViewModel : ObservableObject
         OnPropertyChanged(nameof(DayCellHeight));
     }
 
+    internal async Task MoveSessionToDay(CalendarDay targetDay, int insertIndex, TaskCompletionTime session)
+    {
+        if (session?.IdMissionNavigation == null) return;
+
+        var mission = session.IdMissionNavigation;
+
+        // Удаляем сессию из текущего дня
+        foreach (var day in Days)
+        {
+            var existing = day.TasksSessions.FirstOrDefault(s => s.Id == session.Id);
+            if (existing != null)
+                day.TasksSessions.Remove(existing);
+        }
+
+        // Рассчитываем новое время
+        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
+
+        var duration = session.EndExecution.Value - session.StartExecution.Value;
+
+        var existingSessions = targetDay.TasksSessions
+            .Where(s => s.Id != session.Id)
+            .OrderBy(s => s.StartExecution)
+            .ToList();
+
+        DateTime newStartTime;
+
+        if (existingSessions.Count == 0)
+        {
+            newStartTime = dayStart;
+        }
+        else if (insertIndex == 0)
+        {
+            newStartTime = dayStart;
+        }
+        else if (insertIndex >= existingSessions.Count)
+        {
+            newStartTime = existingSessions.Last().EndExecution.Value;
+        }
+        else
+        {
+            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
+        }
+
+        var newEndTime = newStartTime.Add(duration);
+
+        // Корректируем границы дня
+        //if (newEndTime > dayEnd) newEndTime = dayEnd;
+        //if (newStartTime < dayStart) newStartTime = dayStart;
+
+        // Обновляем сессию
+        session.StartExecution = newStartTime;
+        session.EndExecution = newEndTime;
+
+        // Обновляем даты миссии
+       var last= UpdateMissionDatesFromSessions(mission);
+
+        // Сохраняем
+        await _taskState.UpdateAsync(last);
+
+        // Обновляем отображение
+        RefreshAllDays();
+        SelectedSession = null;
+    }
+
+    internal async Task CreateSessionFromMission(CalendarDay targetDay, int insertIndex, Mission mission)
+    {
+        // Получаем длительность
+        var duration = mission.DurationMinutes > 0
+            ? TimeSpan.FromMinutes(mission.DurationMinutes.Value)
+            : TimeSpan.FromHours(1);
+
+        // Удаляем миссию из Inbox
+        InboxMissions.Remove(mission);
+
+        // Рассчитываем время вставки
+        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
+
+        var existingSessions = targetDay.TasksSessions
+            .OrderBy(s => s.StartExecution)
+            .ToList();
+
+        DateTime newStartTime;
+
+        if (existingSessions.Count == 0)
+        {
+            newStartTime = dayStart;
+        }
+        else if (insertIndex == 0)
+        {
+            newStartTime = dayStart;
+        }
+        else if (insertIndex >= existingSessions.Count)
+        {
+            newStartTime = existingSessions.Last().EndExecution.Value;
+        }
+        else
+        {
+            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
+        }
+
+        var newEndTime = newStartTime.Add(duration);
+
+        // Корректируем, если выходит за границы дня
+        //if (newEndTime > dayEnd)
+        //    newEndTime = dayEnd;
+        //нихрена подобного, если задача длиннее дня предлагаем создать новую сессию для ее выполнения
+        
+
+        // Создаем новую сессию
+        var newSession = new TaskCompletionTime
+        {
+            IdMission = mission.Id,
+            StartExecution = newStartTime,
+            EndExecution = newEndTime,
+            IdMissionNavigation = mission
+        };
+
+        if (mission.TaskCompletionTimes == null)
+            mission.TaskCompletionTimes = new List<TaskCompletionTime>();
+
+        mission.TaskCompletionTimes.Add(newSession);
+
+        // Обновляем даты миссии
+        //mission.StartDate = newStartTime;
+        //mission.EndDate = newEndTime;
+        //ЭТА СЕССИЯ МОЖЕТ НЕ ЕДИНСТВЕННОЙ БЫТЬ, А ПРОМЕЖУТОЧНОЙ ТАК НЕЛЬЗЯ
+        UpdateMissionDatesFromSessions(mission);
+        // Сохраняем в БД
+        if (mission.Id == 0)
+            await _taskState.AddAsync(mission);
+        else
+            await _taskState.UpdateAsync(mission);
+
+        // Обновляем отображение
+        RebuildMissionBuckets();
+        RefreshAllDays();
+    }
+
     public double DayTimelineHeight => HourLabels.Count * HourSlotHeight;
     public double DayCellHeight => DayHeaderHeight + DayTimelineHeight;
 
-    public ObservableCollection<Mission> AllMissions => _taskState.Tasks;
     public ObservableCollection<Mission> PlannedMissions { get; set; } = new ObservableCollection<Mission>();
     public ObservableCollection<Mission> InboxMissions { get; set; } = new ObservableCollection<Mission>();
 }
+   //internal async Task MoveMissionToDayWithInsert(CalendarDay targetDay, int insertIndex, Mission draggedMission, bool isFromInbox = false)
+   // {
+   //     // Удаляем из локальных коллекций сразу для более плавного UX.
+   //     if (isFromInbox) InboxMissions.Remove(draggedMission);
+   //     else PlannedMissions.Remove(draggedMission);
+   //     foreach (var day in Days) day.Tasks?.Remove(draggedMission);
+
+   //     var realTasks = targetDay.Tasks?
+   //         .Where(t => t != draggedMission)
+   //         .OrderBy(t => t.StartDate)
+   //         .ToList() ?? new List<Mission>();
+
+   //     DateTime dayStart = targetDay.Date.Date.AddHours(StartHour);
+   //     DateTime dayEnd = targetDay.Date.Date.AddHours(EndHour);
+   //     TimeSpan duration = (draggedMission.EndDate - draggedMission.StartDate)?.TotalHours > 0
+   //         ? (draggedMission.EndDate - draggedMission.StartDate).Value
+   //         : TimeSpan.FromHours(1);
+
+   //     DateTime newStartTime, newEndTime;
+
+   //     if (realTasks.Count == 0)
+   //     {
+   //         newStartTime = dayStart;
+   //         newEndTime = newStartTime.Add(duration);
+   //     }
+   //     else if (insertIndex == 0)
+   //     {
+   //         newStartTime = realTasks[0].StartDate.Value - duration;
+   //         if (newStartTime < dayStart) newStartTime = dayStart;
+   //         newEndTime = realTasks[0].StartDate.Value;
+   //     }
+   //     else if (insertIndex >= realTasks.Count)
+   //     {
+   //         newStartTime = realTasks.Last().EndDate.Value;
+   //         newEndTime = newStartTime.Add(duration);
+   //     }
+   //     else
+   //     {
+   //         newStartTime = realTasks[insertIndex - 1].EndDate.Value;
+   //         newEndTime = realTasks[insertIndex].StartDate.Value;
+   //     }
+
+   //     draggedMission.StartDate = newStartTime;
+   //     draggedMission.EndDate = newEndTime > dayEnd ? dayEnd : newEndTime;
+
+   //     if (draggedMission.Id == 0)
+   //         await _taskState.AddAsync(draggedMission);
+   //     else
+   //         await _taskState.UpdateAsync(draggedMission);
+
+   //     RebuildMissionBuckets();
+   //     RefreshAllDays();
+   //     SelectedMission = null;
+   // }

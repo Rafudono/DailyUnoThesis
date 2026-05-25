@@ -88,8 +88,16 @@ public class CalendarWidthBehavior : Behavior<ItemsControl>
         var itemsControl = AssociatedObject;
         if (itemsControl == null || itemsControl.ActualWidth <= 0) return;
 
-        var itemWidth = itemsControl.ActualWidth / 7;
+        // Округляем ВНИЗ, чтобы 7 элементов точно поместились
+        var itemWidth = Math.Floor(itemsControl.ActualWidth / 7.0);
 
+        var wrapPanel = itemsControl.ItemsPanelRoot as WrapPanel;
+        if (wrapPanel != null)
+        {
+            wrapPanel.ItemWidth = (float)itemWidth;
+        }
+
+        // Обновляем ширину каждого контейнера
         for (int i = 0; i < itemsControl.Items.Count; i++)
         {
             if (itemsControl.ContainerFromIndex(i) is FrameworkElement container)

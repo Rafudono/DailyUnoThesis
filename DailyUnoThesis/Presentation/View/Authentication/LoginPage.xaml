@@ -1,0 +1,153 @@
+﻿<Page
+    x:Class="DailyUnoThesis.Presentation.View.Authentication.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DailyUnoThesis.Presentation.View.Authentication"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <Style x:Key="AuthPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="#00224d"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#A3B1C6"/>
+            <Setter Property="Padding" Value="0,4,0,2"/>
+            <Setter Property="PlaceholderForeground" Value="#A3B1C6"/>
+        </Style>
+
+        <Style x:Key="AuthLoginBoxStyle" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#A3B1C6"/>
+            <Setter Property="Padding" Value="0,4,0,2"/>
+            <Setter Property="PlaceholderForeground" Value="#A3B1C6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid x:Name="RootGrid">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Target="BottomBorder.BorderBrush" Value="#A3B1C6"/>
+                                            <Setter Target="Placeholder.Opacity" Value="0.6"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="BottomBorder.BorderBrush" Value="#756C6C"/>
+                                            <Setter Target="Placeholder.Opacity" Value="0.4"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Focused">
+                                        <VisualState.Setters>
+                                            <Setter Target="BottomBorder.BorderBrush" Value="#82A5C6"/>
+                                            <Setter Target="BottomBorder.BorderThickness" Value="0,0,0,2"/>
+                                            <Setter Target="Placeholder.Opacity" Value="0.3"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="BottomBorder.BorderBrush" Value="#D0D0D0"/>
+                                            <Setter Target="Placeholder.Opacity" Value="2"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <ScrollViewer x:Name="ContentElement"
+                                          Margin="{TemplateBinding Padding}"
+                                          FontFamily="{TemplateBinding FontFamily}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          Foreground="{TemplateBinding Foreground}"/>
+
+                            <TextBlock x:Name="Placeholder"
+                                       Text="{TemplateBinding PlaceholderText}"
+                                       FontFamily="Segoe Print"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Foreground="{TemplateBinding PlaceholderForeground}"
+                                       Opacity="0.6"
+                                       IsHitTestVisible="False"
+                                       Margin="{TemplateBinding Padding}"
+                                       VerticalAlignment="Center"/>
+
+                            <Border x:Name="BottomBorder"
+                                    BorderBrush="#A3B1C6"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    VerticalAlignment="Bottom"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                  HorizontalContentAlignment="Center">
+        <StackPanel MaxWidth="360" Margin="40,60,40,40" Spacing="16" VerticalAlignment="Center">
+
+            <!-- Заголовок -->
+            <TextBlock Text="Авторизация"
+                       FontFamily="Segoe Print"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource InkBlueLightBrush}"
+                       TextAlignment="Center"
+                       Margin="0,0,0,8"/>
+            <Border Height="2"
+                    Background="#A3B1C6"
+                    Margin="40,0,40,0"
+                    CornerRadius="1"/>
+
+            <!-- Логин -->
+            <TextBox PlaceholderText="Имя пользователя"
+                     x:Name="LoginUsername"
+                     FontFamily="Segoe Print"
+                     Style="{StaticResource AuthLoginBoxStyle}"
+                     IsSpellCheckEnabled="False"
+                     Text="{Binding UserCredentials.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <!-- Пароль -->
+            <PasswordBox x:Name="LoginPassword"
+                         PlaceholderText="Пароль"
+                         Style="{StaticResource AuthPasswordBoxStyle}"
+                         Password="{Binding UserCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <!-- Запомнить меня -->
+            <CheckBox Content="Запомнить меня"
+                      IsChecked="{Binding UserCredentials.SaveCredentials, Mode=TwoWay}"
+                      FontFamily="Segoe Print"
+                      FontSize="14"
+                      Foreground="{StaticResource InkBlueLightBrush}"/>
+
+            <!-- Войти -->
+            <Button Content="Войти"
+                    x:Name="LoginButton"
+                    AutomationProperties.AutomationId="LoginButton"
+                    Style="{StaticResource NoirDialogButtonStyle}"
+                    Command="{Binding Login}"
+                    Margin="0,8,0,0"/>
+
+            <!-- Ссылки внизу -->
+            <StackPanel Spacing="4" Margin="0,8,0,0">
+                <Button Content="Забыли пароль?"
+                        Style="{StaticResource TextButtonStyle}"
+                        FontFamily="Segoe Print"
+                        FontSize="13"/>
+                <Button Content="Регистрация"
+                        Style="{StaticResource TextButtonStyle}"
+                        FontFamily="Segoe Print"
+                        FontSize="13"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

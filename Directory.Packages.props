@@ -8,6 +8,7 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     <PackageVersion Include="MvvmLightLibs" Version="5.4.1.1" />
     <PackageVersion Include="Uno.Extensions.Reactive" Version="7.0.17" />
     <PackageVersion Include="Uno.Microsoft.Xaml.Behaviors.Interactivity" Version="3.0.3" />

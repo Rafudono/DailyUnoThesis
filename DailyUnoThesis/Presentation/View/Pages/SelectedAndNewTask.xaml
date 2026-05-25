@@ -18,7 +18,7 @@
     xmlns:utu="using:Uno.Toolkit.UI"
     xmlns:um="using:Uno.Material"
     xmlns:ut="using:Uno.Themes"
-    NavigationCacheMode="Enabled"
+    NavigationCacheMode="Required"
      x:Name="DetailPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <!--<Page.DataContext>
