@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using Uno.Extensions.Navigation;
 using Uno.Extensions.Navigation;
 using Uno.Toolkit.UI;
+using DailyUnoThesis.Presentation.View.Pages.Projects;
 
 
 namespace DailyUnoThesis.Presentation.ViewModel.ProjectControl;
@@ -34,17 +35,20 @@ public partial class PanelProjectViewModel : ObservableObject
     public readonly INavigator _navigator;
     private CoreDispatcher dispatcher;
     //public PageNavigation Navigation;
-    private TaskPages TaskPages;
+    private PanelProjects TaskPages;
     private TaskTodayListPage TaskListPageToday;
     private TaskCompleteListPage TaskListPageComplete;
     private TaskOverdueListPage TaskOverdueListPage;
     private TaskListPageCategory TaskListPageCategory;
-    private TaskCategotyControle CategotyControle;
+    private ProjectFolderViewModel ProjectControle;
 
-    public ObservableCollection<Category> Categories => CategoryService.Instance.NavCategories;
+    public ObservableCollection<Category> Categories => CategoryService.Instance.Projects;
   
     [ObservableProperty]
     private Category selectedCategory;
+
+
+
     [ObservableProperty]
     private Category category;
 
@@ -178,7 +182,7 @@ public partial class PanelProjectViewModel : ObservableObject
         {
             return creatNewTask ?? new RelayCommand(async () =>
             {
-                ViewModelStore.GetInstance().DetailedTask.CreatNewTaskoutside();
+                ViewModelStore.GetInstance().DetailedProject.CreatNewTaskoutside();
                 IsSplitViewPaneOpen = IsSplitViewPaneOpen ? false : true;
 
             }
@@ -312,7 +316,7 @@ public partial class PanelProjectViewModel : ObservableObject
     private async Task DeleteCategory(Category category, CategoryDeleteMode deleteMode)
     {
         await APIHost.GetInstance().DeleteCategories(category.Id, deleteMode);
-        await CategoryService.Instance.RefreshFromDatabaseAsync();
+        await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
         await ViewModelStore.GetInstance().FillDataViewModels();
     }
 
@@ -394,36 +398,37 @@ public partial class PanelProjectViewModel : ObservableObject
 
     private async void GoToSelectCategory(Category value)
     {
-        await CategotyControle.GetIdCategory(value);
+        await ProjectControle.GetIdCategory(value);
+        await ViewModelStore.GetInstance().DetailedProject.GetMainProject(value);
     }
 
     public async Task CreateCategory()
     {
         Category.IsProgect = true;
         await APIHost.GetInstance().CreateCategory(Category);
-        await CategoryService.Instance.RefreshFromDatabaseAsync();
+        await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
         IsVisibleCat = false;
         Category = new();
     }
 
     public async Task GetCaterogy()
     {
-        //await CategoryService.Instance.RefreshFromDatabaseAsync();
+        await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
     }
 
 
 
 
-    public async void SetControl(TaskPages pass)
+    public async void SetControl(PanelProjects pass)
     {
         if (TaskPages == null)
             TaskPages = pass;
-        SelectedBaseCategory = ListNavigations[0];
-        //TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
-        //var vm = ViewModelStore.GetInstance().Category;
-        //TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
-        //ViewModelStore.GetInstance().DetailedTask.GetBoolProject(false);
-        //CategotyControle = vm;
+        //SelectedBaseCategory = ListNavigations[0];
+        TaskPages.framePage.Navigate(typeof(ProjectFolder));
+        var vm = ViewModelStore.GetInstance().ProjectFolder;
+        TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
+        ViewModelStore.GetInstance().DetailedProject.GetBoolProject(true);
+        ProjectControle = vm;
 
     }
 

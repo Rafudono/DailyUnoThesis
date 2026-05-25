@@ -65,7 +65,7 @@ public class TaskStateService
             return;
 
         await APIHost.GetInstance().CreateMission(task);
-        var savedMission = await APIHost.GetInstance().GetLastMission(task.UserId, task.Title);
+        var savedMission = await APIHost.GetInstance().GetLastMission(task);
 
         var missionToAdd = savedMission?.Id > 0 ? savedMission : task;
         SubscribeMission(missionToAdd);

@@ -48,6 +48,8 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
 
+        <con:RootToMarginConverter x:Key="RootToMarginConverter" />
+
      
     </Page.Resources>
 
@@ -467,7 +469,7 @@ Height="600">
                                 <Style TargetType="TreeViewItem">
                                     <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
                                     <Setter Property="MinHeight" Value="0"/>
-                                    <Setter Property="IsExpanded" Value="True" />
+                                    <!--<Setter Property="IsExpanded" Value="True" />-->
                                     <Setter Property="Transitions">
                                         <Setter.Value>
                                             <TransitionCollection>
@@ -485,7 +487,7 @@ Height="600">
 
                             <TreeView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
-                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0" Margin="{Binding IdUpMission, Converter={StaticResource RootToMarginConverter}}">
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="LifeCycleStatesGrid">
                                                 <VisualState x:Name="DeleteGrid">
@@ -513,7 +515,7 @@ Height="600">
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
 
-                                        <Grid  Margin="0" x:Name="GridRootBorder" Height="85" Background="Transparent">
+                                        <Grid  x:Name="GridRootBorder" Height="85" Background="Transparent"  Margin="0">
 
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="0"/>

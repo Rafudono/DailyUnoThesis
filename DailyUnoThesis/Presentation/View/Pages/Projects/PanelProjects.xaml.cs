@@ -26,9 +26,23 @@ public sealed partial class PanelProjects : Page
 {
     public PanelProjectViewModel ViewModel;
 
+    public Frame framePage;
+    public Frame framePageTask;
+    public ListView BaseList;
+    public ListView CategoriesList;
+    PageNavigation Navigation;
+    TaskPages pass;
+    public Grid GridStatic;
+    public TabBar TabBar;
+    double acpanel;
+
     public PanelProjects()
     {
         this.InitializeComponent();
+        framePage = ContentFrame;
+        GridStatic = TaskContentGrid;
+        framePageTask = ContentFrameTask;
+        TabBar = new();
         this.DataContextChanged += OnDataContextChanged;
 
     }
@@ -42,6 +56,9 @@ public sealed partial class PanelProjects : Page
             viewModel.SetDispatcher(this.Dispatcher);
 
             ViewModel = viewModel;
+            viewModel.SetControl(this);
+            await viewModel.GetCaterogy();
+
 
             ViewModelStore.GetInstance().PanelProject = viewModel;
         }

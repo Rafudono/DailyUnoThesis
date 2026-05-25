@@ -37,6 +37,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        
 
     </Page.Resources>
 
@@ -158,9 +159,9 @@ Margin="0,0,1,0"/>
                                                 <Border BorderBrush="#2D3135" BorderThickness="0,0,0,1" Margin="0,0,0,0"/>
 
                                                 <StackPanel Grid.Row="0" Padding="10,0,10,20" Spacing="0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Button Content="+"/>
-                                                        <TextBlock Text="АРХИВ ПРОЕКТОВ" FontSize="14" FontFamily="Consolas" FontWeight="Bold" Opacity="0.8"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                                        <Button Content="&#xE70D;" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource TextsButtonStyle}" Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                                        <TextBlock Text="АРХИВ ПРОЕКТОВ" FontSize="14" FontFamily="Consolas" FontWeight="Bold" Opacity="0.8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     </StackPanel>
                                                     <Border Height="1" Background="{StaticResource DarkGrayBrown}" Margin="-10,0,0,0" HorizontalAlignment="Stretch"/>
 
@@ -182,7 +183,9 @@ Margin="0,0,1,0"/>
                                             Margin="5 0 0 -6" FontSize="18" FontWeight="Black" Padding="0"  Style="{StaticResource TextsButtonStyle}"  
           Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
                                                 </StackPanel>
-                                                <TextBlock Text="АКТИВНЫХ ОБЪЕКТОВ: 3" FontSize="13" FontFamily="Consolas" Opacity="0.8" Margin="10 0 0 0"/>
+                                                <TextBlock Text="АКТИВНЫХ ОБЪЕКТОВ: " FontSize="13" FontFamily="Consolas" Opacity="0.8" Margin="10 0 0 0">
+                                                    <Run Text="{Binding Categories.Count}"/>
+                                                </TextBlock>
                                                 <Border Height="1" Background="{StaticResource DarkGrayBrown}" Margin="10,3,10,0" HorizontalAlignment="Stretch"/>
 
 
@@ -459,7 +462,9 @@ Margin="0,0,1,0"/>
                         <Grid Padding="1 0 1 0"  x:Name="TaskContentGrid"
                        Grid.Column="1" Grid.Row="1"
 uen:Region.Attached="True"  Visibility="{Binding IsVisibilityTabBar, Converter={StaticResource BoolToVisibilityConverter}}"
-uen:Region.Navigator="Visibility" />
+uen:Region.Navigator="Visibility">
+                            <TextBlock Text="Выберите проект" FontSize="36" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Print" Foreground="{StaticResource InkBlueLightBrush}"/>
+                        </Grid>
 
 
                         <Frame  Visibility="{Binding IsVisibilityFrame, Converter={StaticResource BoolToVisibilityConverter}}"  x:Name="ContentFrame" Grid.Column="1" Grid.Row="1" />

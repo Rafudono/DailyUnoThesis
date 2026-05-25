@@ -15,6 +15,9 @@ namespace DailyUnoThesis.Models.DobleClasses
         public ObservableCollection<Category> Categories { get; } = new();
         public ObservableCollection<Category> NavCategories { get; } = new();
         public ObservableCollection<Category> FilterCategories { get; } = new();
+        public ObservableCollection<Category> Projects { get; } = new();
+        public ObservableCollection<Category> AssignmentOfProjects { get; } = new();
+
         private CategoryService() { }
 
         // Метод для обновления данных из БД
@@ -30,17 +33,24 @@ namespace DailyUnoThesis.Models.DobleClasses
             //data.AddRange(s => s.IdUpCategory != null);
             NavCategories.AddRange(data.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
             FilterCategories.AddRange(data);
-            //NavCategories.RemoveAll(s => s.IdUpCategory != null);
 
-            // 2. Очищаем текущую коллекцию
-            //Categories.Clear();
 
-            // 3. Заполняем её новыми данными
-            //foreach (var item in data.Where(s=>s.IdUpCategory == null || s.IdUpCategory == 0))
-            //{
-                
-            //    NavCategories.Add(item);
-            //}
+
+            var dataProj = await APIHost.GetInstance().GetProject();
+            Projects.AddRange(dataProj);
+
+
+        }
+
+        public async Task RefreshFromProjectsDatabaseAsync()
+        {
+            Projects.Clear();
+          
+            var dataProj = await APIHost.GetInstance().GetProject();
+            AssignmentOfProjects.AddRange(dataProj);
+            Projects.AddRange(dataProj.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
+
+
         }
 
         private async Task<List<Category>> GetCategoriesFromApi()

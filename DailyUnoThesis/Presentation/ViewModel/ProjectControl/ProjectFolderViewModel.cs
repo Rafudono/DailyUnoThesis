@@ -245,7 +245,7 @@ public partial class ProjectFolderViewModel : ObservableObject
                 missions.AddRange(Task.InverseIdUpMissionNavigation);
                 Subtasks = missions;
             }
-            ViewModelStore.GetInstance().ChangeSelected(Task);
+            ViewModelStore.GetInstance().ChangeSelectedProject(Task);
             //if (Task.Id != 0)
             //    ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
         }
@@ -258,7 +258,7 @@ public partial class ProjectFolderViewModel : ObservableObject
 
         // Открываем панель подробностей
         if (Task.Id != 0)
-            ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
+            ViewModelStore.GetInstance().PanelProject.IsSplitViewPaneOpen = true;
 
     }
 
@@ -752,7 +752,7 @@ public partial class ProjectFolderViewModel : ObservableObject
         }
         else
         {
-            mis = Missions.FirstOrDefault(s => s.Id == mission.IdUpMissionNavigation.IdUpMission);
+            mis =  Missions.FirstOrDefault(s => s.Id == mission.IdUpMissionNavigation.IdUpMission);
             Mission sub2mis = mis.InverseIdUpMissionNavigation.FirstOrDefault(s => s.Id == mission.IdUpMission);
             sub2mis.InverseIdUpMissionNavigation.Remove(mission);
 
@@ -761,10 +761,10 @@ public partial class ProjectFolderViewModel : ObservableObject
         {
             if (Task.Id == mis.Id || Task.Id == mission.IdUpMission)
             {
-                ViewModelStore.GetInstance().ChangeSelected(Task);
+                ViewModelStore.GetInstance().ChangeSelectedProject(Task);
             }
             if (Task.Id == mission.Id)
-                ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = false;
+                ViewModelStore.GetInstance().PanelProject.IsSplitViewPaneOpen = false;
         }
         Missions.Add(new Mission());
         //ObservableCollection < Mission > list = new();
