@@ -39,7 +39,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             {
                 ViewModelStore.GetInstance().OverdueTasks = viewModel;
                 ViewModel = viewModel;
-
+                //await ViewModelStore.GetInstance().FillDataViewModels();
                 //        ViewModel = viewModel;
 
                 //    //Передаем DispatcherQueue(в WinUI/ Uno 5 это DispatcherQueue)

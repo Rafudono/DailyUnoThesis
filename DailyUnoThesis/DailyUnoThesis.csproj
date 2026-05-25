@@ -182,12 +182,40 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Presentation\View\Calendar\MonthCalendarView.xaml">
+    <Page Update="Styles\Dictionary\DetectiveComboBoxItemStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Presentation\View\Calendar\WeekCalendarView.xaml">
+    <Page Update="Styles\Dictionary\DetectiveTabBarItemStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Presentation\View\Pages\Chats\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\Other\KanbanBoard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Dictionary\TextBoxHeaderStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Timer\AnalysisTimers.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\Projects\PanelProjects.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Pages\Projects\ProjectFolder.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

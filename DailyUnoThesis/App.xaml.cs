@@ -1,18 +1,21 @@
+using System; // Для IntPtr
+using System.Threading.Tasks;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Calendar;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Pages.Other; // Для Task
+using DailyUnoThesis.Presentation.View.Pages.Projects;
 using DailyUnoThesis.Presentation.View.Timer;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
+using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
 using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
-using Windows.UI;
-using Windows.Graphics;
-using Windows.UI.Core; // Для CoreWindow, если нужно
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Dispatching; // Для DispatcherQueue
-using System; // Для IntPtr
-using System.Threading.Tasks; // Для Task
+using Microsoft.UI.Xaml;
+using Windows.Graphics;
+using Windows.UI;
+using Windows.UI.Core; // Для CoreWindow, если нужно
 
 namespace DailyUnoThesis;
 public partial class App : Application
@@ -108,6 +111,7 @@ public partial class App : Application
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
+            //раздер задач
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, PageNavigation>(),
             new ViewMap<TaskPages, TaskPageControle>(),
@@ -119,11 +123,22 @@ public partial class App : Application
             new ViewMap<TaskListPageCategory, TaskCategotyControle>(),
             new ViewMap<SelectedAndNewTask, TaskViewModel>(),
 
+
+            //раздел проектов
+            new ViewMap<PanelProjects, PanelProjectViewModel>(),
+            new ViewMap<ProjectFolder, ProjectFolderViewModel>(),
+
+            
+
+            new ViewMap<KanbanBoard, KanbanBoardViewModel>(),
+
             new ViewMap<PanelTimer, PanelTimerControle>(),
             new ViewMap<Pomodoro, PomodoroTimerControle>(),
             new ViewMap<RegularTimer, RegularTimerControle>(),
+            new ViewMap<AnalysisTimers, AnalysisTimersViewModel>(),
 
-           // new ViewMap<TableCalendar, TableCalendarControle>(),
+
+            // new ViewMap<TableCalendar, TableCalendarControle>(),
             new ViewMap<TableCalendar, MonthCalendarViewModel>(),
 
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
@@ -141,19 +156,27 @@ public partial class App : Application
                          {
                               new ("Second", View: views.FindByViewModel<SecondViewModel>()),
                               new ("Complete", View: views.FindByViewModel<TaskCompleteControle>()),
-                              new ("TaskList", View: views.FindByViewModel<TaskListControle>(), IsDefault:true),
+                              new ("TaskList", View: views.FindByViewModel<TaskListControle>()),
                               new ("Overdue", View: views.FindByViewModel<OverdueTaskControle>()),
                               new ("Today", View: views.FindByViewModel<TaskTodayControle>()),
                               new ("Category", View: views.FindByViewModel<TaskCategotyControle>()),
 
                                new ("Task", View: views.FindByViewModel<TaskViewModel>()),
+                                new ("Kanban", View: views.FindByViewModel<KanbanBoardViewModel>()),
                          }),
                          new("PanelTimers", View: views.FindByViewModel<PanelTimerControle>(), 
                          Nested: new RouteMap[]
                          {
                               new ("Pomodoro", View: views.FindByViewModel<PomodoroTimerControle>()),
                               new ("Regular", View: views.FindByViewModel<RegularTimerControle>()),
+                              new ("AnalysisTime", View: views.FindByViewModel<AnalysisTimersViewModel>()),
                          }),
+
+                          new("PanelProject", View: views.FindByViewModel<PanelProjectViewModel>(),
+                         Nested: new RouteMap[]
+                         {
+                         }),
+
                          new("PanelCalendar", View: views.FindByViewModel<MonthCalendarViewModel>()),
                      }),
 

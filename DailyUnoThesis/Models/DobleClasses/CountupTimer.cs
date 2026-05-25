@@ -9,7 +9,8 @@ namespace DailyUnoThesis.Models.DobleClasses
 {
     public class CountupTimer : TaskTimer
     {
-
+        public DateTime StartPlayTimer { get; set; }
+        public DateTime EndTimer { get; set; }
         public override void PauseTimer()
         {
             if (!IsPaused && Timer.IsEnabled)
@@ -17,12 +18,14 @@ namespace DailyUnoThesis.Models.DobleClasses
 
                 Timer.Stop(); // Паузируем таймер
                 IsPaused = true;
+                EndTimer = DateTime.Now;    
             }
             else
             {
                 Timer.Start(); // Продолжаем таймер
                 IsPaused = false;
             }
+            Restart = IsPaused;
         }
 
 

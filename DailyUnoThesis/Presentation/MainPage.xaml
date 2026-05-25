@@ -4,8 +4,10 @@
       xmlns:local="using:DailyUnoThesis.Presentation"
        xmlns:pages="using:DailyUnoThesis.Presentation.View.Pages"
        xmlns:cal="using:DailyUnoThesis.Presentation.View.Calendar"
+                  xmlns:con="using:DailyUnoThesis.Models.Conventers"
       xmlns:time="using:DailyUnoThesis.Presentation.View.Timer"
       xmlns:controlepage="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
+      xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
        xmlns:mod="using:DailyUnoThesis.Models"
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
@@ -13,6 +15,33 @@
       NavigationCacheMode="Required"
       Background="{ThemeResource BackgroundBrush}">
     <Page.Resources>
+
+        <con:MaxTimerConventer x:Key="MaxLength"/>
+        <con:StringToIntConverter x:Key="StringToInt"/>
+        <!--<control:PomodoroTimerControle x:Key="Control"/>-->
+        <con:StringFormatTimeConverter x:Key="StringFormatTimeConverter"/>
+        <con:PlayPauseIconConverter x:Key="PlayPauseIconConverter"/>
+        <con:BoolToStringPlayButtonConverter x:Key="BoolToStringPlayButtonConverter"/>
+        <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <con:ArrowControlEnabledConventer x:Key="ArrowControlEnabledConventer"/>
+        <con:ArrowBackControlEnabledConventer x:Key="ArrowBackControlEnabledConventer"/>
+        <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <con:HeightConventer x:Key="HeightConventer"/>
+
+
+
+        <!--HeightConventer-->
+
+        <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
+        <con:StringFormatConverter x:Key="StringFormatConverter" />
+        <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter"/>
+        <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+        <con:NullToVisibilityConverterTextBoxCategory x:Key="ConverterTextBoxVisibility"/>
+        <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
+        <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <!--<DataTemplate x:Key="TasksTemplate" x:DataType="controlepage:TaskPageControle">
             <pages:TaskPages />
         </DataTemplate>
@@ -88,11 +117,11 @@
     </Page.Resources>
 
     <!--<ScrollViewer IsTabStop="True">-->
-    <Grid Background="#f4f7ff" Margin="3" uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
+    <Grid Background="#3D2B1F" Padding="3" uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
 
 
 
-        <Grid Background="#f4f7ff" x:Name="RootGrid" uen:Region.Attached="True">
+        <Grid Background="#f4f7ff" x:Name="RootGrid" uen:Region.Attached="True" CornerRadius="5">
 
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="WindowStates">
@@ -121,6 +150,91 @@
                     </VisualState>
 
                 </VisualStateGroup>
+                
+                <VisualStateGroup x:Name="MenuOpenStates">
+                    <VisualState x:Name="MenuOpen">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding IsMenuTimerOpen}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimePanel.Width" Value="*" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="MenuClose">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding IsMenuTimerOpen, Converter={StaticResource InverseBoolConverter}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimePanel.Width" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="MenuClosed" />
+                </VisualStateGroup>
+
+
+                <!--<VisualStateGroup x:Name="AbsoluteEndTemers">
+                    <VisualState x:Name="AbsoluteEndStop">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding PomodoroTime.CountdownTimer.IsEnd, Source={StaticResource GlobalStore}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimeMenu.Tag" Value="True" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="NotAbsoluteEnd">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding PomodoroTime.CountdownTimer.IsEnd, Source={StaticResource GlobalStore}, Converter={StaticResource InverseBoolConverter}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimeMenu.Tag" Value="False" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>-->
+
+                <!--<VisualStateGroup x:Name="StopRegularForBreak">
+                    <VisualState x:Name="StopTime">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding PomodoroTime.CountdownTimer.BreakTimer, Source={StaticResource GlobalStore}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PanelTime.Tag" Value="True" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="StarTime">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding PomodoroTime.CountdownTimer.BreakTimer, Source={StaticResource GlobalStore}, Converter={StaticResource InverseBoolConverter}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="PanelTime.Tag" Value="False" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>-->
+
+
+                <VisualStateGroup x:Name="IsEnabledPomodoroTime">
+                    <VisualState x:Name="IsEnabledCountdownTimer">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding PomodoroTime.CountdownTimer.IsPaused, Source={StaticResource GlobalStore}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimerDisplayPomodoro.Foreground" Value="Gray" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+
+                <VisualStateGroup x:Name="IsEnabledRegularTimer">
+                    <VisualState x:Name="IsEnabledCountupTimer">
+                        <VisualState.StateTriggers>
+                            <StateTrigger IsActive="{Binding RegularTimer.CountupTimer.IsPaused, Source={StaticResource GlobalStore}}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimerDisplayRegular.Foreground" Value="Gray" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
 
             <Grid.RowDefinitions>
@@ -146,15 +260,16 @@
 
                 <SplitView.Pane >
 
-                    <Border BorderBrush="Black" BorderThickness="0 0 1 0" CornerRadius="0,8,8,0">
+                    <Border BorderBrush="#f7d6bf" BorderThickness="0 0 1 0" CornerRadius="0,8,8,0">
                    
                     <Grid CornerRadius="0,8,8,0">
                             <Grid.Background>
 
                                 <LinearGradientBrush StartPoint="0.1,1" EndPoint="0.9,0.7">
-                                    <GradientStop Color="#0038b5" Offset="0" />
-                                    <GradientStop Color="#bfd1f9" Offset="0.7" />
-                                    <GradientStop Color="#f4f7ff" Offset="1" />
+                                    <GradientStop Color="#3D2B1F" Offset="0" />
+                                    <GradientStop Color="#3D2B1F" Offset="0.1" />
+                                    <GradientStop Color="#f7d6bf" Offset="0.8" />
+                                    <GradientStop Color="#f7e2d4" Offset="1" />
                                 </LinearGradientBrush>
 
                             </Grid.Background>
@@ -170,7 +285,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                            <utu:TabBar Grid.Row="0" SelectedIndex="1"
+                            <utu:TabBar Grid.Row="0" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}"
                     Orientation="Vertical" Foreground="White" 
                     Background="Transparent" SelectionChanged="SideTabBar_SelectionChanged"
                     uen:Region.Attached="True" MinHeight="130">
@@ -196,7 +311,7 @@
                             </utu:TabBarItem>
 
                             <utu:TabBarItem 
-                            Style="{StaticResource SideTabItemStyle}"
+                            Style="{StaticResource SideTabItemStyle}"   uen:Region.Name="PanelProject"
                             utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
                                 utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
                             Content="Проекты">
@@ -237,15 +352,7 @@ Content="Таймеры">
                             </utu:TabBarItem>
 
 
-                            <utu:TabBarItem 
-Style="{StaticResource SideTabItemStyle}"
-utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
-                                utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
-Content="Аналитика">
-                                <utu:TabBarItem.Icon>
-                                    <SymbolIcon Symbol="List" />
-                                </utu:TabBarItem.Icon>
-                            </utu:TabBarItem>
+                           
 
 
 
@@ -260,7 +367,7 @@ Content="Аналитика">
                 </SplitView.Pane>
 
                 <SplitView.Content>
-                    <Border BorderBrush="Black" BorderThickness="1 0 0 0" >
+                    <Border BorderBrush="#f7d6bf" BorderThickness="1 0 0 0" >
                         
               
                     <Grid Padding="1 0 1 0" x:Name="InnerContentGrid"
@@ -269,6 +376,55 @@ uen:Region.Navigator="Visibility" />
                     </Border>
                 </SplitView.Content>
             </SplitView>
+
+            <Grid x:Name="TimeMenu" Margin="0 55"  Grid.Row="1" BorderBrush="{StaticResource DarkGrayBrown}" BorderThickness="4 2 0 2" CornerRadius="4 0 0 4" HorizontalAlignment="Right" Height="120"
+                  VerticalAlignment="Top" Background="{StaticResource StickerBrushLight}" Visibility="{Binding IsMenuTimer, Converter={StaticResource BoolToVisibilityConverter}}"
+                  Tag="{Binding IsEnd, Mode=TwoWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="0" x:Name="TimePanel"/>
+                </Grid.ColumnDefinitions>
+
+
+                <Grid>
+                    <Button  HorizontalAlignment="Center" 
+CornerRadius="0" Height="120"
+FontFamily="Segoe MDL2 Assets" 
+FontSize="36" Padding="0 0 6 0"
+Style="{StaticResource TextsButtonForIconStyle}" Tag="{StaticResource AccentBlueLightBrush}" helperstyle:ButtonHelper.IconGlyph="&#xE76C;" Foreground="{StaticResource InkBlueLightBrush}"
+Command="{Binding OpenMenuTimer}"
+Margin="0,0,0,0"/>
+                </Grid>
+
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    
+                
+                <StackPanel x:Name="PanelTime"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20 0 0 0" Tag="{Binding StopForBreak, Mode=TwoWay}">
+                    <TextBlock x:Name="TimerDisplayPomodoro"  Text="{Binding PomodoroTime.CountdownTimer.RemainingTime, Source={StaticResource GlobalStore}, Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}"
+                                   FontSize="25" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}" HorizontalAlignment="Center"/>
+
+                    <TextBlock x:Name="TimerDisplayRegular" Text="{Binding RegularTimer.CountupTimer.RemainingTime, Source={StaticResource GlobalStore} , Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}"
+                                   FontSize="25" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}" HorizontalAlignment="Center" />
+
+                    <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="0">
+
+
+                        <Button  FontSize="15" Padding="6 0 0 0"  Command="{Binding RestartTimers}" FontWeight="Bold" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"  helperstyle:ButtonHelper.IconGlyph="&#xE895;" IsEnabled="{Binding CountupTimer.Restart}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" />
+
+                        <Button FontSize="15" FontWeight="Bold" Command="{Binding StopTimers}" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"
+                                     Padding="6 0 0 0"  helperstyle:ButtonHelper.IconGlyph="{Binding IsPause, Converter={StaticResource PlayPauseIconConverter}}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" IsEnabled="{Binding IsEnd, Converter={StaticResource InverseBoolConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Column="1" Command="{Binding CloseMenuTimer}" Content="&#xE10A;" FontSize="20" FontWeight="ExtraBlack" Foreground="{StaticResource ClueRedLightBrush}"
+                                VerticalAlignment="Top" HorizontalAlignment="Right" Margin=" 0 0 0 0"  Style="{StaticResource RedTextButtonStyle}"/>
+                </StackPanel>
+
+
+            </Grid>
                
         </Grid>
 

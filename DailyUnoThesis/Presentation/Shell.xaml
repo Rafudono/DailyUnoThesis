@@ -16,7 +16,7 @@
                 VerticalContentAlignment="Stretch">
       <utu:ExtendedSplashScreen.LoadingContentTemplate>
         <DataTemplate>
-          <Grid>
+          <Grid >
             <Grid.RowDefinitions>
               <RowDefinition Height="2*" />
               <RowDefinition />

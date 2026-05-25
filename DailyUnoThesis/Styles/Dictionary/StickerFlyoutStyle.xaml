@@ -89,4 +89,52 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+
+
+    <Style x:Key="StickerContainerStyle" TargetType="ContentControl">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <!-- Тот же самый ваш RootGrid -->
+                    <Grid x:Name="RootGrid" Margin="10">
+                        <!-- 1. Слой тени -->
+                        <Border Background="#A3B1C6" Opacity="0.4" CornerRadius="2" Margin="2,2,-2,-2">
+                            <Border.RenderTransform>
+                                <SkewTransform AngleX="1" AngleY="1"/>
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- 2. Основное тело стикера -->
+                        <Border x:Name="StickerPaper" 
+                            Background="#FEF9E7" 
+                            BorderBrush="#E6E0B0" 
+                            BorderThickness="1" 
+                            CornerRadius="1">
+                            <Grid>
+                                <!-- Легкий шум или оттенок поверх бумаги -->
+                                <Grid Background="LightGray" Opacity="0.1"/>
+
+                                <!-- Место, куда вставится ваш Grid с контентом -->
+                                <ContentPresenter Content="{TemplateBinding Content}" 
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                              Padding="{TemplateBinding Padding}"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- 3. Красный "скотч" сверху -->
+                        <Rectangle Height="30" Width="50" Fill="Red" Opacity="0.3" 
+                               VerticalAlignment="Top" Margin="0,-15,0,0" 
+                               HorizontalAlignment="Center">
+                            <Rectangle.RenderTransform>
+                                <RotateTransform Angle="-2"/>
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

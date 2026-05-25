@@ -35,7 +35,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
             this.DataContextChanged += OnDataContextChanged;
             ViewModelStore.GetInstance().GetPageCategory(this);
             //PageNavigation.GetInstance().GetPageCategory(this);
-
+            ViewModel = DataContext as TaskCategotyControle;
             pass = this;
            
 
@@ -71,6 +71,21 @@ namespace DailyUnoThesis.Presentation.View.Pages
                 //PageNavigation.GetInstance().GetPageCategory(this);
 
             }
+        }
+
+
+        private async void Grid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            Grid g = sender as Grid;
+            g.Tag = true;
+            //if (sender is FrameworkElement fe)
+            //    VisualStateManager.GoToState((Control)fe, "PointerOver", true);
+        }
+
+        private void Grid_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            Grid g = sender as Grid;
+            g.Tag = false;
         }
 
         //public void GetIdCategory(int id)

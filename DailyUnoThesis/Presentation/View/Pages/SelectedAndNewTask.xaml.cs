@@ -33,8 +33,20 @@ namespace DailyUnoThesis.Presentation.View.Pages
             //var vm = DataContext as TaskViewModel;
             this.DataContextChanged += OnDataContextChanged;
             //PageNavigation.GetInstance().GetPageCategory(this);
-            Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().GetPageTask(this);
-            ViewModel = Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedTask;
+            if (Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedTask == null)
+            {
+                Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().GetPageTask();
+                DataContext = Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedTask;
+                ViewModel = Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedTask;
+                //DataContext = new TaskViewModel();
+            }
+            else if (Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedProject == null)
+            {
+                Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().GetPageProject();
+                DataContext = Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedProject;
+                ViewModel = Presentation.ViewModel.HelperClasses.ViewModelStore.GetInstance().DetailedProject;
+            }
+         
         }
         private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {

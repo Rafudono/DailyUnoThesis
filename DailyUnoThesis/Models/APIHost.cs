@@ -220,10 +220,10 @@ namespace DailyUnoThesis.Models;
     }
 
     // получение изменённого или созданного задания
-    public async Task<Mission> GetLastMission(int id, string title)
+    public async Task<Mission> GetLastMission(/*int id, string title*/ Mission getMission)
     {
 
-        var resp = await client.GetAsync($"Missions/GetLastMission?id={id}&title={title}");
+        var resp = await client.GetAsync($"Missions/GetLastMission?id={getMission.Id}&title={getMission.Title}");
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await resp.Content.ReadAsStringAsync();
@@ -232,30 +232,17 @@ namespace DailyUnoThesis.Models;
         else
         {
             var mission = await resp.Content.ReadFromJsonAsync<Mission>(options);
+            //Mission mis = mission;
+            mission.LevelUp = getMission.LevelUp;
+            mission.IdUpMissionNavigation = getMission.IdUpMissionNavigation;
+           
             return mission;
         }
         return new Mission();
 
     }
 
-    //получение подсказки задач в строке поиска
-    public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(string query)
-    {
-        var resp = await client.GetAsync($"Missions/SearchSuggestions?searchText={query}&&id={1}");
-
-        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            string Error = await resp.Content.ReadAsStringAsync();
-            //MessageBox.Show(Error);
-        }
-        else
-        {
-            var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
-            return result ?? new ObservableCollection<MissionSuggestionDto>();
-        }
-
-        return new ObservableCollection<MissionSuggestionDto>();
-    }
+   
 
 
     #endregion
@@ -293,6 +280,27 @@ namespace DailyUnoThesis.Models;
             ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось удалить task \t  {Error} " };
         }
 
+    }
+
+    //получение подсказки задач в строке поиска
+    public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(MissionSuggestionDto missionSuggestion)
+    {
+        missionSuggestion.UserId = 1;
+        var arg = JsonSerializer.Serialize(missionSuggestion, options);
+        var resp = await client.PostAsync($"Missions/SearchSuggestions", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
+            return result ?? new ObservableCollection<MissionSuggestionDto>();
+        }
+
+        return new ObservableCollection<MissionSuggestionDto>();
     }
 
     // получение фильтрованных задач
@@ -380,7 +388,7 @@ namespace DailyUnoThesis.Models;
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         int id = 1;
         ObservableCollection<Category> categories = new ObservableCollection<Category>();
-        var req = JsonSerializer.Serialize(id, options);
+        //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Categories/GetMyCategory?id={id}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
@@ -394,6 +402,24 @@ namespace DailyUnoThesis.Models;
         else
             categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
         return categories;
+    }
+
+    public async Task<ObservableCollection<Category>> GetFiltersSubCategories(int id)
+    {
+        ObservableCollection<Category> categories = new ObservableCollection<Category>();
+        var resp = await client.GetAsync($"Categories/GetSubCategory?id={1}&idCategory={id}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить категориии \t  {Error} "
+            };
+        }
+        else
+            categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
+        return categories;
+
     }
     #endregion
 
@@ -450,6 +476,257 @@ namespace DailyUnoThesis.Models;
     #endregion
     #endregion
 
+    #region Timers
+
+    public async Task<List<Focustimer>> GetMyFocusTimer()
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        List<Focustimer> focustimers = new List<Focustimer>();
+        int id = 1;
+        var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Focustimers?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+            focustimers = await resp.Content.ReadFromJsonAsync<List<Focustimer>>(options);
+        return focustimers;
+    }
+    internal async Task CreateFocustimer(Focustimer focustimer)
+    {
+        focustimer.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(focustimer, options);
+        var res = await client.PostAsync($"Focustimers", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+    }
+
+    public async Task EditFocustimer(Focustimer focustimer)
+    {
+
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(focustimer, options);
+        var resp = await client.PutAsync($"Focustimers", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+    }
+
+    internal async Task DeleteTimer(int id)
+    {
+        //var arg = JsonSerializer.Serialize(id, options);
+        var resp = await client.DeleteAsync($"Focustimers?id={id}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+    }
+
+
+    public async Task CreateMissionTimer(Missionstimer missionstimer)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        missionstimer.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(missionstimer, options);
+        var res = await client.PostAsync($"Missionstimers", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+
+    }
+
+
+    public async Task<TimeAnalyticsSummaryDto> GetSummaryTimers()
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        //List<Focustimer> focustimers = new List<Focustimer>();
+        int id = 1;
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missionstimers/GetSummary/{id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var timeAnalyticsSummary = await resp.Content.ReadFromJsonAsync<TimeAnalyticsSummaryDto>(options);
+            return timeAnalyticsSummary;
+        }
+        return new TimeAnalyticsSummaryDto();
+    }
+
+    public async Task<List<DailyWorkHoursDto>> GetDailyWorkHours(DateTime fromDate, DateTime toDate)
+    {
+        string from = fromDate.ToString("yyyy-MM-dd");
+        string to = toDate.ToString("yyyy-MM-dd");
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        //List<Focustimer> focustimers = new List<Focustimer>();
+        int id = 1;
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missionstimers/GetDailyWorkHours/{id}?fromDate={from}&toDate={to}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var timeAnalyticsSummary = await resp.Content.ReadFromJsonAsync<List<DailyWorkHoursDto>>(options);
+            return timeAnalyticsSummary;
+        }
+        return new  List<DailyWorkHoursDto>();
+    }
+
+
+    public async Task<List<DayTimelineDto>> GetTimelineData(DateTime fromDate, DateTime toDate)
+    {
+        string from = fromDate.ToString("yyyy-MM-dd");
+        string to = toDate.ToString("yyyy-MM-dd");
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        //List<Focustimer> focustimers = new List<Focustimer>();
+        int id = 1;
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missionstimers/GetWeeklyTimeline/{id}?fromDate={from}&toDate={to}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var timeAnalyticsSummary = await resp.Content.ReadFromJsonAsync<List<DayTimelineDto>>(options);
+            return timeAnalyticsSummary;
+        }
+        return new List<DayTimelineDto>();
+    }
+
+
+    public async Task<List<TaskDistributionDto>> GetTaskDistribution(DateTime fromDate, DateTime toDate)
+    {
+        string from = fromDate.ToString("yyyy-MM-dd");
+        string to = toDate.ToString("yyyy-MM-dd");
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        //List<Focustimer> focustimers = new List<Focustimer>();
+        int id = 1;
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missionstimers/GetTaskDistribution/{id}?fromDate={from}&toDate={to}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var timeAnalyticsSummary = await resp.Content.ReadFromJsonAsync<List<TaskDistributionDto>>(options);
+            return timeAnalyticsSummary;
+        }
+        return new List<TaskDistributionDto>();
+    }
+
+
+    public async Task<ObservableCollection<Missionstimer>> GetTitlesMissionsTimer()
+    {
+
+        var res = await client.GetAsync($"Missionstimers/GetTitlesMissionsTimer/{1}");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+
+        }
+        else
+        {
+            var missions = await res.Content.ReadFromJsonAsync<ObservableCollection<Missionstimer>>(options);
+            return missions;
+        }
+        return new ObservableCollection<Missionstimer>();
+    }
+
+
+    public async Task<TaskDeepAnalysisDto> GetTaskDeepAnalysis(Missionstimer missionstimer, DateTime fromDate, DateTime toDate)
+    {
+        string from = fromDate.ToString("yyyy-MM-dd");
+        string to = toDate.ToString("yyyy-MM-dd");
+        int id = 1;
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missionstimers/GetTaskDeepAnalysis/{id}?missionId={missionstimer.MissionId}&title={missionstimer.TitleMission}&fromDate={from}&toDate={to}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var taskDeepAnalysisDto = await resp.Content.ReadFromJsonAsync<TaskDeepAnalysisDto>(options);
+            return taskDeepAnalysisDto;
+        }
+        return new TaskDeepAnalysisDto();
+    }
+
+
+
+
+    public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestionsTimer(MissionSuggestionDto missionSuggestion)
+    {
+        missionSuggestion.UserId = 1;
+        var arg = JsonSerializer.Serialize(missionSuggestion, options);
+        var resp = await client.PostAsync($"Missionstimers/SearchSuggestions", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<MissionSuggestionDto>>(options);
+            return result ?? new ObservableCollection<MissionSuggestionDto>();
+        }
+
+        return new ObservableCollection<MissionSuggestionDto>();
+    }
+
+
+
+    public async Task<ObservableCollection<Missionstimer>> GetSearchMissionTimer(MissionSuggestionDto missionSuggestion)
+    {
+        missionSuggestion.UserId = 1;
+        var arg = JsonSerializer.Serialize(missionSuggestion, options);
+        var res = await client.PostAsync($"Missionstimers/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await res.Content.ReadFromJsonAsync<ObservableCollection<Missionstimer>>(options);
+            return result ?? new ObservableCollection<Missionstimer>();
+        }
+
+        return new ObservableCollection<Missionstimer>();
+    }
+    #endregion
+
     #region Possibly Trash
     // пустой
     public async Task<List<Mission>> GetMyMissions()
@@ -470,6 +747,10 @@ namespace DailyUnoThesis.Models;
             Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
         return Missions;
     }
+
+
+
+  
     #endregion
 
     #region Sessions
@@ -491,6 +772,7 @@ namespace DailyUnoThesis.Models;
         return Sessions;
     }
     #endregion
+
 
 
     //#region TaskCompletion

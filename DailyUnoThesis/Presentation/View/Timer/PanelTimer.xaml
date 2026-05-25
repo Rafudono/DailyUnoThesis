@@ -15,18 +15,97 @@
         <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="SystemControlTransparentBrush" />
     </Page.Resources>
 
-    <ScrollViewer IsTabStop="True">
+    <!--<ScrollViewer IsTabStop="True">-->
         <Grid  uen:Region.Attached="True" utu:SafeArea.Insets="VisibleBounds">
 
-            <Grid Background="DarkSeaGreen">
+        <Grid Background="#e9e9e9">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.1" />
+                    <RowDefinition Height="0.05*" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <NavigationView OpenPaneLength="170" IsPaneOpen="False" uen:Region.Attached="true"
+
+
+                <!--<NavigationView OpenPaneLength="170" IsPaneOpen="False" uen:Region.Attached="true"
+      Grid.Row="1" IsSettingsVisible="False">
+        <NavigationView.MenuItems>
+             -->
+                <!--Tag должен совпадать с именами в маршрутах-->
+                <!-- 
+            <NavigationViewItem Icon="Clock" Content="Помодоро"
+                  uen:Region.Name="PomodoroTimer" />
+            <NavigationViewItem Icon="Clock" Content="Обычный"
+  uen:Region.Name="RegularTimers" />
+            <NavigationViewItem Icon="Clock" Content="Analize"
+  uen:Region.Name="Analize" />
+
+        </NavigationView.MenuItems>
+        <Grid uen:Region.Attached="True"
+uen:Region.Navigator="Visibility"
+Grid.Row="1">
+            <Grid uen:Region.Name="Analize"
+          Visibility="Collapsed">
+                <TextBlock Text="Analize"
+                   FontSize="24"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+            </Grid>
+        </Grid>
+    </NavigationView>-->
+
+            <utu:TabBar Grid.Row="0" Orientation="Horizontal" Foreground="White"  Background="Transparent"  uen:Region.Attached="True" MinHeight="10" SelectedIndex="2"
+                            ItemContainerStyle="{StaticResource DetectiveTabBarItemStyle}">
+
+                    <utu:TabBarItem
+                        Style="{StaticResource SideTabItemStyle}" uen:Region.Name="Pomodoro"  Tag="RotateCamera"
+                        utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+                        utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation" Content="Помодоро" >
+                        <!--<utu:TabBarItem.Icon>
+                            <SymbolIcon Symbol="Clock" />
+                        </utu:TabBarItem.Icon>-->
+                    </utu:TabBarItem>
+
+                    <utu:TabBarItem
+      Style="{StaticResource SideTabItemStyle}" uen:Region.Name="Regular"  Tag="Clock"
+      utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+      utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation" Content="Обычный" >
+                        <!--<utu:TabBarItem.Icon>
+                            <SymbolIcon Symbol="Clock" />
+                        </utu:TabBarItem.Icon>-->
+                    </utu:TabBarItem>
+
+                    <utu:TabBarItem
+      Style="{StaticResource SideTabItemStyle}" uen:Region.Name="AnalysisTime"  Tag="Library"
+      utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
+      utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation" Content="Аналитика" >
+                        <!--<utu:TabBarItem.Icon>
+                            <SymbolIcon Symbol="RotateCamera" />
+                        </utu:TabBarItem.Icon>-->
+                    </utu:TabBarItem>
+
+
+
+
+
+                </utu:TabBar>
+
+
+
+
+
+
+                <Border Grid.Row="1" BorderBrush="#f7d6bf" BorderThickness="1" >
+
+
+                    <Grid Padding="1 0 1 0" x:Name="InnerContentGrid"
+uen:Region.Attached="True"
+uen:Region.Navigator="Visibility" />
+                </Border>
+
+                
+                <!--<NavigationView OpenPaneLength="170" IsPaneOpen="False" uen:Region.Attached="true"
                   Grid.Row="1" IsSettingsVisible="False">
                     <NavigationView.MenuItems>
-                         <!--Tag должен совпадать с именами в маршрутах--> 
+                         --><!--Tag должен совпадать с именами в маршрутах--><!-- 
                         <NavigationViewItem Icon="Clock" Content="Помодоро"
                               uen:Region.Name="PomodoroTimer" />
                         <NavigationViewItem Icon="Clock" Content="Обычный"
@@ -46,7 +125,9 @@
                                VerticalAlignment="Center" />
                         </Grid>
                     </Grid>
-                </NavigationView>
+                </NavigationView>-->
+
+                
                 <!--<SelectorBar Grid.Row="1" x:Name="SelectorBar2" >
                     <SelectorBarItem Icon="Clock" Text="Помодоро" uen:Region.Name="PomodoroTimer"/>
                     <SelectorBarItem x:Name="SelectorBarItemPage2" Icon="Clock" Text="Обычный" uen:Region.Name="RegularTimers" />
@@ -56,7 +137,7 @@
             </Grid>
 
         </Grid>
-    </ScrollViewer>
+    <!--</ScrollViewer>-->
 
     <!--<Grid Background="DarkSeaGreen">
         <Grid>

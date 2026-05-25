@@ -5,6 +5,7 @@
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.PagesControls"
+      xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
     xmlns:uen="using:Uno.Extensions.Navigation.UI"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -22,8 +23,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
        mc:Ignorable="d"
       xmlns:ut="using:Uno.Themes"
       x:Name="MyPageRoot"
- Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-      >
+ Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <!--<Page.DataContext>
         <control:TaskCategotyControle/>
     </Page.DataContext>-->
@@ -73,38 +73,38 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                 <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="1300" />
+                        <AdaptiveTrigger MinWindowWidth="1000" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="EmptySpace.Width" Value="0.2*" />
+                        <Setter Target="EmptySpace.Width" Value="0.05*" />
                     </VisualState.Setters>
                 </VisualState>
 
                 <VisualState x:Name="AverageState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="500" />
+                        <AdaptiveTrigger MinWindowWidth="400" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
 
                         <Setter Target="EmptySpace.Width" Value="0" />
+                        <Setter Target="EmptyGrid.Margin" Value=" 0 50 0 0"/>
+
                     </VisualState.Setters>
                 </VisualState>
 
-                <!--<VisualState x:Name="NarrowState">
+                <VisualState x:Name="NarrowState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="100" />
+                        <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-
-                        -->
-                <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />-->
-                <!--
+                        <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />
                         <Setter Target="RootSplitView.OpenPaneLength" Value="220" />
                         <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
                         <Setter Target="HamburgerBtn.Visibility" Value="Visible" />-->
-                <!--
+
+                        <Setter Target="EmptyGrid.Margin" Value="0 50 0 0"/>
                     </VisualState.Setters>
-                </VisualState>-->
+                </VisualState>
             </VisualStateGroup>
 
 
@@ -145,13 +145,13 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
             </VisualStateGroup>-->
         </VisualStateManager.VisualStateGroups>
 
-        <Grid Grid.Column="0" Background="{StaticResource DividerLightBrush}">
+        <Grid Name="EmptyGrid" Grid.Column="0" Background="{StaticResource DividerLightBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top" Spacing="10" Margin="10">
-                <StackPanel VerticalAlignment="Top" Spacing="8" Orientation="Horizontal" Margin="10 10 0 10">
+                <StackPanel x:Name="FiltersPanel" VerticalAlignment="Top" Spacing="8" Orientation="Horizontal" Margin="10 10 0 10">
                     <!--<TextBlock Text="папки" />
                         <ComboBox Width="Auto"
                               DisplayMemberPath="Title"
@@ -271,13 +271,13 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
 
                                 <StackPanel   Spacing="0" Background="Transparent" HorizontalAlignment="Right">
                                     <StackPanel Margin="10 20 10 0" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Right">
-                                        <Button FontFamily="Comic Sans MS" Content="&#xE71E;" Command="{Binding Category.ApplyDateFilter, Source={StaticResource GlobalStore}}"
+                                        <Button FontFamily="Segoe Print" Content="Найти" Command="{Binding Category.ApplyDateFilter, Source={StaticResource GlobalStore}}"
                                                     HorizontalAlignment="Stretch" Foreground="{StaticResource InkBlueLightBrush}" Tag="{StaticResource AccentBlueLightBrush}"
-                                                    FontWeight="Bold" Style="{StaticResource TextsButtonStyle}" FontSize="25"/>
+                                                    FontWeight="SemiBold" Style="{StaticResource TextsButtonStyle}" FontSize="18" helperstyle:ButtonHelper.IconGlyph="&#xE71E;"/>
 
-                                        <Button Content="&#xE75C;" FontFamily="Comic Sans MS"  CommandParameter="{Binding ElementName=CalendarView}"
+                                        <Button Content="Сбросить" FontFamily="Segoe Print"  CommandParameter="{Binding ElementName=CalendarView}"
                                                     Command="{Binding Category.DeleteFilter, Source={StaticResource GlobalStore}}"
-                                                     FontWeight="Bold"  Style="{StaticResource RedTextButtonStyle}" FontSize="25"/>
+                                                      FontWeight="SemiBold"  Style="{StaticResource RedTextButtonStyle}" FontSize="18" Tag="&#xE75C;"/>
 
                                     </StackPanel>
 
@@ -361,7 +361,7 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
                                             <Border HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#00224d" Padding="0,0,0,2">
                                                 <TextBlock FontFamily="Segoe Print" Text="Категории" FontWeight="Bold" FontSize="20"/>
                                             </Border>
-                                            <ListView Margin="0 20" ItemsSource="{Binding Categories}" Height="200"  Padding="5">
+                                            <ListView Margin="0 20" ItemsSource="{Binding Categories}" MaxHeight="200"  Padding="5">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate x:DataType="mod:Category">
                                                         <StackPanel Orientation="Horizontal" >
@@ -441,7 +441,7 @@ Height="600">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="0.1*" x:Name="EmptySpace"/>
+                            <ColumnDefinition Width="0.01*" x:Name="EmptySpace"/>
                         </Grid.ColumnDefinitions>
 
                         <TreeView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
@@ -478,17 +478,15 @@ Height="600">
                                 <Style TargetType="TreeViewItem">
                                     <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
                                     <Setter Property="MinHeight" Value="0"/>
-                                    <!--<Setter Property="IsExpanded" Value="True" />
-                                <Setter Property="Transitions">
-                                    <Setter.Value>
-                                        <TransitionCollection>
-                                             -->
-                                    <!--Эта штука заставляет соседей плавно ехать на свободное место-->
-                                    <!-- 
-                                            <AddDeleteThemeTransition />
-                                        </TransitionCollection>
-                                    </Setter.Value>
-                                </Setter>-->
+                                    <Setter Property="IsExpanded" Value="True" />
+                                    <Setter Property="Transitions">
+                                        <Setter.Value>
+                                            <TransitionCollection>
+                                                <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                                <AddDeleteThemeTransition />
+                                            </TransitionCollection>
+                                        </Setter.Value>
+                                    </Setter>
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     <Setter Property="Padding" Value="0" />
                                     <!--Убираем лишние падинги-->
@@ -498,14 +496,46 @@ Height="600">
 
                             <TreeView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
-                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem">
-                                        <Grid Background="Transparent" Margin="0">
+                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="LifeCycleStatesGrid">
+                                                <VisualState x:Name="DeleteGrid">
+                                                    <VisualState.StateTriggers>
+                                                        <StateTrigger IsActive="{Binding IsDelete}" />
+                                                    </VisualState.StateTriggers>
+                                                    <Storyboard>
+                                                        <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                        <DoubleAnimation Storyboard.TargetName="TreeViewItem"  Storyboard.TargetProperty="Height"  To="0" Duration="0:0:0.6" EnableDependentAnimation="True">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <DoubleAnimation Storyboard.TargetName="GridRootBorder"  Storyboard.TargetProperty="Height"  To="0" Duration="0:0:0.6" EnableDependentAnimation="True">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                    <VisualState.Setters>
+                                                        <!--<Setter Target="GridRootBorder.Height" Value="0"/>
+                                        <Setter Target="TreeViewItem.Height" Value="0"/>-->
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+
+                                        <Grid  Margin="0" x:Name="GridRootBorder" Height="85" Background="Transparent">
+
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="0"/>
                                                 <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
+                                            <Grid.RenderTransform>
+                                                <CompositeTransform />
+                                            </Grid.RenderTransform>
+
                                             <Border x:Name="RootBorder" Padding="0 3 0 -5" MinWidth="400" CornerRadius="4" Background="Transparent" Grid.Column="1" Margin="0"
-                                            BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" MinHeight="0">
+                            BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="85" MinHeight="0">
                                                 <Border.RenderTransform>
                                                     <CompositeTransform />
                                                 </Border.RenderTransform>
@@ -519,20 +549,20 @@ Height="600">
                                                             <Storyboard>
                                                                 <!-- 1. Плавно исчезаем -->
                                                                 <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                                                         Storyboard.TargetProperty="Opacity" 
-                                                         To="0" Duration="0:0:0.4"/>
+                                         Storyboard.TargetProperty="Opacity" 
+                                         To="0" Duration="0:0:0.4"/>
                                                                 <!-- 2. Сдвигаем влево (эффект вылета) -->
                                                                 <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
-                                                         To="-100" Duration="0:0:0.4">
+                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+                                         To="-100" Duration="0:0:0.4">
                                                                     <DoubleAnimation.EasingFunction>
                                                                         <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
                                                                     </DoubleAnimation.EasingFunction>
                                                                 </DoubleAnimation>
                                                                 <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
-                                                                <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                                                             Storyboard.TargetProperty="Height" 
-                                                             To="0" Duration="0:0:0.4">
+                                                                <DoubleAnimation Storyboard.TargetName="GridRootBorder" 
+                                             Storyboard.TargetProperty="Height" 
+                                             To="0" Duration="0:0:0.4">
                                                                     <DoubleAnimation.EasingFunction>
                                                                         <CubicEase EasingMode="EaseInOut"/>
                                                                     </DoubleAnimation.EasingFunction>
@@ -546,20 +576,20 @@ Height="600">
                                                             <Storyboard>
                                                                 <!-- 1. Плавно исчезаем -->
                                                                 <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                Storyboard.TargetProperty="Opacity" 
-                To="0" Duration="0:0:0.4"/>
+Storyboard.TargetProperty="Opacity" 
+To="0" Duration="0:0:0.4"/>
                                                                 <!-- 2. Сдвигаем влево (эффект вылета) -->
                                                                 <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
-                To="100" Duration="0:0:0.4">
+Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+To="100" Duration="0:0:0.4">
                                                                     <DoubleAnimation.EasingFunction>
                                                                         <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
                                                                     </DoubleAnimation.EasingFunction>
                                                                 </DoubleAnimation>
                                                                 <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
                                                                 <DoubleAnimation Storyboard.TargetName="RootBorder" 
-                    Storyboard.TargetProperty="Height" 
-                    To="0" Duration="0:0:0.4">
+    Storyboard.TargetProperty="Height" 
+    To="0" Duration="0:0:0.4">
                                                                     <DoubleAnimation.EasingFunction>
                                                                         <CubicEase EasingMode="EaseInOut"/>
                                                                     </DoubleAnimation.EasingFunction>
@@ -581,19 +611,19 @@ Height="600">
                                                     <Grid Grid.Column="0">
                                                         <!-- Вертикальная линия "сверху донизу" -->
                                                         <Rectangle Width="1.5" 
-                        Fill="{StaticResource ClueRedLightBrush}" 
-                        Opacity="1" 
-                        HorizontalAlignment="Left" 
-                        Margin="12,0,0,0" />
+        Fill="{StaticResource ClueRedLightBrush}" 
+        Opacity="1" 
+        HorizontalAlignment="Left" 
+        Margin="12,0,0,0" />
 
                                                         <!-- Горизонтальная ниточка к чекбоксу -->
                                                         <Rectangle Height="1" 
-                        Width="12" 
-                        Fill="{StaticResource ClueRedLightBrush}" 
-                        Opacity="1" 
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
-                        Margin="12,0,0,0" />
+        Width="12" 
+        Fill="{StaticResource ClueRedLightBrush}" 
+        Opacity="1" 
+        HorizontalAlignment="Left" 
+        VerticalAlignment="Center" 
+        Margin="12,0,0,0" />
                                                     </Grid>
                                                     <Grid  Background="Transparent" Grid.Column="1"  MinWidth="200" IsHitTestVisible="True">
                                                         <Grid.ColumnDefinitions>
@@ -626,16 +656,16 @@ Height="600">
                                                                     <Storyboard>
                                                                         <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
                                                                         <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
-                                                              Storyboard.TargetProperty="ScaleX" 
-                                                              To="1" 
-                                                              Duration="0:0:0.4">
+                                              Storyboard.TargetProperty="ScaleX" 
+                                              To="1" 
+                                              Duration="0:0:0.4">
                                                                             <DoubleAnimation.EasingFunction>
                                                                                 <CubicEase EasingMode="EaseOut"/>
                                                                             </DoubleAnimation.EasingFunction>
                                                                         </DoubleAnimation>
                                                                         <!-- Плавная смена цвета текста -->
                                                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
-                                       Storyboard.TargetProperty="Foreground">
+                       Storyboard.TargetProperty="Foreground">
                                                                             <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
                                                                         </ObjectAnimationUsingKeyFrames>
                                                                     </Storyboard>
@@ -657,15 +687,15 @@ Height="600">
                                                                 <ColumnDefinition/>
                                                             </Grid.ColumnDefinitions>
                                                             <CheckBox CommandParameter="{Binding}" Tag="&#xE73E;"
-                                                          Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}" 
-                                                          IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
+                                          Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}" 
+                                          IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
                                                             <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
                                                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                                                     <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"   FontSize="25" TextWrapping="NoWrap" Foreground="{ThemeResource InkBlueLightBrushOver}" FontWeight="Medium"
-                                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Stretch" MaxLines="1" FontFamily="Segoe Print"/>
+                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Stretch" MaxLines="1" FontFamily="Segoe Print"/>
                                                                     <!-- Линия зачеркивания - стилизуем цветом "Clue Red" -->
                                                                     <Rectangle x:Name="StrikeLine" Height="2" Margin="0 8 0 0"  Fill="{ThemeResource DividerDarkBrush}" HorizontalAlignment="Stretch"  VerticalAlignment="Center"
-                                                                   RenderTransformOrigin="0,0.5" IsHitTestVisible="False">
+                                                   RenderTransformOrigin="0,0.5" IsHitTestVisible="False">
                                                                         <Rectangle.RenderTransform>
                                                                             <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
                                                                         </Rectangle.RenderTransform>
@@ -675,22 +705,22 @@ Height="600">
 
                                                                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
                                                                     <TextBlock FontFamily="Comic Sans MS" x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"
-                                                                   Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13" >
-                                                            <Run Text="&#xE163;" FontFamily="Segoe MDL2 Assets"/>
-                                                            <Run Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+                                                   Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13" >
+                                            <Run Text="&#xE163;" FontFamily="Segoe MDL2 Assets"/>
+                                            <Run Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
                                                                     </TextBlock>
                                                                     <TextBlock FontFamily="Comic Sans MS" x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"
-                                                                   Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13">
-                                                            <Run Text="#"/>
-                                                            <Run Text="{Binding Category.Title}"/>
+                                                   Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13">
+                                            <Run Text="#"/>
+                                            <Run Text="{Binding Category.Title}"/>
                                                                     </TextBlock>
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </Grid>
                                                         <Button Content="&#xE74D;" x:Name="DelButton" Grid.Column="1" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top" Padding="0" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderBrush="Transparent"
-                Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextButtonStyle}"
-                                                    CommandParameter="{Binding}"
-                                                    Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
+Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}" HorizontalContentAlignment="Center"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
                                                             <!--Style="{StaticResource TextButtonStyle}"-->
                                                             <Button.Resources>
                                                                 <!-- Цвет текста при наведении (PointerOver) -->
