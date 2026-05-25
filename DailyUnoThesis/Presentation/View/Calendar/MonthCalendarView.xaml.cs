@@ -95,7 +95,7 @@ public sealed partial class MonthCalendarView : Page
             return;
         }
 
-        if (!e.DataView.Properties.TryGetValue("DraggedMission", out object draggedItem)) return;
+        if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
         // var draggedSession = draggedItem as TaskCompletionTime;
         // if (draggedSession == null) return;
 
@@ -355,7 +355,7 @@ public sealed partial class MonthCalendarView : Page
 
         if (mission != null)
         {
-            args.Data.Properties.Add("DraggedMission", mission);
+            args.Data.Properties.Add("DraggedItem", mission);
             bool isInboxMission = !mission.StartDate.HasValue || !mission.EndDate.HasValue;
             args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;

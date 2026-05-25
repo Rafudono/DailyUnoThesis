@@ -309,8 +309,8 @@ public partial class MonthCalendarViewModel : ObservableObject
             .OrderBy(t => t.StartExecution)
             .ToList() ?? new List<TaskCompletionTime>();
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+        DateTime dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
 
         // Пустой день
         if (realTasks.Count == 0)
@@ -350,8 +350,8 @@ public partial class MonthCalendarViewModel : ObservableObject
             return insertIndex == 0;
         }
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+        DateTime dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        DateTime dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
 
         var duration = draggedMission.DurationMinutes > 0
             ? TimeSpan.FromMinutes(draggedMission.DurationMinutes.Value)
@@ -511,8 +511,8 @@ public partial class MonthCalendarViewModel : ObservableObject
         }
 
         // Рассчитываем новое время
-        var dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
-        var dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
 
         var duration = session.EndExecution.Value - session.StartExecution.Value;
 
@@ -572,8 +572,8 @@ public partial class MonthCalendarViewModel : ObservableObject
         InboxMissions.Remove(mission);
 
         // Рассчитываем время вставки
-        var dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
-        var dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
+        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
 
         var existingSessions = targetDay.TasksSessions
             .OrderBy(s => s.StartExecution)

@@ -1,11 +1,13 @@
 using System; // Для IntPtr
 using System.Threading.Tasks;
 using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.View.Authentication;
 using DailyUnoThesis.Presentation.View.Calendar;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Pages.Other; // Для Task
 using DailyUnoThesis.Presentation.View.Pages.Projects;
 using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.AuthenticationControle;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
@@ -123,6 +125,9 @@ public partial class App : Application
             new ViewMap<TaskListPageCategory, TaskCategotyControle>(),
             new ViewMap<SelectedAndNewTask, TaskViewModel>(),
 
+            //авторизация
+            new ViewMap<LoginPage, LoginViewModel>(),
+            new ViewMap<RegistrationPage, RegistrationViewModel>(),
 
             //раздел проектов
             new ViewMap<PanelProjects, PanelProjectViewModel>(),
@@ -148,7 +153,11 @@ public partial class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested: new RouteMap[]
                 {
-                     new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true,
+
+                    //new("Login", View: views.FindByViewModel<LoginViewModel>()),
+                    //new("Registration", View: views.FindByViewModel<RegistrationViewModel>()),
+                   // new("Login", View: views.FindByViewModel<LoginViewModel>(), IsDefault:true,
+                    new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true,
                      Nested: new RouteMap[] // Просто используем массив
                      {
                          new("TaskPage", View: views.FindByViewModel<TaskPageControle>()/*, IsDefault:true*/,
