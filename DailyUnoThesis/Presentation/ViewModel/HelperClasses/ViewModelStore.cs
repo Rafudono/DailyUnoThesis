@@ -229,6 +229,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
                     await CompleteTasks.GetComplete();
             if (OverdueTasks != null)
                         await OverdueTasks.GetOverdue();
+            if (ProjectFolder != null)
+                await ProjectFolder.FillData();
 
         }
         #endregion

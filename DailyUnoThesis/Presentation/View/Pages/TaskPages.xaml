@@ -386,7 +386,7 @@ Margin="0,0,1,0"/>
                                     </TreeView>
 
 
-                                    <TextBlock Text="#Проекты" Margin="0,10" />
+                                    <!--<TextBlock Text="#Проекты" Margin="0,10" />-->
 
                                 <!--Width="200"-->
 

@@ -367,7 +367,7 @@ Margin="0,0,1,0"/>
                                                                             <TextBlock Text="СТАТУС: В РАЗРАБОТКЕ" FontSize="8" FontFamily="Consolas" Foreground="#A0AEC0"/>
                                                                             <Grid Width="200">
                                                                                 <Rectangle Height="2" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="3"/>
-                                                                                <muxc:ProgressBar Value="40" Minimum="0" Maximum="100" Style="{StaticResource MaterialProgressBarStyle}" Width="200"/>
+                                                                                <muxc:ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100" Style="{StaticResource MaterialProgressBarStyle}" Width="200"/>
                                                                             </Grid>
                                                                         </StackPanel>
 

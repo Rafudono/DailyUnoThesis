@@ -316,6 +316,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return applyDateSettings ?? new RelayCommand(async () =>
                 {
                     await ViewModelStore.GetInstance().FillDataViewModels();
+
                 }
                 );
             }
@@ -639,10 +640,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         {
                             if (Task.StartDate.Value.Date == Task.EndDate.Value.Date) 
                             {
+                                Task.EndDate = Task.EndDate.Value.AddHours(1);
                                 Task.TaskCompletionTimes.Add(new TaskCompletionTime
                                 {
                                     StartExecution = Task.StartDate,
-                                    EndExecution = Task.EndDate.Value.AddHours(1)
+                                    EndExecution = Task.EndDate
                                 });
                             }
                         }
@@ -693,7 +695,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return;
             foreach (var mis in mission.InverseIdUpMissionNavigation)
             {
-                mis.UserId = 1;
+                mis.UserId = Task.UserId;
                 mis.CategoryId = Task.CategoryId;
                 await EditSubtasksCategory(mis);
             }

@@ -157,9 +157,9 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
 
 
                                                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0" HorizontalAlignment="Right">
-                                                    <Button Content="Применить" Command="{Binding DetailedTask.ApplyDateSettings, Source={StaticResource GlobalStore}}" HorizontalAlignment="Stretch"
+                                                    <!--<Button Content="Применить" Command="{Binding DetailedTask.ApplyDateSettings, Source={StaticResource GlobalStore}}" HorizontalAlignment="Stretch"
                                                                 Foreground="{StaticResource InkBlueLightBrush}" Tag="{StaticResource AccentBlueLightBrush}"
-                                              FontWeight="SemiBold" Style="{StaticResource TextsButtonStyle}" FontSize="18" helperstyle:ButtonHelper.IconGlyph="&#xE73E;"/>
+                                              FontWeight="SemiBold" Style="{StaticResource TextsButtonStyle}" FontSize="18" helperstyle:ButtonHelper.IconGlyph="&#xE73E;"/>-->
 
                                                     <Button  FontFamily="Segoe Print"  CommandParameter="{Binding ElementName=CalendarView}"
                                                                 Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"

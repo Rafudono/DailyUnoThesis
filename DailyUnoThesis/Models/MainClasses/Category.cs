@@ -28,7 +28,7 @@ public partial class Category: INotifyPropertyChanged
 
     public bool IsProgect { get; set; }
 
-
+    public virtual int? Progress { get; set; } = 0;
 
 
 
