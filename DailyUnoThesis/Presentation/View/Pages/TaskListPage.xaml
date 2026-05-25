@@ -286,7 +286,7 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
                                                     HorizontalAlignment="Stretch" Foreground="{StaticResource InkBlueLightBrush}" Tag="{StaticResource AccentBlueLightBrush}"
                                                     FontWeight="Bold" Style="{StaticResource TextsButtonStyle}" FontSize="25"/>
 
-                                    <Button Content="&#xE75C;" FontFamily="Comic Sans MS"  CommandParameter="{Binding ElementName=CalendarView}"
+                                        <Button Content="Сбросить" FontFamily="Segoe Print"  CommandParameter="{Binding ElementName=CalendarView}"
                                                     Command="{Binding AllTasks.DeleteFilter, Source={StaticResource GlobalStore}}"
                                                      FontWeight="Bold"  Style="{StaticResource RedTextButtonStyle}" FontSize="25"/>
 
