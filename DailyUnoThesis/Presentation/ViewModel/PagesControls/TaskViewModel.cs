@@ -695,7 +695,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 return;
             foreach (var mis in mission.InverseIdUpMissionNavigation)
             {
-                mis.UserId = Task.UserId;
+                mis.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
                 mis.CategoryId = Task.CategoryId;
                 await EditSubtasksCategory(mis);
             }

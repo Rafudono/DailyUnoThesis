@@ -52,7 +52,7 @@ Grid.Row="1">
         </Grid>
     </NavigationView>-->
 
-            <utu:TabBar Grid.Row="0" Orientation="Horizontal" Foreground="White"  Background="Transparent"  uen:Region.Attached="True" MinHeight="10" SelectedIndex="2"
+            <utu:TabBar Grid.Row="0" Orientation="Horizontal" Foreground="White"  Background="Transparent"  uen:Region.Attached="True" MinHeight="10" SelectedIndex="1"
                             ItemContainerStyle="{StaticResource DetectiveTabBarItemStyle}">
 
                     <utu:TabBarItem
