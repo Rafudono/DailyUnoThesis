@@ -46,6 +46,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         [ObservableProperty]
         private string taskDateSettings;
 
+        [ObservableProperty]
+        private bool isProject;
 
 
 
@@ -303,7 +305,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return applyDateSettings ?? new RelayCommand(async () =>
                 {
-
+                    await ViewModelStore.GetInstance().FillDataViewModels();
                 }
                 );
             }
@@ -343,6 +345,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         }
 
+        public void CreatNewTaskoutside()
+        {
+            
+            NewTask.Execute(null);
+        }
+        public void GetBoolProject(bool boolProject)
+        {
+            IsProject = boolProject;
+        }
 
 
         private RelayCommand newTask;
@@ -512,10 +523,18 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public void GetTask(Mission mission)
         {
+            if(Task.Id == mission.Id)
+                Task = new() { LevelUp = 1 };
             Task = mission;
-            if (Task.EndDate != DateTime.MinValue)
+            DeleteDateSettings.Execute(1);
+            if (Task.EndDate != null && Task.EndDate != DateTime.MinValue)
             {
                 SelectedDate = Task.EndDate;
+                if (Task.EndDate.Value.TimeOfDay != TimeSpan.Zero)
+                {
+                    UseTime = true;
+                    SelectedTime = Task.EndDate.Value.TimeOfDay;
+                }
             }
             else
             {
@@ -573,6 +592,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     Task.InverseIdUpMissionNavigation = Subtasks;
                     await EditSubtasksCategory(Task);
                 }
+                Task.IsProject = IsProject;
 
                 if (Task.Id == 0)
                 {
@@ -587,12 +607,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     Task = new();
                 else
                 {
-                    Mission mis = Task;
-                    Task = await APIHost.GetInstance().GetLastMission(Task.Id, Task.Title);
-                    Task.LevelUp = mis.LevelUp;
-                    Task.IdUpMissionNavigation = mis.IdUpMissionNavigation;
+                    Task = await APIHost.GetInstance().GetLastMission(Task);
                     Subtasks = (List<Mission>?)Task.InverseIdUpMissionNavigation;
-
                 }
                 await ViewModelStore.GetInstance().FillDataViewModels();
                 //await PageNavigation.GetInstance().CurPage.FillData();

@@ -1,0 +1,122 @@
+﻿<Page
+    x:Class="DailyUnoThesis.Presentation.View.Pages.Other.KanbanBoard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DailyUnoThesis.Presentation.View.Pages.Other"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+
+       xmlns:mv="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
+    xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
+    xmlns:con="using:DailyUnoThesis.Models.Conventers"
+      xmlns:model="using:DailyUnoThesis.Models"
+             xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
+      xmlns:help="using:DailyUnoThesis.Presentation.ViewModel.HelperClasses"
+       xmlns:uen="using:Uno.Extensions.Navigation.UI"
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+       xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+ xmlns:utu="using:Uno.Toolkit.UI"
+ xmlns:um="using:Uno.Material"
+      x:Name="PanelTask"
+ NavigationCacheMode="Enabled"
+    
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid x:Name="maingrid" Background="BlueViolet" uen:Region.Attached="True" >
+        <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <!-- Пространство для настроек и функций -->
+                <RowDefinition Height="*"/>
+                <!-- Сама доска -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ (Заготовка под функции) -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="20,10" Spacing="15">
+                <TextBlock Text="ДОСКА ПРОЕКТА" 
+                   VerticalAlignment="Center" 
+                   FontFamily="Segoe Print" FontSize="18" FontWeight="Bold" 
+                   Foreground="{StaticResource DarkGrayBrown}"/>
+
+                <!-- Сюда в будущем добавятся кнопки фильтров, поиска и т.д. -->
+                <Button Content="Фильтры" Style="{StaticResource TextButtonStyle}" /> <!--Tag="&#xE71C;"-->
+                <Button Content="Участники" Style="{StaticResource TextButtonStyle}"/> <!--Tag="&#xE716;"-->
+            </StackPanel>
+
+            <!-- 2. КАНБАН-ДОСКА В РАМКЕ -->
+            <Border Grid.Row="1" 
+            Margin="10,0,10,10" 
+            Padding="3"
+            Background="#4A3728" 
+            CornerRadius="4" 
+            BorderBrush="#311a11" 
+            BorderThickness="2">
+
+                <!-- Эффект тени внутри рамки для глубины -->
+                <Grid x:Name="Corkboard" Background="#C9A77C" BorderBrush="#311a11"  BorderThickness="2" CornerRadius="4">
+                    <!-- Цвет пробки -->
+
+                    <!-- Декоративная текстура (упрощенная "пробка") -->
+                    <Canvas Opacity="1">
+                        <!-- Можно добавить мелкий паттерн или шум, если Uno позволяет -->
+                        <Rectangle Height="10" Fill="Transparent" Stroke="Black" StrokeDashArray="20,20" Stretch="Fill" Opacity="0.5" Margin="0,5" StrokeThickness="2"/>
+                    </Canvas>
+
+                    <Grid  BorderThickness="2" BorderBrush="#311a11" CornerRadius="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Колонки с разделителями (как будто планки на доске) -->
+
+                        <!-- КОЛОНКА 1: ОЧЕРЕДЬ -->
+                        <Grid Grid.Column="0" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="ОЧЕРЕДЬ" Style="{StaticResource KanbanHeaderStyle}"/>
+                            <ListView Grid.Row="1" ItemsSource="{Binding QueueMissions}" 
+                              ItemContainerStyle="{StaticResource KanbanListViewItemStyle}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Style="{StaticResource StickerContainerStyle}" Margin="0,5">
+                                            <Grid Padding="15">
+                                                <TextBlock Text="{Binding Title}" FontFamily="Segoe Print" Foreground="#311a11" TextWrapping="Wrap"/>
+                                            </Grid>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+
+                        <!-- КОЛОНКА 2: В РАБОТЕ -->
+                        <Grid Grid.Column="1" Margin="5" BorderBrush="#8D6E63" BorderThickness="1,0,1,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="В РАБОТЕ" Style="{StaticResource KanbanHeaderStyle}"/>
+                            <ListView Grid.Row="1" />
+                        </Grid>
+
+                        <!-- КОЛОНКА 3: ЗАВЕРШЕНО -->
+                        <Grid Grid.Column="2" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="ЗАВЕРШЕНО" Style="{StaticResource KanbanHeaderStyle}"/>
+                            <ListView Grid.Row="1"  />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Page>

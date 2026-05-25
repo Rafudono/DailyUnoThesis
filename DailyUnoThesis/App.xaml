@@ -30,6 +30,9 @@
                 <ResourceDictionary Source="/Styles/Dictionary/StickerFlyoutStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/Dictionary/ColorStyles.xaml"/>
                 <ResourceDictionary Source="/Styles/Dictionary/NotebookTextBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/DetectiveComboBoxItemStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/DetectiveTabBarItemStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/TextBoxHeaderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
       <!-- Add resources here -->
@@ -70,9 +73,28 @@
 
             <SolidColorBrush x:Key="DarkGrayBrown" Color="#756C6C" />
 
-            <SolidColorBrush x:Key="StickerBrush" Color="#FEF9E7"/>
+            <SolidColorBrush x:Key="StickerBrushLight" Color="#FEF9E7"/>
             <SolidColorBrush x:Key="StickerBrush" Color="#E6E0B0"/>
             <!-- Ярче красный для темной темы -->
+
+            <RadialGradientBrush x:Key="ShadowBrush" 
+          Center="0.5,0.5" 
+          RadiusX="0.45" RadiusY="0.45" 
+          GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="Gray" Offset="0.7"/>
+                <GradientStop Color="Gray" Offset="0.8"/>
+                <GradientStop Color="Gray" Offset="0.9"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="Transparent" Offset="0.90"/>-->
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+                <GradientStop Color="Transparent" Offset="1"/>
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <!--<GradientStop Color="Transparent" Offset="1.0"/>-->
+            </RadialGradientBrush>
 
             <!--отмеченное в календаре сегодня-->
             <RadialGradientBrush x:Key="SelectedDayBrush" 
@@ -91,6 +113,44 @@
                 <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
                 <!--<GradientStop Color="Transparent" Offset="1.0"/>-->
             </RadialGradientBrush>
+
+            <RadialGradientBrush x:Key="BreakTimeBrush" 
+          Center="0.5,0.5" 
+          RadiusX="0.45" RadiusY="0.45" 
+          GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="#FEF9E7" Offset="0.8"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="Transparent" Offset="0.90"/>-->
+                <!--<GradientStop Color="#6F4E37" Offset="8"/>-->
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+
+                <GradientStop Color="#6F4E37" Offset="1"/>
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <!--<GradientStop Color="Transparent" Offset="1.0"/>-->
+            </RadialGradientBrush>
+
+            <RadialGradientBrush x:Key="WorkTimeBrush" 
+Center="0.5,0.5" 
+RadiusX="0.45" RadiusY="0.45" 
+GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="#FEF9E7" Offset="0.8"/>
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="Transparent" Offset="0.90"/>-->
+                <!--<GradientStop Color="#6F4E37" Offset="8"/>-->
+
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+
+                <GradientStop Color="{StaticResource ClueRedLightBrush}" Offset="1"/>
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <!--<GradientStop Color="Transparent" Offset="1.0"/>-->
+            </RadialGradientBrush> 
 
 
             <RadialGradientBrush x:Key="TodayRingBrush"
@@ -139,6 +199,25 @@ GradientOrigin="0.3,0.4">
                 <!--<GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.83"/>
 
                 --><!-- 85% до 95% — Сам красный цвет (толщина кольца) --><!--
+                <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.90"/>-->
+
+                <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->
+                <GradientStop Color="Transparent" Offset="1.0"/>
+            </RadialGradientBrush>
+
+            <RadialGradientBrush x:Key="TransparentGridBrushCat"
+Center="0.5,0.5" 
+RadiusX="0.5" RadiusY="0.5" 
+GradientOrigin="0.5,0.5">
+                <!-- 0% до 80% — Полная прозрачность (пустота внутри) -->
+                <GradientStop Color="{StaticResource DividerLightBrush}" Offset="0.50" />
+
+                <!-- 80% до 85% — Резкий переход в красный цвет -->
+                <!--<GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.83"/>
+
+                -->
+                <!-- 85% до 95% — Сам красный цвет (толщина кольца) -->
+                <!--
                 <GradientStop Color="{StaticResource ClueRedDarkLightBrush}" Offset="0.90"/>-->
 
                 <!-- 95% до 100% — Снова прозрачность (чтобы края были мягкими или исчезали) -->

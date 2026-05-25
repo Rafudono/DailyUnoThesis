@@ -5,17 +5,60 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="using:DailyUnoThesis.Presentation.View.Timer"
       xmlns:con="using:DailyUnoThesis.Models.Conventers"
-
+xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
            xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
        xmlns:dob="using:DailyUnoThesis.Models.DobleClasses"
    xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.TimerPagesControle" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       mc:Ignorable="d" 
-      DataContext="DynamicResource Control"
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="450" d:DesignWidth="800"
+
+
+
+
+
+    xmlns:uen="using:Uno.Extensions.Navigation.UI"
+xmlns:utu="using:Uno.Toolkit.UI"
+xmlns:um="using:Uno.Material"
+NavigationCacheMode="Required"
+          xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+      xmlns:ut="using:Uno.Themes"
+      x:Name="TimePageRoot">
     <Page.Resources>
         <con:MaxTimerConventer x:Key="MaxLength"/>
         <con:StringToIntConverter x:Key="StringToInt"/>
-        <control:PomodoroTimerControle x:Key="Control"/>
+        <!--<control:PomodoroTimerControle x:Key="Control"/>-->
+        <con:StringFormatTimeConverter x:Key="StringFormatTimeConverter"/>
+        <con:PlayPauseIconConverter x:Key="PlayPauseIconConverter"/>
+        <con:BoolToStringPlayButtonConverter x:Key="BoolToStringPlayButtonConverter"/>
+        <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <con:ArrowControlEnabledConventer x:Key="ArrowControlEnabledConventer"/>
+        <con:ArrowBackControlEnabledConventer x:Key="ArrowBackControlEnabledConventer"/>
+        <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <con:HeightConventer x:Key="HeightConventer"/>
+        <con:BoolToStringRoundTomatosConverter x:Key="BoolToStringRoundTomatosConverter"/>
+
+        
+
+
+        <!--HeightConventer-->
+
+        <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
+        <con:StringFormatConverter x:Key="StringFormatConverter" />
+        <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter"/>
+        <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+        <con:NullToVisibilityConverterTextBoxCategory x:Key="ConverterTextBoxVisibility"/>
+        <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
+        <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
+
+
+
+
+
+
 
         <Style TargetType="ToggleButton" x:Key="RadioLookToggleButton">
             <Setter Property="Template">
@@ -38,251 +81,1140 @@
     </Page.Resources>
 
     <Grid Background="BurlyWood">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="100" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!-- Когда окно узкое и пошел перенос, добавляем нахлёст -->
+                        <Setter Target="HelperGrid.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="700" />
+                    </VisualState.StateTriggers>
+                    <!-- Здесь обычные отступы -->
+                </VisualState>
+            </VisualStateGroup>
+            
+      
+        </VisualStateManager.VisualStateGroups>
+
+
         
-                <Grid>
-                    <Grid Width="200" Height="400" HorizontalAlignment="Right" Margin="5">
-                <ListBox>
-                    
-                </ListBox>
+        <Grid Background="#E9E9E9">
+            <!-- Общий фон страницы -->
 
-                    </Grid>
+            <Grid >
+                <Grid.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/PapersDoc.jpg" 
+             Stretch="UniformToFill" 
+             Opacity="0.8"/>
+                    <!-- Опционально: сделать фон менее ярким -->
+                </Grid.Background>
 
-
-                    <Grid Width="400" MinHeight="600" MaxHeight="1000" VerticalAlignment="Center" Background="Bisque" HorizontalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="4*"/>
-                    <RowDefinition Height="1.5*" />
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-
-
-
-
-
-
-                <Grid Height="140" Background="AliceBlue" Grid.Row="1"  VerticalAlignment="Top">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1.6*"></RowDefinition>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    
-               
-                <StackPanel  Background="BlanchedAlmond" Grid.Row="0" Orientation="Horizontal"  VerticalAlignment="Top">
-                    <!--<TabControl MinHeight="80" MinWidth="200" MaxHeight="200" VerticalAlignment="Top">
-                        <TabItem  Header="Pomodoro">
-                            <Grid>
-
-                                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" >
-                                        <TextBox  Name="textBox1" Height="50" Width="50" PreviewTextInput="TextBox_PreviewTextInput"
-               TextChanged="MaxLengthChanged"  Text="{Binding TextHour}"
-               PreviewKeyDown="NextTextBox" FontSize="35" TextAlignment="Center"/>
-
-                                        <TextBlock Height="50" Text=":" FontSize="35"/>
-                                        <TextBox Height="50" Width="50" Name="textBox2" PreviewTextInput="TextBox_PreviewTextInput"
-              TextChanged="MaxLengthChanged"
-              Text="{Binding TextMin, Converter={StaticResource MaxLength}, UpdateSourceTrigger=PropertyChanged}"
-              PreviewKeyDown="NextTextBox" FontSize="35" TextAlignment="Center"/>
-                                        <TextBlock Height="50" Text=":" FontSize="35"/>
-                                        <TextBox Height="50" Width="50" Name="textBox3" PreviewTextInput="TextBox_PreviewTextInput" 
-              TextChanged="MaxLengthChanged" Text="{Binding TextSec, ConverterParameter=OnlyMaxLeght, Converter={StaticResource MaxLength}, UpdateSourceTrigger=PropertyChanged}"
-              FontSize="35" TextAlignment="Center"/>
-
-                                    </StackPanel>
-                                    
-                                        <Button Margin="5 0 0 0"  Content="Start" Command="{Binding StartCountdownTimer}"/>
-
-                                    
-                                </StackPanel>
-                            </Grid>
-                        </TabItem>
-
-
-
-                        <TabItem Header="Pomodoro2">
-                            <Grid>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" >
-                                        <TextBox  Width="100" PreviewTextInput="TextBox_PreviewTextInput"
- Text="{Binding TextTime}"
-FontSize="35" TextAlignment="Right"/>
-                                        <ComboBox Width="66" ItemsSource="{Binding ListTime}" SelectedItem="{Binding SelectedListTime}" FontSize="21" VerticalContentAlignment="Center">
-
-                                        </ComboBox>
-
-                                    </StackPanel>
-                                   
-                                        <Button Content="Start" Margin="5 0 0 0" Command="{Binding StartSelectCountdownTimer}"/>
-
-                                   
-                                </StackPanel>
-                            </Grid>
-                        </TabItem>
-                    </TabControl>-->
-                    <Button Height="50" Content="Pause/Start" Command="{Binding StopCountdownTimer}" VerticalAlignment="Bottom" Margin="5 0 0 5"/>
-                        <Button Content="Repeats" Height="50" VerticalAlignment="Bottom" Margin="5 0 0 5" Click="Button_Click"/>
-                  
-                </StackPanel>
-                    <StackPanel Grid.Row="1" >
-                        <TextBlock >
-                            <Run Text="Количество Повторов: "/>
-                            <Run  Text="{Binding CountdownTimer.Repetitions}"/>
-                        </TextBlock>
-                        <!--<TextBlock   PreviewTextInput="TextBox_PreviewTextInput" 
- Text="{Binding CountdownTimer.BreakTime, StringFormat=hh\\:mm\\:ss}" 
-FontSize="25"/>-->
-
-                    </StackPanel>
-                </Grid>
-
-
-                <Ellipse Width="300" VerticalAlignment="Center" 
-Height="300" StrokeThickness="6" Margin="5">
+                <ScrollViewer >
                    
-                   
-                </Ellipse>
-                <Grid HorizontalAlignment="Center" Height="300" VerticalAlignment="Center" >
-                    <!--<TextBlock  FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Center" Text="00:00:00"/>-->
+                        <!--<VariableSizedWrapGrid Width="1200" Margin="3 60 3 7" Orientation="Horizontal" HorizontalAlignment="Center" Background="Red" >-->
 
-                    <!--<TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" PreviewTextInput="TextBox_PreviewTextInput" 
- Text="{Binding CountdownTimer.RemainingTime}" 
-FontSize="70" TextAlignment="Right"/>-->
+                    <Grid  Padding="-5 10 0 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.6*" MinWidth="380" x:Name="Test"/>
+                            <ColumnDefinition Width="Auto" x:Name="CenterScreen" />
+                            <ColumnDefinition  x:Name="PaneColumn" Width="0" MaxWidth="480"/>
+                            <!--<ColumnDefinition Width="0.5*" />-->
+
+                        </Grid.ColumnDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="PaneStates">
+
+                                <VisualState x:Name="InlinePanel">
+                                    <VisualState.StateTriggers>
+                                        <StateTrigger IsActive="{Binding IsEnoughSpace}" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="PaneColumn.Width" Value="0.3*" />
+                                        <Setter Target="PaneColumn.MinWidth" Value="350" />
+                                        <Setter Target="SettingsPanel.Margin" Value="30 0" /> 
+                                        <!--<Setter Target="ListSpace.Visible" Value="Collapsed" />-->
+
+                                        <!--<Setter Target="DetailsPane.Visibility" Value="Collapsed" />-->
+
+                                    </VisualState.Setters>
+                                </VisualState>
+                                
+                                <VisualState x:Name="OverlayPanel">
+                                    <VisualState.StateTriggers>
+                                        <StateTrigger IsActive="{Binding IsDarkSpace}" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="DarkSpace.Visibility" Value="Visible" />
+                                        <!--<Setter Target="ListSpace.Visible" Value="Collapsed" />-->
+
+                                        <!--<Setter Target="DetailsPane.Visibility" Value="Collapsed" />-->
+
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <!--СОСТОЯНИЕ: ПАНЕЛЬ ОТКРЫТА-->
+                            
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="PaneStatesOpen">
+                                <VisualState x:Name="Open">
+                                    <VisualState.StateTriggers>
+                                        <StateTrigger IsActive="{Binding IsPaneOpen}" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <!--<Setter Target="PaneColumn.Width" Value="0.3*" />
+            <Setter Target="PaneColumn.MinWidth" Value="350" />-->
+                                        <!--<Setter Target="ListSpace.Tag" Value="true" />-->
+
+                                        <Setter Target="ListSpace.Visibility" Value="Visible" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="PaneStatesOpenWidth">
+                                <VisualState x:Name="OpenWidth">
+                                    <VisualState.StateTriggers>
+                                        <StateTrigger IsActive="{Binding IsEnoughSpace}" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <!--<Setter Target="PaneColumn.Width" Value="0.3*" />
+            <Setter Target="PaneColumn.MinWidth" Value="350" />-->
+                                        <!--<Setter Target="ListSpace.Tag" Value="true" />-->
+
+                                        <Setter Target="ListSpace.Visibility" Value="Visible" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid  x:Name="GridGrid" Width="Auto" />
+
+                        <!-- Основной стикер -->
+                        <ContentControl Style="{StaticResource StickerContainerStyle}"  Margin="0 0 0 0"  MinWidth="390" MinHeight="400" Padding="10 10 10 20" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                            <StackPanel>
+                                <Grid Padding="0" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Spacing="5">
+
+                                    <!-- Циферблат -->
+                                        <Grid x:Name="ClockFace" MinWidth="300" MinHeight="300"  VerticalAlignment="Top" Margin="0 10 0 0" >
+                                        <!-- Эффект "наброска": три линии с разным DashArray создают вид небрежного круга -->
+                                        <Grid  Visibility="{Binding CountdownTimer.BreakTimer, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                        <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="2" Opacity="0.4" Margin="2"/>
+                                        <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="1" Opacity="0.2" Margin="-2" StrokeDashArray="4,2"/>
+                                        <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="1.5" Opacity="0.3" Margin="5" StrokeDashArray="10,5"/>
+
+                                        <Grid >
+                                            <!-- Основное кольцо пятна (неровное и мягкое) -->
+                                            <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="6" Opacity="0.2" Margin="0" >
+                                                <!--<Ellipse.BlurEffect>
+             -->
+                                                <!-- Если Uno поддерживает, добавляем легкое размытие -->
+                                                <!--
+         </Ellipse.BlurEffect>-->
+                                            </Ellipse>
+
+                                            <!-- Второе кольцо (внутренний ободок чашки) -->
+                                            <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="2" Opacity="0.15" Margin="10" StrokeDashArray="15,2,10,5" />
+                                            <Ellipse Stroke="{StaticResource ClueRedLightBrush}" StrokeThickness="2" Opacity="0.15" Margin="10" StrokeDashArray="15,2,10,5" Fill="{StaticResource WorkTimeBrush}"/>
+
+                                            <!-- Эффект "пролитого кофе" (небольшое пятнышко сбоку) -->
+                                            <!--<Ellipse Fill="#6F4E37" Width="40" Height="30" Opacity="0.1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,30">
+                                                <Ellipse.RenderTransform>
+                                                    <RotateTransform Angle="30"/>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>-->
+                                        </Grid>
+                                        </Grid>
+                                        <Grid  Visibility="{Binding CountdownTimer.BreakTimer, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <!-- СЛОЙ 1: КАРАНДАШНЫЙ НАБРОС (ВИДИМ ПРИ РАБОТЕ) -->
+                                            <!-- Используем Visibility, привязанный к свойству IsBreak (нужен инвертированный конвертер) -->
+                                            <Canvas >
+                                                <Ellipse Stroke="{StaticResource BackgroundDarkBrush}" StrokeThickness="2" Opacity="0.4" Margin="2" />
+                                                <Ellipse Stroke="{StaticResource BackgroundDarkBrush}" StrokeThickness="1" Opacity="0.2" Margin="-2" StrokeDashArray="4,2"/>
+                                                <Ellipse Stroke="{StaticResource BackgroundDarkBrush}" StrokeThickness="1.5" Opacity="0.3" Margin="5" StrokeDashArray="10,5" />
+                                            </Canvas>
+
+                                            <!-- СЛОЙ 2: КОФЕЙНЫЙ СЛЕД (ВИДИМ ПРИ ПЕРЕРЫВЕ) -->
+                                            <Grid Visibility="{Binding IsBreakMode}">
+                                                <!-- Основное кольцо пятна (неровное и мягкое) -->
+                                                <Ellipse Stroke="#6F4E37" StrokeThickness="6" Opacity="0.2" Margin="0" >
+                                                    <!--<Ellipse.BlurEffect>
+             -->
+                                                    <!-- Если Uno поддерживает, добавляем легкое размытие -->
+                                                    <!--
+         </Ellipse.BlurEffect>-->
+                                                </Ellipse>
+
+                                                <!-- Второе кольцо (внутренний ободок чашки) -->
+                                                <Ellipse Stroke="#4B3621" StrokeThickness="2" Opacity="0.15" Margin="10" StrokeDashArray="15,2,10,5" />
+                                                <Ellipse Stroke="#4B3621" StrokeThickness="2" Opacity="0.15" Margin="10" StrokeDashArray="15,2,10,5" Fill="{StaticResource BreakTimeBrush}"/>
+
+                                                <!-- Эффект "пролитого кофе" (небольшое пятнышко сбоку) -->
+                                                <!--
+     <Ellipse Fill="#6F4E37" Width="40" Height="30" Opacity="0.1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,30">
+         <Ellipse.RenderTransform>
+             <RotateTransform Angle="30"/>
+         </Ellipse.RenderTransform>
+     </Ellipse>-->
+                                            </Grid>
+                                        </Grid>
+
+                                        <!-- Таймер -->
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TimerDisplay" 
+                                       Text="{Binding CountdownTimer.RemainingTime, Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}" 
+                                       FontSize="74" 
+                                       FontFamily="Comic Sans MS" 
+                                       FontWeight="Bold" 
+                                       Foreground="{StaticResource InkBlueLightBrush}"/>
+                                                <!--54-->
 
 
 
-                </Grid>
-                        
-                <Grid Height="300" Background="AntiqueWhite" Grid.Row="2" VerticalAlignment="Top">
-                    
-         
-                <StackPanel >
-                    
-                    <Button Content="SaveЕemplateTimer" />
-                        <Button Content="AddRepeats"/>
-                        <Button Content="AddBreaks"/>
-                    </StackPanel>
-                </Grid>
-
-
-
-            </Grid>
-                </Grid>
-
-        <!--<Grid x:Name="RepeatPanel" Visibility="Collapsed">
-            <Grid Background="DarkGray" Opacity="0.6"  MouseLeftButtonDown="VisibilityRepeats">
-                
-            </Grid>
-              
-        <Grid Background="DarkKhaki" MinHeight="200" MaxHeight="500" MinWidth="250" MaxWidth="380">
-            <StackPanel >
-                    <TextBlock Text="Количество повторов:" FontSize="19"/>
-
-                    <ListBox ItemsSource="{Binding ListNumderRepeats}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="x:Type dob:ClassCheckad">
-                                <Grid>
-                                    <StackPanel Orientation="Horizontal">
-                                        <RadioButton VerticalContentAlignment="Center" FontSize="19" IsChecked="{Binding Check}"
-HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding Content}" GroupName="{Binding Group}"/>
-                                        <TextBox x:Name="OurAnswer" IsEnabled="False" Visibility="Collapsed" PlaceholderText="TextBox_PreviewTextInput" Margin="10 0" Text="{Binding Value}" Width="50" FontSize="19"/>
-
-                                    </StackPanel>
-                                    
-                                                   
-                                </Grid>
-                                --><!--<DataTemplate.Triggers>
-                                    <DataTrigger  Binding="{Binding Content}" Value="Свой вариант">
-                                        <Setter Property="Visibility" Value="Visible" TargetName="OurAnswer"/>
-                                     
-                                    </DataTrigger>
-                               
-                                    <DataTrigger  Binding="{Binding Check}" Value="true">
-                                        <Setter Property="IsEnabled" Value="True" TargetName="OurAnswer"/>
-
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>--><!--
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-
-                    --><!--<Grid>
-                        <ToggleButton Content="{Binding Content}" IsChecked="{Binding Check, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding Group}">
-                            <ToggleButton.Template>
-                                <ControlTemplate TargetType="ToggleButton">
-                                    <Grid>
-                                        <RadioButton IsChecked="{TemplateBinding IsChecked}"
-HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}" GroupName="{TemplateBinding Tag}"/>
-                                        <Border Background="Transparent"/>
+                                                <!-- Подпись сессии -->
+                                            <TextBlock Text="сессия №1" 
+                                       HorizontalAlignment="Center" 
+                                       FontFamily="Segoe Print" 
+                                       FontSize="14" Opacity="0.5" Margin="0,-10,0,0"/>
+                                        </StackPanel>
                                     </Grid>
-                                </ControlTemplate>
-                            </ToggleButton.Template>
-                        </ToggleButton>
-                    </Grid>-->
-
-                    <!--<TextBox x:Name="NumderRepeats"   Text="Свой вариант" FontSize="19">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="GotFocus">
-                                <i:InvokeCommandAction Command="{Binding SaveRepeatTimer}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-
-                    </TextBox>--><!--
 
 
-                    <StackPanel Margin="0 10" >
-                        <TextBlock Text="Время перерыва:" FontSize="19"/>
-                        <ListBox ItemsSource="{Binding ListTimeBreak}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate x:DataType="dob:ClassCheckad">
-                                    <Grid>
-                                        <StackPanel Orientation="Horizontal">
-                                            <RadioButton VerticalContentAlignment="Center" FontSize="19" IsChecked="{Binding Check}"
-HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding Content}" GroupName="{Binding Group}"/>
+                                        
+                                        <Button Height="35" FontFamily="Comic Sans MS" x:Name="DoubleTimerButton"  MaxHeight="40"
+                                                        Style="{StaticResource StampTogButtonStyle}" helperstyle:ButtonHelper.IconGlyph="&#xE713;"
+                                                        FontWeight="Bold"  Tag="{Binding IsDoubleTimer}" HorizontalAlignment="Left" >
+                                            <StackPanel Orientation="Horizontal" Spacing="0">
+                                                <TextBlock FontFamily="Segoe Print" FontWeight="Bold" VerticalAlignment="Top" FontSize="14" Text="Запустить с отслеживанием"
+                                                       IsHitTestVisible="False" Background="Transparent" Padding="0" Margin="2 -5 0 0" ></TextBlock>
+                                                <!--<Button Content="&#xE106;" Visibility="{Binding PomodoroTime.IsSample, Source={StaticResource GlobalStore},  Converter={StaticResource BoolToVisibilityConverter}}"
+    x:Name="ClearButSample" Command="{Binding PomodoroTime.ClearSample, Source={StaticResource GlobalStore}}" 
+Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="20" FontWeight="Bold" Foreground="White" FontSize="15" FontFamily="Segoe MDL2 Assets">
+                                            </Button>-->
 
-                                            <StackPanel Margin="10 0" IsTapEnabled="False" Visibility="Collapsed"  x:Name="OurAnswer" Orientation="Horizontal">
-                                                <TextBox PlaceholderText="TextBox_PreviewTextInput"  Text="{Binding Value}" FontSize="19"/>
-                                                <ComboBox Width="66"   SelectedItem="{Binding SecondValue}" FontSize="20" VerticalContentAlignment="Top">
-                                                    <ComboBoxItem Content="сек"/>
-                                                    <ComboBoxItem Content="мин"/>
-                                                    <ComboBoxItem Content="час"/>
-                                                    
-
-                                                </ComboBox>
                                             </StackPanel>
+
+                                            <Button.Flyout>
+                                                <Flyout FlyoutPresenterStyle="{StaticResource StickerFlyoutStyle}" x:Name="ContentContainer">
+                                                    <StackPanel Spacing="5">
+                                                        <CheckBox x:Name="StopTimeForBreak" Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}" Width="315" Content="Учитывать перерывы"
+                                                  FontFamily="Segoe Print" FontSize="17" IsChecked="{Binding IsStopForBreak, Mode=TwoWay}" />
+
+                                                        <CheckBox x:Name="AbsoluteEnd" Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}" Width="315" Content="Останавливать всё по завершению Помодоро"
+                                                  FontFamily="Segoe Print"  FontSize="17" IsChecked="{Binding IsAbsoluteEnd, Mode=TwoWay}" />
+                                                        
+                                                        <Button FontSize="18" FontWeight="Bold" Content="Запустить" Command="{Binding StartDoubleTimer}" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"
+                                                         helperstyle:ButtonHelper.IconGlyph="&#xE768;" Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+                                                                IsEnabled="{Binding Main.IsPause, Source={StaticResource GlobalStore}}"/>
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                        
+                                        <Grid Height="10"/>
+
+
+
+
+                                        <!-- Кнопки управления (в стиле штампов) -->
+                                    <!--<Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    -->
+                                    <!-- Кнопка Старт/Пауза -->
+                                    <!--
+                                    <Button Grid.Column="0" HorizontalAlignment="Center" Style="{StaticResource TextsButtonStyle}">
+                                        <Border BorderBrush="Green" BorderThickness="2" Padding="15,5" CornerRadius="2">
+                                            <TextBlock Text="В РАБОТУ" FontFamily="Segoe Print" FontWeight="Bold" Foreground="Green" Opacity="0.8"/>
+                                        </Border>
+                                    </Button>
+
+                                    -->
+                                    <!-- Кнопка Сброс -->
+                                    <!--
+                                    <Button Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource TextsButtonStyle}">
+                                        <Border BorderBrush="{StaticResource ClueRedLightBrush}" BorderThickness="2" Padding="15,5" CornerRadius="2">
+                                            <TextBlock Text="ОТБОЙ" FontFamily="Segoe Print" FontWeight="Bold" Foreground="{StaticResource ClueRedLightBrush}" Opacity="0.8"/>
+                                        </Border>
+                                    </Button>
+                                </Grid>-->
+                                    </StackPanel>
+
+                                    
+                                   
+
+                                </Grid>
+                                
+                          
+                            </StackPanel>
+                        </ContentControl>
+
+                        <!--<Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Violet" HorizontalAlignment="Right"/>
+
+                        <Grid Grid.Column="1" Background="Red" x:Name=""/>
+                        <Grid Grid.Column="2" Background="Aqua"/>-->
+
+
+
+
+
+                        <!--НАСТРОЙКИ ТАЙМЕРА-->
+                        <StackPanel x:Name="SettingsPanel" Grid.ColumnSpan="2" Margin="0 0 0 0"  HorizontalAlignment="Right">
+                            <Grid Visibility="Collapsed" MinHeight="290" x:Name="HelperGrid"  Width="{Binding Width, ElementName=Test}" Height="{Binding Height, ElementName=ClockFace}" Margin="0 20"/>
+                            <StackPanel   MinHeight="300"   x:Name="AdditionalSettings" HorizontalAlignment="Right" Grid.Row="1"  >
+                                <ContentControl   MinHeight="360"  Style="{StaticResource StickerContainerStyle}" HorizontalAlignment="Center" Grid.Row="1">
+                            <!-- Меняем скотч на "скрепку" или просто другой наклон -->
+                                <Grid  MinHeight="360" Padding="15 20" Background="#FDFEFE">
+                                        <StackPanel x:Name="SettingPanel" MinWidth="325" MaxWidth="420" MinHeight="350" Spacing="10" HorizontalAlignment="Center" Padding="0 0 00 0">
+                                            <Grid>
+                                                <Button Padding="5" Height="35" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Left" Content="Сохранить"
+          Command="{Binding CheckSavePomodoroTimer}" IsEnabled="{Binding CountdownTimer.IsPaused}" />
+
+                                                <Button Height="35" FontFamily="Comic Sans MS" x:Name="SampleButton"  MaxHeight="40" 
+                                                        Style="{StaticResource StampTogButtonStyle}" helperstyle:ButtonHelper.IconGlyph="&#xE713;"
+                                                        FontWeight="Bold"  Tag="{Binding IsSample}" HorizontalAlignment="Right" Command="{Binding OpenPanelSample}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="0">
+                                                        <TextBlock FontFamily="Segoe Print" FontWeight="Bold" VerticalAlignment="Top" FontSize="16" Text="Шаблоны" IsHitTestVisible="False" Background="Transparent" Padding="0" Margin="2 -5 0 0" ></TextBlock>
+                                                        <Button Content="&#xE106;" Visibility="{Binding PomodoroTime.IsSample, Source={StaticResource GlobalStore},  Converter={StaticResource BoolToVisibilityConverter}}"
+    x:Name="ClearButSample" Command="{Binding PomodoroTime.ClearSample, Source={StaticResource GlobalStore}}" 
+Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="20" FontWeight="Bold" Foreground="White" FontSize="15" FontFamily="Segoe MDL2 Assets">
+                                                        </Button>
+
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
+
+                                            <!--<Button Padding="5" Height="35" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Left" Content="Сохранить"
+                                                    Command="{Binding CheckSavePomodoroTimer}" />-->
+
+
+                                            <!-- Переключатель режимов (в стиле вкладок или просто кнопок) -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5">
+                                        <RadioButton x:Name="ModeUnit" Content="Классический" FontFamily="Segoe Print" FontSize="13" IsChecked="{Binding ModeHmsTime, Mode=TwoWay}"/>
+                                                <RadioButton x:Name="ModeHms" Content="Точное время"  FontFamily="Segoe Print" FontSize="13"  IsChecked="{Binding ModeSettingTime}"/>
+
+                                    </StackPanel>
+
+                                    <!-- КОНТЕЙНЕР ДЛЯ ВВОДА -->
+                                    <Grid VerticalAlignment="Top" Margin="0 -10 0 0">
+
+                                        <!-- ВАРИАНТ 1: ЧЧ:ММ:СС -->
+                                                <StackPanel Visibility="{Binding IsChecked, ElementName=ModeHms, Converter={StaticResource BoolToVisibilityConverter}}"
+HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center">
+
+                                            <TextBox x:Name="textBox1" Width="50" VerticalAlignment="Top" FontSize="24"  TextChanging="TimeTextBox_TextChanged" PreviewKeyDown="TimeTextBox_KeyDown" 
+         Text="{Binding TextHour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}}"
+         BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging" PlaceholderText="00" HorizontalTextAlignment="Center"
+         MaxLength="2" InputScope="Number" Foreground="{StaticResource InkBlueLightBrush}"
+          Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                            <TextBlock Foreground="{StaticResource InkBlueLightBrush}" Text=":" FontSize="35" VerticalAlignment="Top" Margin="5,-5,5,10" FontFamily="Segoe Print" FontWeight="Bold"/>
+
+                                            <TextBox  x:Name="textBox2" Width="50" VerticalAlignment="Top" TextChanging="TimeTextBox_TextChanged"  PreviewKeyDown="TimeTextBox_KeyDown"
+         Text="{Binding TextMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='Limit59'}"
+         BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging" PlaceholderText="00" 
+         MaxLength="2" InputScope="Number" Foreground="{StaticResource InkBlueLightBrush}"
+         Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                            <TextBlock Foreground="{StaticResource InkBlueLightBrush}" Text=":" FontSize="35" VerticalAlignment="Top" Margin="5,-5,5,19" FontFamily="Segoe Print" FontWeight="Bold"/>
+
+                                            <TextBox x:Name="textBox3" Width="50" VerticalAlignment="Top" TextChanging="TimeTextBox_TextChanged"  PreviewKeyDown="TimeTextBox_KeyDown"
+         Text="{Binding TextSec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='Limit59'}"
+         BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging" PlaceholderText="00"
+         MaxLength="2" InputScope="Number" Foreground="{StaticResource InkBlueLightBrush}"
+         Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+                                        </StackPanel>
+                                                    <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 -20 0 0"
+                                                     Visibility="{Binding SecondNullTimer, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                        <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                        <!--Priority-->
+                                                        <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Должно быть заполнено хотя бы 1 поле" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                        <!-- ВАРИАНТ 2: Значение + Выбор единицы -->
+                                                <StackPanel Spacing="20" Visibility="{Binding IsChecked, ElementName=ModeUnit, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center">
+
+                                            <Button x:Name="backward" IsEnabled="{Binding TextTime, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Classic}" FontSize="25" Width="30"
+           helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+           Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+           Command="{Binding AdjustTimeCommand}" CommandParameter="Timer:-1"></Button>
+
+
+
+                                            <TextBox Width="60" x:Name="Classic" TextChanging="TimeClassicTextBox_TextChanged" 
+                                                             Text="{Binding TextTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='Classic'}"
+         VerticalAlignment="Top" Foreground="{StaticResource InkBlueLightBrush}"
+         BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+         InputScope="Number"
+         Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                            <Button x:Name="forward" IsEnabled="{Binding TextTime, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Classic}" FontSize="25" Width="30"
+          helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+          Command="{Binding AdjustTimeCommand}" CommandParameter="Timer:1"></Button>
+
+                                            <TextBlock VerticalAlignment="Center" FontFamily="Segoe Print"  Text="Минут" FontWeight="ExtraBlack" FontSize="20" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                            <!--<ComboBox Width="120" Margin="10,-10,0,0" SelectedIndex="0" PlaceholderText="Время" Height="40"
+          VerticalAlignment="Center" Tag="&#xE916;"
+          SelectedItem="{Binding SelectedListTime, Mode=TwoWay}"
+           Style="{StaticResource DetectiveComboBoxStyle}">
+                                                        <ComboBoxItem Content="Секунд"/>
+                                                        <ComboBoxItem Content="Минут"/>
+                                                        <ComboBoxItem Content="Часов"/>
+                                                    </ComboBox>-->
+                                        </StackPanel>
+                                                    <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 -20 0 0"
+                                                     Visibility="{Binding IsEnabled, ElementName=backward, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                        <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                        <!--Priority-->
+                                                        <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 10 минут" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+
+                                           
+
+
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 -10">
+
+                                        <Button  FontSize="18"  Content="Рестарт" Command="{Binding RestartCountdownTimer}" FontWeight="Bold" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"  helperstyle:ButtonHelper.IconGlyph="&#xE895;" IsEnabled="{Binding CountdownTimer.Restart}"
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" />
+
+                                            <Button FontSize="18" FontWeight="Bold" Content="{Binding CountdownTimer.IsPaused, Converter={StaticResource BoolToStringPlayButtonConverter}}" Command="{Binding StartCountdownTimer}" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"
+                                                         helperstyle:ButtonHelper.IconGlyph="{Binding CountdownTimer.IsPaused, Converter={StaticResource PlayPauseIconConverter}}"
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" IsEnabled="{Binding CountdownTimer.IsEnd, Converter={StaticResource InverseBoolConverter}}"/>
+
+                                    </StackPanel>
+
+                                        <Rectangle Height="1" Fill="Transparent" 
+Stroke="Black" 
+StrokeDashArray="6,1" 
+Stretch="Fill" Opacity="0.5" Margin="0,10"/>
+
+
+
+
+                                            
+                                            
+                                            <TextBox  Visibility="{Binding IsSelectedMission, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                                   VerticalAlignment="Top" Foreground="{StaticResource InkBlueLightBrush}" PlaceholderText="Над чем работаете?" Text="{Binding NameTimer, Mode=TwoWay}"
+                                                  Style="{StaticResource NotebookTimerTextBoxStyle}" HorizontalContentAlignment="Left" TextAlignment="Left"/>
+                                            
+                                            <Border Padding="3" BorderBrush="{StaticResource InkBlueLightBrush}" BorderThickness="0 0 0 2" Visibility="{Binding IsSelectedMission, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 -10 0 0">
+                                                <StackPanel>
+                                                    <Button Grid.Row="2" Content="&#xE106;" Margin="0 0 0 -6" FontSize="18" FontWeight="Black" HorizontalAlignment="Right" Padding="0" CornerRadius="0" Style="{StaticResource StampButtonStyle}" Command="{Binding ClearMission}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"  Visibility="{Binding IsSelectedMission, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="{Binding NameTimer}" FontFamily="Comic Sans MS" FontSize="28"/>
+                                                </StackPanel>
+                                            </Border>
+                                            
+                                            <Button Height="33" FontFamily="Comic Sans MS" x:Name="MissionsButton"  MaxHeight="40" Margin="0 -5"
+                                                        Style="{StaticResource StampTogButtonStyle}" helperstyle:ButtonHelper.IconGlyph="&#xE713;"
+                                                        FontWeight="Bold"  Tag="{Binding IsSelectedMission}" HorizontalAlignment="Center" Command="{Binding OpenPanelTree}">
+                                                <StackPanel Orientation="Horizontal" Spacing="0">
+                                                    <TextBlock FontFamily="Segoe Print" FontWeight="Bold" VerticalAlignment="Top" FontSize="16" Text="Выбрать из списка" IsHitTestVisible="False" Background="Transparent" Padding="0" Margin="2 -5 0 0" ></TextBlock>
+                                                    <Button Content="&#xE106;" Visibility="{Binding PomodoroTime.IsSelectedMission, Source={StaticResource GlobalStore},  Converter={StaticResource BoolToVisibilityConverter}}"
+    x:Name="ClearButMissions" Command="{Binding PomodoroTime.ClearMission, Source={StaticResource GlobalStore}}" 
+Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="20" FontWeight="Bold" Foreground="White" FontSize="15" FontFamily="Segoe MDL2 Assets">
+                                                    </Button>
+
+                                                </StackPanel>
+                                            </Button>
+
+                                            <Rectangle Height="1" Fill="Transparent" 
+Stroke="Black" 
+StrokeDashArray="6,1" 
+Stretch="Fill" Opacity="0.5" Margin="0,0"/>
+
+                                        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 -10 0 0"
+                                                  Visibility="{Binding Warning, Converter={StaticResource BoolToVisibilityConverter}}" ><!--Warning-->
+                                            <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                            <!--Priority-->
+                                            <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Число будет заменено на указанное" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
                                         </StackPanel>
 
+                                        <CheckBox x:Name="BreakAndReapits" Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}" Width="215" Content="Перерывы и раунды"
+                                                  FontFamily="Segoe Print" FontSize="17" IsChecked="{Binding IsRepetitions, Mode=TwoWay}" Margin="0 -5 0 -10"/>
 
-                                    </Grid>
-                                    --><!--<DataTemplate.Triggers>
-                                        <DataTrigger  Binding="{Binding Content}" Value="Свой вариант">
-                                            <Setter Property="Visibility" Value="Visible" TargetName="OurAnswer"/>
+                                    <!--КОНТЕЙНЕР ДЛЯ ДОПОЛНИТЕЛЬНЫХ НАСТРОЕК ТАЙМЕРА-->
+                                    <StackPanel Visibility="{Binding IsChecked, ElementName=BreakAndReapits, Converter={StaticResource BoolToVisibilityConverter}}">
 
-                                        </DataTrigger>
+                                            <Grid HorizontalAlignment="Left">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="151"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="50"/>
+                                                    <RowDefinition Height="50"/>
+                                                    <RowDefinition Height="50"/>
+                                                    <RowDefinition />
+                                                    <RowDefinition Height="40"/>
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                
+                                           
+                                        <!--КОРОТКИЙ ПЕРЕРЫВ-->
+                                                
+                                                <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 0"
+                                                            Visibility="{Binding IsEnabled, ElementName=backwardShortBreak, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                    <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/> <!--Priority-->
+                                                    <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 5 минут" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                </StackPanel>
+                                               
+                                                <TextBlock   VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Короткий перерыв:" FontWeight="ExtraBlack"
+           FontSize="14" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                                <Button x:Name="backwardShortBreak" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                            IsEnabled="{Binding ShortBreak, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Short}" 
+           helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+           Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+           Command="{Binding AdjustTimeCommand}" CommandParameter="Short:-1"></Button>
 
-                                        <DataTrigger  Binding="{Binding Check}" Value="true">
-                                            <Setter Property="IsEnabled" Value="True" TargetName="OurAnswer"/>
-
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>--><!--
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
 
 
-                        --><!--<StackPanel Orientation="Horizontal">
-                    <TextBox Text="Свой вариант" FontSize="19"/>
-                    <ComboBox Width="66" ItemsSource="{Binding ListTime}" SelectedItem="{Binding SelectedListTime}" FontSize="20" VerticalContentAlignment="Top">
+                                                    <TextBox Width="40" x:Name="Short"  TextChanging="TimeClassicTextBox_TextChanged" FontSize="16"
+                                                             Text="{Binding ShortBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='Classic'}"
+         VerticalAlignment="Top"  Foreground="{StaticResource InkBlueLightBrush}"
+         BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+         InputScope="Number"
+         Style="{StaticResource NotebookTimerTextBoxStyle}"/>
 
-                    </ComboBox>
-                </StackPanel>--><!--
-                </StackPanel>
-                <Button Content="Save" Command="{Binding SaveRepeatTimer}"/>
-                    <Button Content="Close" Click="VisibilityRepeatsCol"/>
+                                            <Button x:Name="forwardShortBreak" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                            IsEnabled="{Binding ShortBreak, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Short}" 
+          helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+          Command="{Binding AdjustTimeCommand}" CommandParameter="Short:1"></Button>
+                                            </StackPanel>
 
-            </StackPanel>
+                                                <TextBlock  Grid.Column="2" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Минут" FontWeight="ExtraBlack" Margin="-6 0"
+                                                               FontSize="13" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                     
+
+                                        <!--ДЛИННЫЙ ПЕРЕРЫВ-->
+                                                <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 0"
+                                                            Visibility="{Binding IsEnabled, ElementName=backwardBigBreak, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                    <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    <!--Priority-->
+                                                    <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 15 минут" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                </StackPanel>
+                                                
+                                                <TextBlock Grid.Row="1" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Длинный перерыв:  " FontWeight="ExtraBlack"
+  FontSize="14" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                                <StackPanel VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                                                    <Button x:Name="backwardBigBreak" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding BigBreak, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Big}" 
+  helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+  Command="{Binding AdjustTimeCommand}" CommandParameter="Big:-1"></Button>
+
+                                                    <TextBox Width="40"  x:Name="Big"  TextChanging="TimeClassicTextBox_TextChanged" FontSize="16"
+                                                    Text="{Binding BigBreak, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='Classic'}"
+VerticalAlignment="Top"  Foreground="{StaticResource InkBlueLightBrush}"
+BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+InputScope="Number"
+Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                            <Button x:Name="forwardBigBreak" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding BigBreak, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Classic}" 
+ helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+ Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+ Command="{Binding AdjustTimeCommand}" CommandParameter="Big:1"></Button>
+                                                </StackPanel>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Минут" FontWeight="ExtraBlack" Margin="-6 0"
+                                                      FontSize="13" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                       
+
+
+                                        <!--ПОМОДОРОК В РАУНДЕ-->
+                                                <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 0"
+                                                            Visibility="{Binding IsEnabled, ElementName=backwardTomatoesInRound, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                    <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    <!--Priority-->
+                                                    <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 1" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                </StackPanel>
+
+                                                <TextBlock Grid.Row="2" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Помидорок в раунде:  " FontWeight="ExtraBlack"
+  FontSize="14" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                                <StackPanel VerticalAlignment="Bottom" Grid.Row="2" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Left">
+                                                    <Button x:Name="backwardTomatoesInRound" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding TomatoesInRound, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Count}" 
+  helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+  Command="{Binding AdjustTimeCommand}" CommandParameter="TomatRount:-1"></Button>
+
+                                                    <TextBox Width="40" x:Name="TomatoesInRound"  TextChanging="TimeClassicTextBox_TextChanged" FontSize="16"
+                                                    Text="{Binding TomatoesInRound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='TomatoAndRound'}"
+VerticalAlignment="Top"  Foreground="{StaticResource InkBlueLightBrush}"
+BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+InputScope="Number"
+Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                                <Button x:Name="forwardTomatoesInRound" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding TomatoesInRound, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Count}" 
+ helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+ Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+ Command="{Binding AdjustTimeCommand}" CommandParameter="TomatRount:1"></Button>
+                                                </StackPanel>
+
+
+
+
+                                                <!--ВЫБОР МЕЖДУ РАУНДАМИ ИЛИ ПОМИДОРКАМИ-->
+                                                <StackPanel Margin="0 10 0 0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+                                                    <Border BorderBrush="{StaticResource InkBlueLightBrush}" BorderThickness="0 0 0 2" Padding="0 0 -9 0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Print"  Text="Считать по:  " FontWeight="ExtraBlack" Margin="3 0 0 0"
+FontSize="15" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                                    </Border>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15">
+                                                        <RadioButton x:Name="Rounds" Content="раундам" FontFamily="Segoe Print" FontSize="15" IsChecked="{Binding ModeTomatosOrRound, Mode=TwoWay}"/>
+                                                        <RadioButton x:Name="Tomatos" Content="помидоркам"  FontFamily="Segoe Print" FontSize="15" Checked="CheckedTomatos"/>
+                                                    </StackPanel>
+                                                    </StackPanel>
+                                                
+
+                                            <!--КОЛИЧЕСТВО РАУНДОВ-->
+                                                <Grid Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Left"  VerticalAlignment="Top"  
+             Visibility="{Binding IsChecked, ElementName=Rounds, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <StackPanel Grid.Row="4" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 0"
+                                                             Visibility="{Binding IsEnabled, ElementName=backwardNumberOfRounds, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                        <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                        <!--Priority-->
+                                                        <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 1" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <TextBlock Grid.Row="4" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Раундов:  " FontWeight="ExtraBlack"
+  FontSize="14" Foreground="{StaticResource InkBlueLightBrush}"  Visibility="{Binding IsChecked, ElementName=Rounds, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                                                <StackPanel VerticalAlignment="Bottom" Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
+         Visibility="{Binding IsChecked, ElementName=Rounds, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <Button x:Name="backwardNumberOfRounds" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding NumberOfRounds, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Count}" 
+  helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+  Command="{Binding AdjustTimeCommand}" CommandParameter="Round:-1"></Button>
+
+                                                <TextBox Width="40"  TextChanging="TimeClassicTextBox_TextChanged" FontSize="16"
+                                                    Text="{Binding NumberOfRounds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='TomatoAndRound'}"
+VerticalAlignment="Top"  Foreground="{StaticResource InkBlueLightBrush}"
+BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+InputScope="Number"
+Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                                <Button x:Name="forwardNumberOfRounds" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding NumberOfRounds, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Count}" 
+ helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+ Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+ Command="{Binding AdjustTimeCommand}" CommandParameter="Round:1"></Button>
+
+                                            </StackPanel>
+
+
+                                            <!--ВСЕГО ПОМИДОРОК-->
+                                                <Grid Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Left"  VerticalAlignment="Top"
+                                                             Visibility="{Binding IsChecked, ElementName=Tomatos, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <StackPanel  Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-5 0"
+                                                             Visibility="{Binding IsEnabled, ElementName=backwardNumberOfTomatoes, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                    
+                                                    <SymbolIcon Symbol="Important" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                    <!--Priority-->
+                                                    <TextBlock    VerticalAlignment="Top" FontFamily="Segoe Print"  Text="Не меньше 1" FontWeight="ExtraBlack"
+FontSize="13" Foreground="{ThemeResource ClueRedBrush}"/>
+                                                </StackPanel>
+                                                </Grid>
+                                                <TextBlock Grid.Row="4" VerticalAlignment="Bottom" FontFamily="Segoe Print"  Text="Всего помидорок:  " FontWeight="ExtraBlack"
+  FontSize="14" Foreground="{StaticResource InkBlueLightBrush}"  Visibility="{Binding IsChecked, ElementName=Tomatos, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                                                <StackPanel VerticalAlignment="Bottom" Grid.Row="4" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Left"
+           Visibility="{Binding IsChecked, ElementName=Tomatos, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <Button x:Name="backwardNumberOfTomatoes" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding NumberOfTomatoes, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowBackControlEnabledConventer}, ConverterParameter=Count}" 
+  helperstyle:ButtonHelper.IconGlyph="&#xE76B;" Style="{StaticResource TextsButtonStyle}"
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+  Command="{Binding AdjustTimeCommand}" CommandParameter="Tomato:-1"></Button>
+
+                                                    <TextBox Width="40" x:Name="CountTomatos" TextChanging="TimeClassicTextBox_TextChanged" FontSize="16"
+                                                    Text="{Binding NumberOfTomatoes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MaxLength}, ConverterParameter='TomatoAndRound'}"
+VerticalAlignment="Top"  Foreground="{StaticResource InkBlueLightBrush}"
+BeforeTextChanging="TextBox_OnlyDigits_BeforeTextChanging"  PlaceholderText="00"
+InputScope="Number"
+Style="{StaticResource NotebookTimerTextBoxStyle}"/>
+
+                                                <Button x:Name="forwardNumberOfTomatoes" FontSize="11" Width="10" Height="10"  Margin="-5 0"
+                                                   IsEnabled="{Binding NumberOfTomatoes, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ArrowControlEnabledConventer}, ConverterParameter=Count}" 
+ helperstyle:ButtonHelper.IconGlyph="&#xE76C;"  Style="{StaticResource TextsButtonStyle}"
+ Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"
+ Command="{Binding AdjustTimeCommand}" CommandParameter="Tomato:1"></Button>
+
+                                            </StackPanel>
+
+                                                <!--<Grid Background="Aqua"/>
+                                                <Grid Background="Navy" Grid.Column="1"/>
+                                                <Grid Background="Goldenrod" Grid.Column="2"/>-->
+                                            </Grid>
+
+                                            <!--<StackPanel Grid.Row="1" >
+                                            <TextBlock >
+<Run Text="Количество Повторов: "/>
+<Run  Text="{Binding CountdownTimer.Repetitions}"/>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding CountdownTimer.BreakTime}" FontSize="25"/>
+
+                                        </StackPanel>-->
+                                           
+                                        </StackPanel>
+
+                                    <Rectangle Height="1" Fill="Transparent" 
+Stroke="Black" 
+StrokeDashArray="6,1" 
+Stretch="Fill" Opacity="0.5" Margin="0,10"/>
+
+
+                                    <!--<Grid Grid.Row="1" Background="DarkKhaki">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding NullItemTreeViewItem}"/>
+                                        <Button Content="save" Grid.Column="1" Command="{Binding CheckSavePomodoroTimer}">
+
+                                        </Button>
+                                        <StackPanel>
+                                            --><!--<StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SelectedMission.Title, Source={StaticResource Control}}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </StackPanel.Style>--><!--
+                                            <TextBox Text="{Binding Mission.Title}"  Tag="Введите название" Style="{StaticResource TextBoxStyle}" />
+                                            <TextBox Text="{Binding Mission.Description}" Tag="Введите описание" Style="{StaticResource FullTextBoxStyle}" TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                            --><!--<StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SelectedMission.Title, Source={StaticResource Control}}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </StackPanel.Style>--><!--
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding SelectedMission.Title}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock >
+                              <Run Text="#"/>
+                              <Run Text="{Binding SelectedMission.EndDate}"/>
+                                                                --><!--<TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding SelectedMission.EndDate, Source={StaticResource Control}}" Value="{x:Null}">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>--><!--
+                                                    </TextBlock>
+                                                    <TextBlock >
+<Run Text="#"/>
+<Run Name="TitleCategory" Text="{Binding SelectedMission.Category.Title}"/>
+                                                                --><!--<TextBlock.Style>-->
+                                                                    <!--<Style TargetType="TextBlock">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding SelectedMission.Category, Source={StaticResource Control}}" Value="{x:Null}">
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>-->
+                                                                <!--</TextBlock.Style>--><!--
+                                                    </TextBlock>
+
+                                                </StackPanel>
+
+                                                <Line  StrokeThickness="1" Stroke="Black" X1="0" X2="250" Y1="0" Y2="0"  HorizontalAlignment="Right"/>
+
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>-->
+
+
+
+                                    <!--<Button Content="УСТАНОВИТЬ ТАЙМЕР" 
+Command="{Binding StartCountdownCommand}"
+HorizontalAlignment="Center"
+Style="{StaticResource TextsButtonStyle}"/>-->
+                                </StackPanel>
+                            </Grid>
+                        </ContentControl>
+
+
+                        </StackPanel>
+                        </StackPanel>
+
+
+                        <!--ПАНЕЛЬ СПИСКОВ-->
+                        <Grid Grid.ColumnSpan="2" Background="Black" Opacity="0.6" Margin="0 -15" x:Name="DarkSpace" Visibility="Collapsed" Tapped="{x:Bind ViewModel.ClosePanel}"/>
+
+                        <Grid Grid.ColumnSpan="3" MinWidth="360" MaxWidth="480" Background="{StaticResource DividerLightBrush}" Margin="10 0" Visibility="Collapsed"  x:Name="ListSpace" 
+                                  BorderBrush="#8f8585" BorderThickness="1.5" CornerRadius="15 0 0 15" HorizontalAlignment="Right" Tag="{Binding IsEnoughSpace, Mode=TwoWay}">
+                                
+                                <!-- 1. Кожаная обложка (Бордер с тремя сторонами) -->
+                                <!-- Используем ваш кофейный #5F4B3F или еще темнее #3D2B1F -->
+                                <Border Background="#3D2B1F" 
+CornerRadius="10,4,4,10" 
+BorderThickness="2,2,0,2" 
+BorderBrush="#2A1D15">
+
+
+                                    <Grid>
+                                        <Grid Background="LightGray" Opacity="0.15"/>
+                                        <!-- 2. Стежки (Нитки) -->
+                                        <!-- Вертикальная пунктирная линия вдоль левого края -->
+                                        <Rectangle Width="1" 
+           Stroke="#8B7355" 
+           StrokeThickness="2" 
+           StrokeDashArray="2,2" 
+           HorizontalAlignment="Left" 
+           Margin="3,10,0,10" 
+           VerticalAlignment="Stretch" 
+           Opacity="0.6"/>
+
+                                        <!-- 3. Стопка бумаги (Эффект нескольких листов) -->
+                                        <!-- Сдвинутый белый лист создает эффект объема -->
+                                        <Border Background="White" Opacity="0.5" Margin="10,5,2,4" CornerRadius="5"/>
+
+                                        <!-- Основной лист (Досье) -->
+                                        <Border x:Name="PaperSheet" 
+        Background="#ecf1ff" 
+        Margin="15,10,3,4" 
+       
+        CornerRadius="2"
+        BorderBrush="#E6E0B0" 
+        BorderThickness="1">
+
+
+                                        <Grid VerticalAlignment="Top">
+                                            
+
+                                            <ListView x:Name="SampleTimerList" ItemsSource="{Binding MissionsTimers}" SelectedItem="{Binding SelectedTimer, Mode=TwoWay}"  SelectionMode="Single" 
+                                                      ItemClick="{x:Bind ViewModel.OnItemInvoked}" IsItemClickEnabled="True"  Visibility="{Binding IsMissions, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate x:DataType="mod:Focustimer">
+                                                        <Border CornerRadius="4" Padding="10 10 10 0" BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1" VerticalAlignment="Top">
+                                                            <Grid>
+                                                                <interactivity:Interaction.Behaviors>
+                                                                    <!-- Когда курсор входит в Grid -->
+                                                                    <core:EventTriggerBehavior EventName="PointerEntered">
+                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>
+                                                                    </core:EventTriggerBehavior>
+                                                                    <!-- Когда курсор выходит из Grid -->
+                                                                    <core:EventTriggerBehavior EventName="PointerExited">
+                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="0"/>
+                                                                    </core:EventTriggerBehavior>
+                                                                </interactivity:Interaction.Behaviors>
+
+                                                                <StackPanel>
+                                                                <TextBlock FontSize="23" Text="{Binding DurationTime, Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}" TextWrapping="NoWrap" FontFamily="Comic Sans MS"/>
+
+
+                                                                <StackPanel Margin="15 0 0 0">
+                                                                    <Border BorderBrush="{StaticResource BackgroundDarkBrush}" BorderThickness="0 0 0 1" HorizontalAlignment="Left">
+                                                                        <TextBlock FontSize="18" Text="{Binding TitleMission}" TextWrapping="Wrap" FontFamily="Segoe Print"/>
+                                                                    </Border>
+                                                                </StackPanel>
+                                                                <TextBlock FontSize="18" FontFamily="Segoe Print" TextWrapping="NoWrap" Margin="15 0 0 0">
+                                                 <!--<Run Text="00:00:00" FontFamily="Comic Sans MS" FontSize="20"/>-->
+                                                 <Run Text="Перерывы:"/>
+                                                 <Run Text="{Binding DurationBreak.Value.Minute}" FontFamily="Comic Sans MS"/>
+                                                 <Run Text="-"/>
+                                                 <Run Text="{Binding LongBreakTime.Value.Minute}" FontFamily="Comic Sans MS"/>
+                                                 <Run Text="минут" />
+                                                                </TextBlock>
+                                                                <TextBlock FontSize="18" FontFamily="Segoe Print" Margin="15 0 0 0" TextWrapping="NoWrap">
+                                        <Run Text="{Binding IsRound, Converter={StaticResource BoolToStringRoundTomatosConverter}}"/>
+                                        <Run Text=":"/>
+                                        <Run Text="{Binding CountRound}" FontFamily="Comic Sans MS"/>
+                                        <Run Text="по" />
+                                        <Run Text="{Binding Repetitions}" FontFamily="Comic Sans MS"/>
+                                        <Run Text="помидорки" FontSize="16"/>
+                                                                </TextBlock>
+                                                                <Grid Background="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="10"  Opacity="0.5"></Grid>
+                                                            </StackPanel>
+
+                                                                
+                                                                <Button Content="&#xE74D;" x:Name="DelButton" Grid.Column="1" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top" Padding="0" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderBrush="Transparent"
+Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}" HorizontalContentAlignment="Center"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding DataContext.RemoveFocusTimerCommand, ElementName=TimePageRoot}">
+                                                                    <!--Style="{StaticResource TextButtonStyle}"-->
+                                                                    <Button.Resources>
+                                                                        <!-- Цвет текста при наведении (PointerOver) -->
+                                                                        <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="ClueRedBrush" />
+
+                                                                        <!-- Цвет текста при нажатии (Pressed) -->
+                                                                        <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="ClueRedBrush" />
+
+                                                                        <!-- Цвет текста, если кнопка отключена (Disabled) -->
+                                                                        <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="Gray" Opacity="0.5" />
+                                                                    </Button.Resources>
+                                                                    <!--<SymbolIcon Symbol="Delete"/>-->
+                                                                </Button>
+
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+
+
+                                            <TreeView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
+SelectionMode="Single"  SelectedItem="{Binding SelectedMission, Mode=TwoWay}" ItemInvoked="{x:Bind ViewModel.OnItemInvokedTree}" Visibility="{Binding IsMissions, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                                <TreeView.Resources>
+                                                    <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
+                       Код символа ">"-->
+                                                    <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
+                                                    <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
+
+                                                    <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
+                                                    <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
+
+                                                    <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
+                                                    <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
+                                                    <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
+
+                                                    <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
+                                                    <!--Цвет фона при наведении-->
+                                                    <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
+                                                    <!--Цвет фона при выделении-->
+                                                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" />
+                                                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListMediumBrush}" />
+
+                                                    <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
+                                                    <!--Или ваш InkBlueBrush-->
+
+                                                    <!--Убираем системные отступы, которые могут мешать нитям-->
+                                                    <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
+                                                </TreeView.Resources>
+
+                                                <TreeView.ItemContainerStyle>
+                                                    <Style TargetType="TreeViewItem">
+                                                        <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
+                                                        <Setter Property="MinHeight" Value="0"/>
+                                                        <Setter Property="IsExpanded" Value="True" />
+                                                        <Setter Property="Transitions">
+                                                            <Setter.Value>
+                                                                <TransitionCollection>
+                                                                    <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                                                    <AddDeleteThemeTransition />
+                                                                </TransitionCollection>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                        <Setter Property="Padding" Value="0" />
+                                                        <!--Убираем лишние падинги-->
+
+                                                    </Style>
+                                                </TreeView.ItemContainerStyle>
+
+                                                <TreeView.ItemTemplate>
+                                                    <DataTemplate x:DataType="mod:Mission">
+                                                        <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+
+
+                                                            <Grid  Margin="0" x:Name="GridRootBorder" Height="70" Background="Transparent">
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="0"/>
+                                                                    <ColumnDefinition />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid.RenderTransform>
+                                                                    <CompositeTransform />
+                                                                </Grid.RenderTransform>
+
+                                                                <Border x:Name="RootBorder" Padding="0 3 0 -5" MinWidth="300" CornerRadius="4" Background="Transparent" Grid.Column="1" Margin="0"
+                                  BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="70" MinHeight="0">
+                                                                    <Border.RenderTransform>
+                                                                        <CompositeTransform />
+                                                                    </Border.RenderTransform>
+                                                                    <Grid HorizontalAlignment="Stretch" Background="Transparent" >
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <!-- Колонки для линий вложенности -->
+                                                                            <!--<ColumnDefinition Width="0.05*" />-->
+                                                                            <ColumnDefinition Width="Auto" />
+                                                                            <ColumnDefinition Width="*" />
+                                                                        </Grid.ColumnDefinitions>
+
+                                                                        <!-- Левая часть: Линии (Нити) -->
+                                                                        <!-- Ширина этого блока будет зависеть от уровня вложенности -->
+                                                                       
+                                                                        <Grid  Background="Transparent" Grid.Column="1"  MinWidth="200" IsHitTestVisible="True">
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition />
+                                                                                <ColumnDefinition Width="0.1*"/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <interactivity:Interaction.Behaviors>
+                                                                                <!-- Когда курсор входит в Grid -->
+                                                                                <core:EventTriggerBehavior EventName="PointerEntered">
+                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>-->
+                                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
+                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrush}"/>-->
+                                                                                </core:EventTriggerBehavior>
+                                                                                <!-- Когда курсор выходит из Grid -->
+                                                                                <core:EventTriggerBehavior EventName="PointerExited">
+                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="0"/>-->
+                                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{ThemeResource SystemControlBackgroundListMediumBrush}"/>
+                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrushOver}"/>-->
+                                                                                </core:EventTriggerBehavior>
+                                                                            </interactivity:Interaction.Behaviors>
+                                                                            <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateGroup x:Name="TaskCompletionStates">
+                                                                                    <VisualState x:Name="Completed">
+                                                                                        <!-- Состояние: выполнено -->
+                                                                                        <VisualState.StateTriggers>
+                                                                                            <!-- Триггер: если IsComplete == true -->
+                                                                                            <StateTrigger IsActive="{Binding IsComplete}" />
+                                                                                        </VisualState.StateTriggers>
+                                                                                        <!-- Применяем стили к дочерним элементам -->
+                                                                                        <Storyboard>
+                                                                                            <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
+                                                                                            <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
+                                                    Storyboard.TargetProperty="ScaleX" 
+                                                    To="1" 
+                                                    Duration="0:0:0.4">
+                                                                                                <DoubleAnimation.EasingFunction>
+                                                                                                    <CubicEase EasingMode="EaseOut"/>
+                                                                                                </DoubleAnimation.EasingFunction>
+                                                                                            </DoubleAnimation>
+                                                                                            <!-- Плавная смена цвета текста -->
+                                                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
+                             Storyboard.TargetProperty="Foreground">
+                                                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
+                                                                                            </ObjectAnimationUsingKeyFrames>
+                                                                                        </Storyboard>
+                                                                                        <VisualState.Setters>
+                                                                                            <!-- Применяем к TextBlock с заголовком -->
+                                                                                            <!-- Применяем к TextBlock с датой -->
+                                                                                            <Setter Target="DateTextBlock.Foreground" Value="Gray"/>
+                                                                                            <!-- Применяем к TextBlock с категорией -->
+                                                                                            <Setter Target="CategoryTextBlock.Foreground" Value="Gray"/>
+                                                                                            <!-- Можно также сделать разделитель менее заметным -->
+                                                                                            <Setter Target="SeparatorRectangle.Opacity" Value="0.1"/>
+                                                                                        </VisualState.Setters>
+                                                                                    </VisualState>
+                                                                                </VisualStateGroup>
+                                                                            </VisualStateManager.VisualStateGroups>
+                                                                            <Grid Width="Auto"  Padding="0" MinHeight="65" IsHitTestVisible="True">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="0.1*" MaxWidth="50" MinWidth="32"/>
+                                                                                    <ColumnDefinition/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <CheckBox  Tag="&#xE73E;"  IsHitTestVisible="False" Height="20" Width="20"
+                                                IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
+                                                                                <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
+                                                                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                                                                        <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"   FontSize="17" TextWrapping="NoWrap" Foreground="{ThemeResource InkBlueLightBrushOver}" FontWeight="Medium"
+                                                         TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Stretch" MaxLines="1" FontFamily="Segoe Print"/>
+                                                                                        <!-- Линия зачеркивания - стилизуем цветом "Clue Red" -->
+                                                                                        <Rectangle x:Name="StrikeLine" Height="2" Margin="0 8 0 0"  Fill="{ThemeResource DividerDarkBrush}" HorizontalAlignment="Stretch"  VerticalAlignment="Center"
+                                                         RenderTransformOrigin="0,0.5" IsHitTestVisible="False">
+                                                                                            <Rectangle.RenderTransform>
+                                                                                                <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
+                                                                                            </Rectangle.RenderTransform>
+                                                                                        </Rectangle>
+                                                                                    </Grid>
+
+
+                                                                                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                                                                                        <TextBlock FontFamily="Comic Sans MS" x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12" >
+                                                  <Run Text="&#xE163;" FontFamily="Segoe MDL2 Assets"/>
+                                                  <Run Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+                                                                                        </TextBlock>
+                                                                                        <TextBlock FontFamily="Comic Sans MS" x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12">
+                                                  <Run Text="#"/>
+                                                  <Run Text="{Binding Category.Title}"/>
+                                                                                        </TextBlock>
+                                                                                    </StackPanel>
+                                                                                </StackPanel>
+                                                                            </Grid>
+
+
+                                                                        </Grid>
+                                                                        <Grid Background="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="10"  Opacity="0.5"></Grid>
+
+
+                                                                    </Grid>
+
+                                                                </Border>
+                                                                <Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                                    <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
+                                                                    <Grid Background="{StaticResource TransparentGridBrush}"/>
+                                                                    <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" RenderTransformOrigin="0.5,0.5">
+                                                                    </FontIcon>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </TreeViewItem>
+                                                    </DataTemplate>
+                                                </TreeView.ItemTemplate>
+                                            </TreeView>
+
+                                        </Grid>
+                                    </Border>
+                                            
+                                </Grid>
+                                </Border>
+                            <!--</Border>-->
+
+                            </Grid>
+
+
+                        
+                    </Grid>
+                    <!--</VariableSizedWrapGrid>-->
+                </ScrollViewer>
+
+
+                <!-- Цитата или подсказка снизу -->
+            </Grid>
         </Grid>
-        </Grid>-->
-
 
 
 

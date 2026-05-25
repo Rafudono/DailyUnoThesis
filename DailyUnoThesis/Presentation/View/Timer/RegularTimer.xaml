@@ -7,19 +7,112 @@
       xmlns:controle ="using:DailyUnoThesis.Presentation.ViewModel.TimerPagesControle"
       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       mc:Ignorable="d" 
-       DataContext="DynamicResource Control"
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="450" d:DesignWidth="800"
+
+            xmlns:con="using:DailyUnoThesis.Models.Conventers"
+xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
+           xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
+       xmlns:dob="using:DailyUnoThesis.Models.DobleClasses"
+   xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.TimerPagesControle"
+
+
+          xmlns:uen="using:Uno.Extensions.Navigation.UI"
+xmlns:utu="using:Uno.Toolkit.UI"
+xmlns:um="using:Uno.Material"
+NavigationCacheMode="Required"
+          xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+      xmlns:ut="using:Uno.Themes"
+      x:Name="TimePageRoot">
     <Page.Resources>
-        <controle:RegularTimerControle x:Key="Control"/>
-        
+        <!--<controle:RegularTimerControle x:Key="Control"/>-->
+
+        <con:MaxTimerConventer x:Key="MaxLength"/>
+        <con:StringToIntConverter x:Key="StringToInt"/>
+        <!--<control:PomodoroTimerControle x:Key="Control"/>-->
+        <con:StringFormatTimeConverter x:Key="StringFormatTimeConverter"/>
+        <con:PlayPauseIconConverter x:Key="PlayPauseIconConverter"/>
+        <con:BoolToStringPlayButtonConverter x:Key="BoolToStringPlayButtonConverter"/>
+        <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <con:ArrowControlEnabledConventer x:Key="ArrowControlEnabledConventer"/>
+        <con:ArrowBackControlEnabledConventer x:Key="ArrowBackControlEnabledConventer"/>
+        <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <con:HeightConventer x:Key="HeightConventer"/>
+
+
+
+        <!--HeightConventer-->
+
+        <con:LevelToMarginConverter x:Key="LevelToMarginConverter" />
+        <con:StringFormatConverter x:Key="StringFormatConverter" />
+        <con:LevelVisibilityConverter x:Key="LevelVisibilityConverter"/>
+        <con:DateTimeToOffsetConverter x:Key="DateTimeToOffsetConverter"/>
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:LevelComboBoxVisibilityConverter x:Key="LevelComboBoxVisibilityConverter"/>
+        <con:NullToVisibilityConverterTextBoxCategory x:Key="ConverterTextBoxVisibility"/>
+        <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
+        <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
+
     </Page.Resources>
 
-    <Grid Background="DarkTurquoise">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+
+
+    <Grid >
+        <!--Background="#E9E9E9"-->
+        <Grid.Background>
+            <ImageBrush ImageSource="ms-appx:///Assets/PapersDoc.jpg" 
+                    Stretch="UniformToFill" 
+                    Opacity="0.8"/>
+            <!-- Опционально: сделать фон менее ярким -->
+        </Grid.Background>
+
+
+        <Grid>
+            <!-- Темно-серый или кофейный фон стола -->
+
+            <!--<StackPanel Padding="10">
+                    <Grid>
+                      
+            -->
+            <!-- Фоновая бумажка 2 (сверху справа) -->
+            <!--
+                        <Border Background="#F5F5F5" Width="650" Height="800" CornerRadius="1" Opacity="1" BorderBrush="LightGray" BorderThickness="1"
+            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,80,40,0">
+                <Border.RenderTransform>
+                    <RotateTransform Angle="-12" />
+                </Border.RenderTransform>
+            </Border>
+
+                        -->
+            <!-- Фоновая бумажка 1 (внизу слева) -->
+            <!--
+                        <Border Background="#E0E0E0" Width="680" Height="620" CornerRadius="1" Opacity="1" BorderBrush="LightGray" BorderThickness="1"
+HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,30">
+                            <Border.RenderTransform>
+                                <RotateTransform Angle="7" />
+                            </Border.RenderTransform>
+                        </Border>
+
+
+                        -->
+            <!-- Фоновая бумажка 3 (по центру, чуть крупнее) -->
+            <!--
+
+                        <Border Background="#F5F5F5" Width="820" Height="660" CornerRadius="1" Opacity="1" BorderBrush="LightGray" BorderThickness="1"
+HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-100,100,0,0">
+                <Border.RenderTransform>
+                    <RotateTransform Angle="25" />
+                </Border.RenderTransform>
+            </Border>
+                        </Grid>
+                </StackPanel>-->
+
+            <!-- Остальной контент страницы (основной табель, стикеры) будет идти здесь -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <!-- ... ваш центральный StackPanel с табелем и т.д. ... -->
+
+                <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -29,9 +122,9 @@
             <TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" 
  Text="{Binding CountupTimer.RemainingTime}" 
 FontSize="60" TextAlignment="Center"/>
-            <!--<TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" 
+           <TextBlock Width="260" VerticalAlignment="Center" HorizontalAlignment="Center" 
  Text="00:00:00" 
-FontSize="60" TextAlignment="Center"/>-->
+FontSize="60" TextAlignment="Center"/>
             <StackPanel Margin="10 0" Grid.Row="1" Orientation="Horizontal">
                 <Button Width="60" Height="25" Margin="5 5" Content="start" Command="{Binding StartCountupTimer}"/>
                 <Button Width="100" Height="25" Margin="5 5" Content="pause/continue" Command="{Binding StopCountupTimer}"/>
@@ -77,56 +170,556 @@ FontSize="60" TextAlignment="Center"/>-->
                     </StackPanel>
                 </StackPanel>
             </Grid>
-        </Grid>
-        <!--<TreeView x:Name="tree" Grid.Column="1" ItemsSource="{Binding Missions}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectedItemChanged">
-                    <i:InvokeCommandAction Command="{Binding SelectedItemTreeViewItem}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            --><!-- Создаем шаблон для отображения элемента --><!--
-            <TreeView.ItemTemplate >
-                <HierarchicalDataTemplate ItemsSource="{Binding InverseIdUpMissionNavigation}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding Title}" FontSize="20"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock >
-                                <Run Text="#"/>
-                                <Run Text="{Binding EndDate, StringFormat=dd-MM-yyyy}"/>
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding EndDate}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Margin="5 0">
-  <Run Text=" #"/>
-  <Run Name="TitleCategory" Text="{Binding Category.Title}"/>
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
+        </Grid>-->
+
+                <Grid >
+
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" x:Name="GridGrid" MinWidth="400"/>
+                        <ColumnDefinition x:Name="PaneColumn" Width="0" MaxWidth="480"/>
+                    </Grid.ColumnDefinitions>
+
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="PaneStates">
+
+                            <VisualState x:Name="InlinePanel">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsEnoughSpace}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="PaneColumn.Width" Value="0.3*" />
+                                    <Setter Target="PaneColumn.MinWidth" Value="350" />
+
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="OverlayPanel">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsDarkSpace}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="DarkSpace.Visibility" Value="Visible" />
+
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!--СОСТОЯНИЕ: ПАНЕЛЬ ОТКРЫТА-->
+
+                        </VisualStateGroup>
+                        <VisualStateGroup x:Name="PaneStatesOpen">
+                            <VisualState x:Name="Open">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsPaneOpen}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                  
+
+                                    <Setter Target="ListSpace.Visibility" Value="Visible" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+
+                        <VisualStateGroup x:Name="PaneStatesOpenWidth">
+                            <VisualState x:Name="OpenWidth">
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsEnoughSpace}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                  
+
+                                    <Setter Target="ListSpace.Visibility" Value="Visible" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    
+                    <!--<Grid Background="Red"/>
+                    <Grid Background="Green" Grid.Column="1"/>-->
+                    <!--<Grid HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="ClockFace" MinHeight="450" MinWidth="400">
+                            -->
+                    <!-- Тень под листом -->
+                    <!--
+            <Border Background="Gray" Opacity="0.1" Margin="5,5,-5,-5" CornerRadius="2"/>
+
+            -->
+                    <!-- Основной лист Табеля -->
+                    <!--
+                        <Border Background="#FDFDFD"  Padding="30,40" BorderBrush="#DDD" BorderThickness="1">
+                <StackPanel Spacing="20">
+
+                    -->
+                    <!-- Шапка бланка -->
+                    <!--
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <StackPanel>
+                            <TextBlock Text="TIME RECORD CARD" FontFamily="Consolas" FontSize="12" FontWeight="Bold" Opacity="0.6"/>
+                            <TextBlock Text="FORM NO. 104-B" FontFamily="Consolas" FontSize="10" Opacity="0.4"/>
                         </StackPanel>
-                        <Line  StrokeThickness="1" Stroke="Black" X1="0" X2="250" Y1="0" Y2="0"  HorizontalAlignment="Right"/>
-
+                        <TextBlock Text="05-11-2026" FontFamily="Consolas" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="140,0,0,0" Opacity="0.7"/>
                     </StackPanel>
-                </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>-->
 
-        <!--<ListBox Grid.Column="1">
-            
-        </ListBox>-->
-        
+                 
+
+                    -->
+                    <!-- Линия отрыва (декоративный пунктир) -->
+                    <!--
+                    <Rectangle Height="1" Fill="Black" Opacity="0.1" Margin="0,5"/>
+                    <StackPanel>
+
+                        <TextBlock Text="ОБЪЕКТ: ТЕКУЩАЯ ЗАДАЧА" 
+                  FontFamily="Segoe Print" FontSize="12" Opacity="0.5"/>
+                        <Rectangle Height="2" Fill="Black" Opacity="0.1" Margin="0,5"/>
+                    </StackPanel>
+
+                    -->
+                    <!-- ТОТ САМЫЙ ТАЙМЕР -->
+                    <!--
+                    <Border BorderBrush="#333" BorderThickness="2,0,2,0" Padding="6,20" Margin="0,10">
+                        <StackPanel>
+                            <TextBlock x:Name="WorkTimerDisplay" 
+                               Text="00:15:42" 
+                               FontSize="72" 
+                               FontFamily="Consolas" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#222"/>
+                            <TextBlock Text="ELAPSED TIME" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center" Opacity="0.5" Margin="0,-5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    -->
+                    <!-- Кнопки управления (как механические переключатели) -->
+                    <!--
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Content="PUNCH IN" 
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource TextsButtonStyle}" 
+                        FontFamily="Consolas" FontSize="16" Height="50" Margin="5"/>
+
+                        <Button Content="PUNCH OUT" 
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource TextsButtonStyle}" 
+                        FontFamily="Consolas" FontSize="16" Height="50" Margin="5" Opacity="0.6"/>
+                    </Grid>
+                  
+                </StackPanel>
+            </Border>
+                    </Grid>-->
+
+
+                    <!--ПАНЕЛЬ ТАЙМЕРА-->
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="ClockFace" MinHeight="450" MinWidth="400">
+
+                        <!-- НИЖНИЙ ЛИСТ (Самый глубокий в стопке) -->
+                        <Border Background="#E0E0E0"  BorderBrush="#CCC" BorderThickness="1" Margin="10,15,0,0">
+                            <Border.RenderTransform>
+                                <RotateTransform Angle="-3"/>
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- СРЕДНИЙ ЛИСТ -->
+                        <Border Background="#EBEBEB"  BorderBrush="#CCC" BorderThickness="1" Margin="5,8,0,0">
+                            <Border.RenderTransform>
+                                <RotateTransform Angle="2"/>
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- ОСНОВНОЙ ЛИСТ (ТАБЕЛЬ) -->
+                        <Border x:Name="MainTimerCard" 
+            Background="#FDFDFD" 
+            Padding="30,40" 
+            BorderBrush="#DDD" 
+            BorderThickness="1"
+            >
+                            <!-- Легкая тень для объема -->
+
+                            <Grid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                  
+
+                                    <!-- Контент Табеля (Таймер, Кнопки и т.д.) -->
+                                <StackPanel Spacing="20">
+                                    <!--Шапка бланка-->
+
+                                    <Grid Margin="0 10"  HorizontalAlignment="Stretch">
+                                        <StackPanel HorizontalAlignment="Left">
+                                            <TextBlock Text="TIME RECORD CARD" FontFamily="Consolas" FontSize="12" FontWeight="Bold" Opacity="0.6"/>
+                                            <TextBlock Text="FORM NO. 104-B" FontFamily="Consolas" FontSize="10" Opacity="0.4"/>
+                                        </StackPanel>
+                                            <StackPanel HorizontalAlignment="Right">
+                                                <Button Padding="5" Height="35" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Left" Content="Сохранить"  Margin="0,-35,0,10"
+Command="{Binding SaveRegularTimer}" IsEnabled="{Binding CountupTimer.Restart}" />
+                                                <TextBlock Text="{Binding DateNow}" FontFamily="Consolas" FontSize="14" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Opacity="0.9"/>
+                                            </StackPanel>
+                                    </Grid>
+
+
+
+
+                                    <!--Линия отрыва (декоративный пунктир)-->
+
+
+                                    <Rectangle Height="1" Fill="Transparent" Stroke="Black" StrokeDashArray="6,1" Stretch="Fill" Opacity="0.5" Margin="0,0"/>
+
+                                    <StackPanel>
+                                        
+                                        <TextBox  Visibility="{Binding IsSelectedMission, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+        VerticalAlignment="Top" Foreground="{StaticResource InkBlueLightBrush}" PlaceholderText="Над чем работаете?" Text="{Binding NameTimer, Mode=TwoWay}"
+       Style="{StaticResource NotebookTimerTextBoxStyle}" HorizontalContentAlignment="Left" TextAlignment="Left"/>
+                                            <Border Padding="3" BorderBrush="{StaticResource InkBlueLightBrush}" BorderThickness="0 0 0 2" Visibility="{Binding IsSelectedMission, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0 -10 0 0">
+                                                <StackPanel>
+                                                    <Button Grid.Row="2" Content="&#xE106;" Margin="0 0 0 -6" FontSize="18" FontWeight="Black" HorizontalAlignment="Right" Padding="0" CornerRadius="0" Style="{StaticResource StampButtonStyle}" Command="{Binding ClearMission}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"  Visibility="{Binding IsSelectedMission, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="{Binding NameTimer}" FontFamily="Comic Sans MS" FontSize="28"/>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <Button Height="33" FontFamily="Comic Sans MS" x:Name="MissionsButton"  MaxHeight="40" Margin="0 5 0 -10" Visibility="{Binding IsEnoughSpace, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                                        Style="{StaticResource StampTogButtonStyle}" helperstyle:ButtonHelper.IconGlyph="&#xE713;"
+                                                        FontWeight="Bold"  Tag="{Binding IsSelectedMission}" HorizontalAlignment="Center" Command="{Binding OpenPanelTree}">
+                                                <StackPanel Orientation="Horizontal" Spacing="0">
+                                                    <TextBlock FontFamily="Segoe Print" FontWeight="Bold" VerticalAlignment="Top" FontSize="16" Text="Выбрать из списка" IsHitTestVisible="False" Background="Transparent" Padding="0" Margin="2 -5 0 0" ></TextBlock>
+                                                    <Button Content="&#xE106;" Visibility="{Binding PomodoroTime.IsSelectedMission, Source={StaticResource GlobalStore},  Converter={StaticResource BoolToVisibilityConverter}}"
+    x:Name="ClearButMissions" Command="{Binding RegularTimer.ClearMission, Source={StaticResource GlobalStore}}" 
+Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="20" FontWeight="Bold" Foreground="White" FontSize="15" FontFamily="Segoe MDL2 Assets">
+                                                    </Button>
+
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+
+
+                                    <Rectangle Height="1" Fill="Transparent" Stroke="Black" StrokeDashArray="6,1" Stretch="Fill" Opacity="0.5" Margin="0 0 0 15"/>
+                                    <!--ТОТ САМЫЙ ТАЙМЕР-->
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Spacing="20" VerticalAlignment="Center">
+                                    
+                          
+                                <Border BorderBrush="#333" BorderThickness="2,0,2,0" Padding="6,0" Margin="0,0">
+                                    <StackPanel>
+                                        <!--<TextBlock x:Name="WorkTimerDisplay" 
+                            Text="00:15:42" 
+                            FontSize="72" 
+                            FontFamily="Consolas" 
+                            HorizontalAlignment="Center" 
+                            Foreground="#222"/>-->
+
+
+                                        <TextBlock x:Name="TimerDisplay" Text="{Binding CountupTimer.RemainingTime, Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}"
+                                                       FontSize="72" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}" HorizontalAlignment="Center" />
+
+
+                                        <TextBlock Text="ELAPSED TIME" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center" Opacity="0.5" Margin="0,-5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+
+                                <!--Кнопки управления (как механические переключатели)-->
+
+                                <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="30">
+                                   
+
+                                    <Button  FontSize="28"  Content="Рестарт" Command="{Binding RestartCountupTimer}" FontWeight="Bold" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"  helperstyle:ButtonHelper.IconGlyph="&#xE895;" IsEnabled="{Binding CountupTimer.Restart}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" />
+
+                                    <Button FontSize="28" FontWeight="Bold" Content="{Binding CountupTimer.IsPaused, Converter={StaticResource BoolToStringPlayButtonConverter}}" Command="{Binding StartCountupTimer}" VerticalAlignment="Bottom" Style="{StaticResource TextsButtonStyle}"
+                                               helperstyle:ButtonHelper.IconGlyph="{Binding CountupTimer.IsPaused, Converter={StaticResource PlayPauseIconConverter}}"
+Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                </StackPanel>
+                                </StackPanel >
+                                </Grid>
+
+                                <!--СКРЕПКА (PathIcon) 
+                                 Она прикреплена к верхнему листу и "зажимает" его-->
+                                <Viewbox Width="50" Height="90" 
+         HorizontalAlignment="Left" 
+         VerticalAlignment="Top" 
+         Margin="20,-15,0,0">
+                                    <!--Отрицательный Margin выносит её наверх-->
+                                    <Path Data="M 20,40 L 20,80 A 15,15 0 0 0 50,80 L 50,30 A 20,20 0 0 0 10,30 L 10,90 A 25,25 0 0 0 60,90 L 60,40"
+      Stroke="#5D6D7E" 
+      StrokeThickness="6" 
+      StrokeStartLineCap="Round" 
+      StrokeEndLineCap="Round"
+      StrokeLineJoin="Round"
+      Width="60" Height="100"
+      Stretch="Uniform"
+      HorizontalAlignment="Left" VerticalAlignment="Top"
+      Margin="20,-50,0,0">
+                                        <Path.RenderTransform>
+                                            <RotateTransform Angle="-25"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Viewbox>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+
+                    <!--ПАНЕЛЬ СПИСКА ЗАДАЧ-->
+                    <Grid Grid.ColumnSpan="2" Background="Black" Opacity="0.6" Margin="0 -15" x:Name="DarkSpace" Visibility="Collapsed" Tapped="{x:Bind ViewModel.ClosePanel}"/>
+
+                    <Grid Grid.ColumnSpan="3" MinWidth="360" MaxWidth="480" Background="{StaticResource DividerLightBrush}" Margin="10 0" Visibility="Collapsed"  x:Name="ListSpace" 
+                                  BorderBrush="#8f8585" BorderThickness="1.5" CornerRadius="15 0 0 15" HorizontalAlignment="Right" Tag="{Binding IsEnoughSpace, Mode=TwoWay}">
+
+                        <!-- 1. Кожаная обложка (Бордер с тремя сторонами) -->
+                        <!-- Используем ваш кофейный #5F4B3F или еще темнее #3D2B1F -->
+                        <Border Background="#3D2B1F" 
+CornerRadius="10,4,4,10" 
+BorderThickness="2,2,0,2" 
+BorderBrush="#2A1D15">
+
+
+                            <Grid>
+                                <Grid Background="LightGray" Opacity="0.15"/>
+                                <!-- 2. Стежки (Нитки) -->
+                                <!-- Вертикальная пунктирная линия вдоль левого края -->
+                                <Rectangle Width="1" 
+           Stroke="#8B7355" 
+           StrokeThickness="2" 
+           StrokeDashArray="2,2" 
+           HorizontalAlignment="Left" 
+           Margin="3,10,0,10" 
+           VerticalAlignment="Stretch" 
+           Opacity="0.6"/>
+
+                                <!-- 3. Стопка бумаги (Эффект нескольких листов) -->
+                                <!-- Сдвинутый белый лист создает эффект объема -->
+                                <Border Background="White" Opacity="0.5" Margin="10,5,2,4" CornerRadius="5"/>
+
+                                <!-- Основной лист (Досье) -->
+                                <Border x:Name="PaperSheet" 
+        Background="#ecf1ff" 
+        Margin="15,10,3,4" 
+       
+        CornerRadius="2"
+        BorderBrush="#E6E0B0" 
+        BorderThickness="1">
+
+
+                                    <Grid VerticalAlignment="Top">
+
+
+                                        <TreeView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
+SelectionMode="Single"  SelectedItem="{Binding SelectedMission, Mode=TwoWay}" ItemInvoked="{x:Bind ViewModel.OnItemInvokedTree}">
+
+                                            <TreeView.Resources>
+                                                <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
+                       Код символа ">"-->
+                                                <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
+                                                <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
+
+                                                <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
+                                                <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
+
+                                                <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
+                                                <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
+                                                <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
+
+                                                <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
+                                                <!--Цвет фона при наведении-->
+                                                <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
+                                                <!--Цвет фона при выделении-->
+                                                <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" />
+                                                <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListMediumBrush}" />
+
+                                                <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
+                                                <!--Или ваш InkBlueBrush-->
+
+                                                <!--Убираем системные отступы, которые могут мешать нитям-->
+                                                <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
+                                            </TreeView.Resources>
+
+                                            <TreeView.ItemContainerStyle>
+                                                <Style TargetType="TreeViewItem">
+                                                    <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
+                                                    <Setter Property="MinHeight" Value="0"/>
+                                                    <Setter Property="IsExpanded" Value="True" />
+                                                    <Setter Property="Transitions">
+                                                        <Setter.Value>
+                                                            <TransitionCollection>
+                                                                <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                                                <AddDeleteThemeTransition />
+                                                            </TransitionCollection>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    <Setter Property="Padding" Value="0" />
+                                                    <!--Убираем лишние падинги-->
+
+                                                </Style>
+                                            </TreeView.ItemContainerStyle>
+
+                                            <TreeView.ItemTemplate>
+                                                <DataTemplate x:DataType="mod:Mission">
+                                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+
+
+                                                        <Grid  Margin="0" x:Name="GridRootBorder" Height="70" Background="Transparent">
+
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="0"/>
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RenderTransform>
+                                                                <CompositeTransform />
+                                                            </Grid.RenderTransform>
+
+                                                            <Border x:Name="RootBorder" Padding="0 3 0 -5" MinWidth="300" CornerRadius="4" Background="Transparent" Grid.Column="1" Margin="0"
+                                  BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="70" MinHeight="0">
+                                                                <Border.RenderTransform>
+                                                                    <CompositeTransform />
+                                                                </Border.RenderTransform>
+                                                                <Grid HorizontalAlignment="Stretch" Background="Transparent" >
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <!-- Колонки для линий вложенности -->
+                                                                        <!--<ColumnDefinition Width="0.05*" />-->
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <!-- Левая часть: Линии (Нити) -->
+                                                                    <!-- Ширина этого блока будет зависеть от уровня вложенности -->
+
+                                                                    <Grid  Background="Transparent" Grid.Column="1"  MinWidth="200" IsHitTestVisible="True">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition />
+                                                                            <ColumnDefinition Width="0.1*"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <interactivity:Interaction.Behaviors>
+                                                                            <!-- Когда курсор входит в Grid -->
+                                                                            <core:EventTriggerBehavior EventName="PointerEntered">
+                                                                                <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>-->
+                                                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
+                                                                                <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrush}"/>-->
+                                                                            </core:EventTriggerBehavior>
+                                                                            <!-- Когда курсор выходит из Grid -->
+                                                                            <core:EventTriggerBehavior EventName="PointerExited">
+                                                                                <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="0"/>-->
+                                                                                <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{ThemeResource SystemControlBackgroundListMediumBrush}"/>
+                                                                                <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrushOver}"/>-->
+                                                                            </core:EventTriggerBehavior>
+                                                                        </interactivity:Interaction.Behaviors>
+                                                                        <VisualStateManager.VisualStateGroups>
+                                                                            <VisualStateGroup x:Name="TaskCompletionStates">
+                                                                                <VisualState x:Name="Completed">
+                                                                                    <!-- Состояние: выполнено -->
+                                                                                    <VisualState.StateTriggers>
+                                                                                        <!-- Триггер: если IsComplete == true -->
+                                                                                        <StateTrigger IsActive="{Binding IsComplete}" />
+                                                                                    </VisualState.StateTriggers>
+                                                                                    <!-- Применяем стили к дочерним элементам -->
+                                                                                    <Storyboard>
+                                                                                        <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
+                                                    Storyboard.TargetProperty="ScaleX" 
+                                                    To="1" 
+                                                    Duration="0:0:0.4">
+                                                                                            <DoubleAnimation.EasingFunction>
+                                                                                                <CubicEase EasingMode="EaseOut"/>
+                                                                                            </DoubleAnimation.EasingFunction>
+                                                                                        </DoubleAnimation>
+                                                                                        <!-- Плавная смена цвета текста -->
+                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
+                             Storyboard.TargetProperty="Foreground">
+                                                                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
+                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                    </Storyboard>
+                                                                                    <VisualState.Setters>
+                                                                                        <!-- Применяем к TextBlock с заголовком -->
+                                                                                        <!-- Применяем к TextBlock с датой -->
+                                                                                        <Setter Target="DateTextBlock.Foreground" Value="Gray"/>
+                                                                                        <!-- Применяем к TextBlock с категорией -->
+                                                                                        <Setter Target="CategoryTextBlock.Foreground" Value="Gray"/>
+                                                                                        <!-- Можно также сделать разделитель менее заметным -->
+                                                                                        <Setter Target="SeparatorRectangle.Opacity" Value="0.1"/>
+                                                                                    </VisualState.Setters>
+                                                                                </VisualState>
+                                                                            </VisualStateGroup>
+                                                                        </VisualStateManager.VisualStateGroups>
+                                                                        <Grid Width="Auto"  Padding="0" MinHeight="65" IsHitTestVisible="True">
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="0.1*" MaxWidth="50" MinWidth="32"/>
+                                                                                <ColumnDefinition/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <CheckBox  Tag="&#xE73E;"  IsHitTestVisible="False" Height="20" Width="20"
+                                                IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
+                                                                            <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
+                                                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                                                                    <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"   FontSize="17" TextWrapping="NoWrap" Foreground="{ThemeResource InkBlueLightBrushOver}" FontWeight="Medium"
+                                                         TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Stretch" MaxLines="1" FontFamily="Segoe Print"/>
+                                                                                    <!-- Линия зачеркивания - стилизуем цветом "Clue Red" -->
+                                                                                    <Rectangle x:Name="StrikeLine" Height="2" Margin="0 8 0 0"  Fill="{ThemeResource DividerDarkBrush}" HorizontalAlignment="Stretch"  VerticalAlignment="Center"
+                                                         RenderTransformOrigin="0,0.5" IsHitTestVisible="False">
+                                                                                        <Rectangle.RenderTransform>
+                                                                                            <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
+                                                                                        </Rectangle.RenderTransform>
+                                                                                    </Rectangle>
+                                                                                </Grid>
+
+
+                                                                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                                                                                    <TextBlock FontFamily="Comic Sans MS" x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12" >
+                                                  <Run Text="&#xE163;" FontFamily="Segoe MDL2 Assets"/>
+                                                  <Run Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
+                                                                                    </TextBlock>
+                                                                                    <TextBlock FontFamily="Comic Sans MS" x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12">
+                                                  <Run Text="#"/>
+                                                  <Run Text="{Binding Category.Title}"/>
+                                                                                    </TextBlock>
+                                                                                </StackPanel>
+                                                                            </StackPanel>
+                                                                        </Grid>
+
+
+                                                                    </Grid>
+                                                                    <Grid Background="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="10"  Opacity="0.5"></Grid>
+
+
+                                                                </Grid>
+
+                                                            </Border>
+                                                            <Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                                <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
+                                                                <Grid Background="{StaticResource TransparentGridBrush}"/>
+                                                                <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" RenderTransformOrigin="0.5,0.5">
+                                                                </FontIcon>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </TreeViewItem>
+                                                </DataTemplate>
+                                            </TreeView.ItemTemplate>
+                                        </TreeView>
+
+                                    </Grid>
+                                </Border>
+
+                            </Grid>
+                        </Border>
+                        <!--</Border>-->
+
+                    </Grid>
+
+
+
+                </Grid>
+
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>

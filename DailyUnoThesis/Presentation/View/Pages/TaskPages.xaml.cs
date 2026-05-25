@@ -10,6 +10,7 @@ using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Uno.Extensions.Specialized;
 using Uno.Toolkit.UI;
 using Windows.UI.Core;
@@ -33,7 +34,7 @@ namespace DailyUnoThesis.Presentation.View.Pages
 
 
         //public TaskPageControle ViewModel { get; } = new();
-        string test {  get; set; }  
+        string test { get; set; }
         public TaskPages()
         {
             this.InitializeComponent();
@@ -68,12 +69,12 @@ namespace DailyUnoThesis.Presentation.View.Pages
                 }
             };
 
-          
+
         }
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-          
+
             // Проверяем, что DataContext — это наша ViewModel
             if (args.NewValue is TaskPageControle viewModel)
             {
@@ -108,10 +109,10 @@ namespace DailyUnoThesis.Presentation.View.Pages
         {
             try
             {
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    await en.GetListPage();
-                });
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                await en.GetListPage();
+            });
                 //или так, но без асинхронности
                 //DispatcherQueue.TryEnqueue(() =>
                 //{
@@ -128,8 +129,8 @@ namespace DailyUnoThesis.Presentation.View.Pages
         }
         public void CloseCatBannerClass()
         {
-             //CatBanner.Visibility = Visibility.Collapsed;         
-             
+            //CatBanner.Visibility = Visibility.Collapsed;         
+
         }
 
 
@@ -145,12 +146,12 @@ namespace DailyUnoThesis.Presentation.View.Pages
             test = "заполнен";
         }
 
-        private void CloseCatBanner(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) 
+        private void CloseCatBanner(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
 
         }
 
-      
+
 
         private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -218,5 +219,22 @@ namespace DailyUnoThesis.Presentation.View.Pages
         //{
         //    ContentFrame.Navigate(typeof(TaskTodayListPage));
         //}
+
+
+
+
+        private async void Grid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+           Grid g = sender as Grid;
+            g.Tag = true;
+            //if (sender is FrameworkElement fe)
+            //    VisualStateManager.GoToState((Control)fe, "PointerOver", true);
+        }
+
+        private void Grid_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            Grid g = sender as Grid;
+            g.Tag = false;
+        }
     }
 }

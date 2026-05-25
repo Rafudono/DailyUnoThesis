@@ -98,7 +98,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 try
                 {
                     await System.Threading.Tasks.Task.Delay(300, token);
-                    var results = await APIHost.GetInstance().GetSuggestions(query);
+                    MissionSuggestionDto missionSuggestion = new MissionSuggestionDto() { Title = query, PageMode = PageMode.TodayTasks };
+                    var results = await APIHost.GetInstance().GetSuggestions(missionSuggestion);
 
                     //if (!token.IsCancellationRequested)
                     //{
@@ -748,8 +749,40 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             await System.Threading.Tasks.Task.Delay(400);
             await APIHost.GetInstance().DeleteMission(mission);
             await System.Threading.Tasks.Task.Delay(300);
-            Missions.Remove(mission);
-            //await FillData();
+            Mission mis = new();
+            if (mission.IdUpMission == 0 || mission.IdUpMission == null)
+                Missions.Remove(mission);
+            else if (Missions.Any(s => s.Id == mission.IdUpMission))
+            {
+                mis = Missions.FirstOrDefault(s => s.Id == mission.IdUpMission);
+                mis.InverseIdUpMissionNavigation.Remove(mission);
+                //if (Task.Id == mis.Id)
+                //{
+                //    ViewModelStore.GetInstance().ChangeSelected(Task);
+                //}
+            }
+            else
+            {
+                mis = Missions.FirstOrDefault(s => s.Id == mission.IdUpMissionNavigation.IdUpMission);
+                Mission sub2mis = mis.InverseIdUpMissionNavigation.FirstOrDefault(s => s.Id == mission.IdUpMission);
+                sub2mis.InverseIdUpMissionNavigation.Remove(mission);
+
+            }
+            if (Task != null)
+            {
+                if (Task.Id == mis.Id || Task.Id == mission.IdUpMission)
+                {
+                    ViewModelStore.GetInstance().ChangeSelected(Task);
+                }
+                if (Task.Id == mission.Id)
+                    ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = false;
+            }
+            Missions.Add(new Mission());
+            //ObservableCollection < Mission > list = new();
+            //list.AddRange(Missions);
+            //Missions.Clear();
+            //Missions.AddRange(list);
+            await GetToday();
         }
 
         private void DeleteSubtasks(Mission mission)

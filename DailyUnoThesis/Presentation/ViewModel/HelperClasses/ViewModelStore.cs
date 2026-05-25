@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
+using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
+using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
 
 namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 {
@@ -38,12 +41,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 
         #region Свойства классов 
         // Главная панель навигации
-        public static readonly DependencyProperty MainProperty =
+        public static readonly DependencyProperty MainPanel =
             DependencyProperty.Register("Main", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
         public PageNavigation Main
         {
-            get => (PageNavigation)GetValue(MainProperty);
-            set => SetValue(MainProperty, value);
+            get => (PageNavigation)GetValue(MainPanel);
+            set => SetValue(MainPanel, value);
         }
 
         // Раздел задач
@@ -105,6 +108,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             set => SetValue(DetailedTaskProperty, value);
         }
 
+        // Меню подробностей проектов
+        public static readonly DependencyProperty DetailedProjectProperty =
+          DependencyProperty.Register("DetailedProject", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+        public TaskViewModel DetailedProject
+        {
+            get => (TaskViewModel)GetValue(DetailedProjectProperty);
+            set => SetValue(DetailedProjectProperty, value);
+        }
+
         // CategoryViewModel 
         public static readonly DependencyProperty CategoryProperty =
             DependencyProperty.Register("Category", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
@@ -113,6 +125,47 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
         {
             get => (TaskCategotyControle)GetValue(CategoryProperty);
             set => SetValue(CategoryProperty, value);
+        }
+
+
+
+
+
+
+
+        // Панель проектов
+        public static readonly DependencyProperty PanelProjectProperty =
+            DependencyProperty.Register("PanelProject", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+
+        public PanelProjectViewModel PanelProject
+        {
+            get => (PanelProjectViewModel)GetValue(PanelProjectProperty);
+            set => SetValue(PanelProjectProperty, value);
+        }
+
+
+
+
+
+        // pomodoro 
+        public static readonly DependencyProperty PomodoroProperty =
+            DependencyProperty.Register("PomodoroTime", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+
+        public PomodoroTimerControle PomodoroTime
+        {
+            get => (PomodoroTimerControle)GetValue(PomodoroProperty);
+            set => SetValue(PomodoroProperty, value);
+        }
+
+
+        // Обычный таймер  
+        public static readonly DependencyProperty RegularTimerProperty =
+            DependencyProperty.Register("RegularTimer", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+
+        public RegularTimerControle RegularTimer
+        {
+            get => (RegularTimerControle)GetValue(RegularTimerProperty);
+            set => SetValue(RegularTimerProperty, value);
         }
         #endregion
 
@@ -124,14 +177,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             //PageCategory = pageCategory;
             Category = pageCategory.DataContext as TaskCategotyControle;
             if(Category != null)
-            await Category.GetIdCategory(1);
+            await Category.GetIdCategory(CategoryService.Instance.FilterCategories[1]);
         }
 
 
-        public void GetPageTask(SelectedAndNewTask page)
+        public void GetPageTask()
         {
             //SelectedAndNewTask = page;
-            DetailedTask = page.DataContext as TaskViewModel;
+            DetailedTask = new TaskViewModel();
+        }
+        public void GetPageProject()
+        {
+            //SelectedAndNewTask = page;
+            DetailedProject = new TaskViewModel();
         }
 
         public void ChangeSelected(Mission mission)
@@ -147,9 +205,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
         {
             await AllTasks.FillData();
             await Category.FillData();
-            //await TodayTasks.GetToday();
-            //await CompleteTasks.GetComplete();
-            //await OverdueTasks.GetOverdue();
+            if(TodayTasks != null)
+                await TodayTasks.GetToday();
+            if (CompleteTasks != null)
+                    await CompleteTasks.GetComplete();
+            if (OverdueTasks != null)
+                        await OverdueTasks.GetOverdue();
 
         }
         #endregion

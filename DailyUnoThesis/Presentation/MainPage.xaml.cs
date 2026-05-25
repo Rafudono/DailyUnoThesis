@@ -1,4 +1,5 @@
 using System;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 namespace DailyUnoThesis.Presentation;
@@ -9,11 +10,25 @@ public sealed partial class MainPage : Page
     {
         this.InitializeComponent();
         //DataContext = PageNavigation.GetInstance();
-        var en = DataContext as PageNavigation;
+        //var en = DataContext as PageNavigation;
         //Task.Run(async () => { await GetClassPage(en); });
-        
+        this.DataContextChanged += OnDataContextChanged;
 
 
+
+    }
+
+
+    private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+    {
+
+        // Проверяем, что DataContext — это наша ViewModel
+        if (args.NewValue is PageNavigation viewModel)
+        {
+            
+            ViewModelStore.GetInstance().Main = viewModel;
+           
+        }
     }
 
     private async Task GetClassPage(PageNavigation? en)

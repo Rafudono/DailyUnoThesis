@@ -9,5 +9,9 @@ public partial class Tag
 
     public string? Title { get; set; }
 
-    public virtual ICollection<Mission> Missions { get; set; } = new List<Mission>();
+    public string Icon { get; set; } = null!;
+
+    public string? Color { get; set; }
+
+    public virtual ICollection<Mission>? Missions { get; set; } = new List<Mission>();
 }

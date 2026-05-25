@@ -6,11 +6,13 @@
     xmlns:mod="using:DailyUnoThesis.Models.MainClasses"
     xmlns:con="using:DailyUnoThesis.Models.Conventers"
       xmlns:model="using:DailyUnoThesis.Models"
+             xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
       xmlns:help="using:DailyUnoThesis.Presentation.ViewModel.HelperClasses"
        xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+xmlns:core="using:Microsoft.Xaml.Interactions.Core"
  xmlns:utu="using:Uno.Toolkit.UI"
  xmlns:um="using:Uno.Material"
       x:Name="PanelTask"
@@ -25,6 +27,10 @@
         <con:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter"/>
         <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
         <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
+        <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        
 
         <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Red" />
         
@@ -57,6 +63,8 @@
      ItemTemplate="{StaticResource NavItemTemplate}"
      HeaderTemplate="{StaticResource NavHeaderTemplate}"
      SeparatorTemplate="{StaticResource NavSeparatorTemplate}" />
+
+      
     </Page.Resources>
 
     <Grid x:Name="maingrid" Background="BlueViolet" uen:Region.Attached="True" >
@@ -124,177 +132,270 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
+        
         <!--<Grid Canvas.ZIndex="100">
             
         </Grid>-->
 
-        <SplitView x:Name="RootSplitView" OpenPaneLength="220"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}"
+        <SplitView x:Name="RootSplitView" OpenPaneLength="220"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
                    CompactPaneLength="0" CornerRadius="0,8,8,0" >
             <SplitView.Pane MaxWidth="220">
-                <Border x:Name="MenuBorder" MaxWidth="220"  Background="#ecf1ff" BorderThickness="1,0,1,0" BorderBrush="#311a11" uen:Region.Attached="True">
-                    <Border.Transitions>
-                        <TransitionCollection>
-                            <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
-                            <RepositionThemeTransition />
-                        </TransitionCollection>
-                    </Border.Transitions>
-                    <ScrollViewer  Padding="10 5" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
+                <Border  BorderThickness="0,0,1,0" BorderBrush="{StaticResource DarkGrayBrown}" Padding="0 0 1 0">
+                <Border x:Name="MenuBorder" MaxWidth="220"  Background="#e9e9e9" BorderThickness="0,0,2,0" BorderBrush="{StaticResource DarkGrayBrown}" uen:Region.Attached="True">
+                        <Border.Transitions>
+                            <TransitionCollection>
+                                <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
+                                <RepositionThemeTransition />
+                            </TransitionCollection>
+                        </Border.Transitions>
+                        <Grid>
+                        <!-- Декоративный элемент: имитация текстуры бумаги или вертикальная полоса-склейка -->
+                        <Rectangle Width="4" 
+HorizontalAlignment="Right" 
+Fill="{StaticResource DarkGrayBrown}" 
+Opacity="0.1" 
+Margin="0,0,1,0"/>
+
+                        <ScrollViewer  Padding="0 5" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollMode="Enabled" 
               VerticalScrollMode="Enabled">
 
-                        <StackPanel>
+                            <StackPanel Spacing="10">
+                                    <StackPanel Height="40">
+                                        
+                                    </StackPanel>
 
-                            <utu:TabBar x:Name="StaticTabBar" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}"
-                                        uen:Region.Attached="True" Orientation="Vertical" Background="Transparent" MinHeight="100" >
+                                    <utu:TabBar x:Name="StaticTabBar" SelectedIndex="0" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}" Width="220" Margin="10 0 0 0"
+                                        uen:Region.Attached="True" Orientation="Vertical" Background="Transparent" MinHeight="150" ItemContainerStyle="{StaticResource DetectiveTabBarItemStyle}">
 
-                                <utu:TabBarItem Content="Все задания" 
-                                    uen:Region.Name="TaskList"
-                                    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
+                                        <utu:TabBarItem Content="Все задания"  uen:Region.Name="TaskList" utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"  Tag="Bookmarks" />
+                                        <utu:TabBarItem Content="На сегодня"  uen:Region.Name="Today"  utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"     Tag="Clock" />
+                                        <utu:TabBarItem Content="Выполненные"  uen:Region.Name="Complete" utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"  Tag="Accept"/>
+                                        <utu:TabBarItem Content="Просроченные"  uen:Region.Name="Overdue" utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"  Tag="SelectAll"/>
+                                </utu:TabBar>
 
-                                <utu:TabBarItem Content="На сегодня" 
-     uen:Region.Name="Today"
-     utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
-                                <utu:TabBarItem Content="Выполненные" 
-    uen:Region.Name="Complete"
-    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
-                                <utu:TabBarItem Content="Просроченные" 
-    uen:Region.Name="Overdue"
-    utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}" MinHeight="30"/>
-                            </utu:TabBar>
-
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="#Категории" Margin="0,10" />
-                                <Button Content="+" Command="{Binding CloseAndOpenAddCategoryPanel}" />
-                            </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0"> 
+                                        <TextBlock  Margin="0 10 0 0"  FontSize="19">
+                                            <Run Text="#" FontFamily="Comic Sans MS"  FontSize="22" />
+                                            <Run Text="Категории" FontFamily="Segoe Print" FontWeight="Bold"/>
+                                        </TextBlock>
+                                        <Button Command="{Binding CloseAndOpenAddCategoryPanel}" HorizontalAlignment="Right" helperstyle:ButtonHelper.IconGlyph="&#xE8F4;"
+                                            Margin="5 0 0 -6" FontSize="18" FontWeight="Black" Padding="0"  Style="{StaticResource TextsButtonStyle}"  
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                </StackPanel>
 
 
-                            <TreeView x:Name="CategoriesRepeater" ItemsSource="{Binding Categories}" 
+                                    <TreeView x:Name="CategoriesRepeater" ItemsSource="{Binding Categories}"  
           SelectionMode="Single"  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
-                                <TreeView.ItemTemplate>
-                                    <DataTemplate x:DataType="mod:Category">
-                                        <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" >
-                                            <Grid  Width="Auto" MinWidth="50" MaxWidth="700">
 
-                                                <Grid.ContextFlyout>
-                                                    <MenuFlyout>
-                                                        <MenuFlyoutItem Text="Редактировать" 
+                                        <TreeView.Resources>
+                                            <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
+         Код символа ">"-->
+                                            <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
+                                            <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
+
+                                            <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
+                                            <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
+
+                                            <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
+                                            <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
+                                            <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
+
+                                            <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
+                                            <!--Цвет фона при наведении-->
+                                            <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
+                                            <!--Цвет фона при выделении-->
+                                            <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" Opacity="0.8"/>
+                                            <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListLowBrush}" Opacity="1"/>
+
+                                            <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
+                                            <!--Или ваш InkBlueBrush-->
+
+                                            <!--Убираем системные отступы, которые могут мешать нитям-->
+                                            <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
+                                        </TreeView.Resources>
+
+                                        <TreeView.ItemContainerStyle>
+                                            <Style TargetType="TreeViewItem">
+                                                <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
+                                                <Setter Property="MinHeight" Value="0"/>
+                                                <Setter Property="IsExpanded" Value="True" />
+                                                <Setter Property="Transitions">
+                                                    <Setter.Value>
+                                                        <TransitionCollection>
+                                                            <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                                            <AddDeleteThemeTransition />
+                                                        </TransitionCollection>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                <Setter Property="Padding" Value="0" />
+                                                <!--Убираем лишние падинги-->
+
+                                            </Style>
+                                        </TreeView.ItemContainerStyle>
+
+
+
+
+                                        <TreeView.ItemTemplate>
+                                            <DataTemplate x:DataType="mod:Category">
+                                                <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" x:Name="TreeViewItem">
+
+                                                    <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid"  Height="30" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
+
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                <!-- Обычное состояние -->
+                                                                <VisualState x:Name="Normal"/>
+                                                                <VisualState x:Name="IsSelected">
+                                                                    <VisualState.StateTriggers>
+                                                                        <StateTrigger IsActive="{Binding IsSelected, ElementName=TreeViewItem}" />
+                                                                    </VisualState.StateTriggers>
+                                                                    <VisualState.Setters>
+                                                                        <!-- Текст становится красным -->
+                                                                        <Setter Target="ContentPresenter.Foreground" Value="{StaticResource ClueRedLightBrush}"/>
+                                                                        <!-- Показываем красную черту -->
+                                                                        <Setter Target="Underline.BorderThickness" Value="0 0 0 2"/>
+                                                                        <!--<Setter Target="CheckedBackground.Opacity" Value="0.5"/>-->
+                                                                        <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
+                     <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
+                                                                        <Setter Target="Underline.Opacity" Value="1"/>
+                                                                        <Setter Target="RootGrid.Height" Value="35"/>
+                                                                        <Setter Target="ChevronPath.Opacity" Value="1"/>
+                                                                        <Setter Target="ChevronPath.Visibility" Value="Visible"/>
+
+                                                                        <!--<Setter Target="HoverBackground.Opacity" Value="0.8"/>-->
+                                                                    </VisualState.Setters>
+                                                                </VisualState>
+                                                                <!--PointerOverAndSelected-->
+                                                                <VisualState x:Name="PointerOver">
+                                                                    <VisualState.StateTriggers>
+                                                                        <StateTrigger IsActive="{Binding Tag, ElementName=RootGrid}" />
+                                                                    </VisualState.StateTriggers>
+                                                                    <VisualState.Setters>
+                                                                        <!-- Цвет текста становится темнее при наведении -->
+                                                                        <!--<Setter Target="ContentPresenter.Foreground" Value="#051a35"/>-->
+                                                                        <Setter Target="Underline.BorderThickness" Value="0 0 0 2"/>
+                                                                        <Setter Target="Underline.Opacity" Value="1"/>
+                                                                        <!--<Setter Target="HoverBackground.Opacity" Value="0.5"/>-->
+                                                                        <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
+<Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
+                                                                        <Setter Target="RootGrid.Height" Value="35"/>
+                                                                    </VisualState.Setters>
+                                                                </VisualState>
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+
+                                                        <Grid.ContextFlyout>
+                                                            <MenuFlyout>
+                                                                <MenuFlyoutItem Text="Редактировать" Background="#ecf1ff" FontFamily="Segoe Print"
                                 Command="{Binding DataContext.EditMissionCommand, ElementName=MyTreeView}"
                                 CommandParameter="{Binding}">
-                                                            <MenuFlyoutItem.Icon>
-                                                                <SymbolIcon Symbol="Edit" />
-                                                            </MenuFlyoutItem.Icon>
-                                                        </MenuFlyoutItem>
+                                                                    <MenuFlyoutItem.Icon>
+                                                                        <SymbolIcon Symbol="Edit" />
+                                                                    </MenuFlyoutItem.Icon>
+                                                                </MenuFlyoutItem>
 
 
-                                                        <MenuFlyoutItem Text="Создать подкатегорию"
+                                                                <MenuFlyoutItem Text="Создать подкатегорию" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                         Command="{Binding PanelTask.CreateSubcategory,Source={StaticResource GlobalStore}}"
                                                                         CommandParameter="{Binding}">
-                                                            <MenuFlyoutItem.Icon>
-                                                                <SymbolIcon Symbol="List" />
-                                                            </MenuFlyoutItem.Icon>
-                                                        </MenuFlyoutItem>
-                                                        СlearСategory
+                                                                    <MenuFlyoutItem.Icon>
+                                                                        <SymbolIcon Symbol="List" />
+                                                                    </MenuFlyoutItem.Icon>
+                                                                </MenuFlyoutItem>
+                                                                СlearСategory
 
-                                                        <MenuFlyoutItem Text="Очистить содержимое"
+                                                                <MenuFlyoutItem Text="Очистить содержимое" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                         Command="{Binding  PanelTask.СlearСategory, Source={StaticResource GlobalStore}}"
                                                                         CommandParameter="{Binding}">
-                                                            <MenuFlyoutItem.Icon>
-                                                                <SymbolIcon Symbol="List" />
-                                                            </MenuFlyoutItem.Icon>
-                                                        </MenuFlyoutItem>
+                                                                    <MenuFlyoutItem.Icon>
+                                                                        <SymbolIcon Symbol="List" />
+                                                                    </MenuFlyoutItem.Icon>
+                                                                </MenuFlyoutItem>
 
-                                                        <MenuFlyoutSeparator />
+                                                                <MenuFlyoutSeparator />
 
 
-                                                        <MenuFlyoutItem Text="Удалить категорию" Foreground="Red"
+                                                                <MenuFlyoutItem Text="Удалить категорию" Foreground="Red" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                         Command="{Binding PanelTask.DeleteCategoryEmptyOnly, Source={StaticResource GlobalStore}}"
                                                                         CommandParameter="{Binding}"
                                                                         Visibility="{Binding IsEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                            <MenuFlyoutItem.Icon>
-                                                                <SymbolIcon Symbol="List" />
-                                                            </MenuFlyoutItem.Icon>
-                                                        </MenuFlyoutItem>
+                                                                    <MenuFlyoutItem.Icon>
+                                                                        <SymbolIcon Symbol="List" />
+                                                                    </MenuFlyoutItem.Icon>
+                                                                </MenuFlyoutItem>
 
 
-                                                        <MenuFlyoutSubItem Text="Удалить"  Foreground="Red"
+                                                                <MenuFlyoutSubItem Text="Удалить"  Foreground="Red" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                            Visibility="{Binding HasAnyContent, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                            <MenuFlyoutSubItem.Icon>
-                                                                <SymbolIcon Symbol="Delete" />
-                                                            </MenuFlyoutSubItem.Icon>
-                                                            <MenuFlyoutItem Text="Удалить только категорию" 
+                                                                    <MenuFlyoutSubItem.Icon>
+                                                                        <SymbolIcon Symbol="Delete" />
+                                                                    </MenuFlyoutSubItem.Icon>
+                                                                    <MenuFlyoutItem Text="Удалить только категорию" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                             Command="{Binding PanelTask.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}"/>
 
-                                                            <MenuFlyoutItem Text="Удалить всё" 
+                                                                    <MenuFlyoutItem Text="Удалить всё" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                             Command="{Binding PanelTask.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
                                                                             CommandParameter="{Binding}" IsEnabled="{Binding HasAllContent, Mode=OneWay}"/>
 
-                                                            <MenuFlyoutSubItem Text="Удалить c вложеннотями"  Foreground="Red" >
+                                                                    <MenuFlyoutSubItem Text="Удалить c вложеннотями" Background="#ecf1ff" FontFamily="Segoe Print"  Foreground="Red" >
 
-                                                                <MenuFlyoutItem Text="Удалить только категории" 
+                                                                        <MenuFlyoutItem Text="Удалить только категории" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                                 Command="{Binding PanelTask.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
                                                                                 CommandParameter="{Binding}"
                                                                                 IsEnabled="{Binding HasSubCategories, Mode=OneWay}" />
 
-                                                                <MenuFlyoutItem Text="Удалить с задачами" 
+                                                                        <MenuFlyoutItem Text="Удалить с задачами" Background="#ecf1ff" FontFamily="Segoe Print"
                                                                                 Command="{Binding PanelTask.DeleteCategoryWithMissions, Source={StaticResource GlobalStore}}"
                                                                                 CommandParameter="{Binding}"
                                                                                 IsEnabled="{Binding HasMissions, Mode=OneWay}"/>
-                                                            </MenuFlyoutSubItem>
+                                                                    </MenuFlyoutSubItem>
 
-                                                        </MenuFlyoutSubItem>
-
-
-                                                    </MenuFlyout>
-                                                </Grid.ContextFlyout>
+                                                                </MenuFlyoutSubItem>
 
 
-                                                <TextBlock Text="{Binding Title}"  FontSize="20"   FontWeight="Medium"/>
-                                                <!--<Button x:Name="DelButton" Grid.Column="1" Content="Del" 
-        CommandParameter="{Binding}"
-        Command="{Binding DataContext.Deletecategory, ElementName=CategoriesRepeater}" />-->
-                                            </Grid>
-                                        </TreeViewItem>
-
-                                    </DataTemplate>
-                                </TreeView.ItemTemplate>
-                            </TreeView>
+                                                            </MenuFlyout>
+                                                        </Grid.ContextFlyout>
 
 
-                            <!--<utu:Card HeaderContent="Outlined card"
-          SubHeaderContent="With title and subtitle only"
-          AutomationProperties.AutomationId="Outlined_Card"
-          Style="{StaticResource OutlinedCardStyle}">
-                                <utu:Card.HeaderContentTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                    Margin="16,14,16,0"
-                    Style="{ThemeResource TitleLarge}" />
-                                    </DataTemplate>
-                                </utu:Card.HeaderContentTemplate>
-                                <utu:Card.SubHeaderContentTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                    Margin="16,0,16,14"
-                    Style="{ThemeResource BodySmall}" />
-                                    </DataTemplate>
-                                </utu:Card.SubHeaderContentTemplate>
-                            </utu:Card>-->
+                                                        <Grid IsHitTestVisible="False" Margin="0,3,25,2" HorizontalAlignment="Left" Background="Transparent">
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <SymbolIcon Symbol="SolidStar" x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="-2 -2 7 0"/>
+                                                                <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="SemiBold"/>
+                                                            </StackPanel>
+                                                            <Border x:Name="Underline" Opacity="0" Margin="0 -20 0 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
+                                                        </Grid>
+                                                        <Grid Background="Transparent" IsHitTestVisible="False" Margin="-25 -2 0 0" Height="20" Width="20" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpCategoryNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                            <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
+                                                            <Grid Background="{StaticResource TransparentGridBrushCat}" Width="20" Height="15"/>
+                                                            <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" HorizontalAlignment="Center" Width="10" Height="10" RenderTransformOrigin="0.5,0.5">
+                                                            </FontIcon>
+                                                        </Grid>
+                                                        <Path IsHitTestVisible="False" Data="M 0,0 L 10,10 L 0,20 Z"  Fill="{StaticResource ClueRedLightBrush}" HorizontalAlignment="Left"  Stretch="Uniform" x:Name="ChevronPath"  Width="10" Height="17"  Margin="-35 2 0 0" Opacity="0"  Visibility="Collapsed"/>
+
+                                                        <!--<CheckBox x:Name="ToggleBut" IsHitTestVisible="False" Visibility="Collapsed" IsChecked="True" />-->
+                                                    </Grid>
+                                                </TreeViewItem>
+
+                                            </DataTemplate>
+                                        </TreeView.ItemTemplate>
+                                    </TreeView>
 
 
-                            <TextBlock Text="#Проекты" Margin="0,10" />
+                                    <TextBlock Text="#Проекты" Margin="0,10" />
 
-                            Width="200"
+                                <!--Width="200"-->
 
-                            <Button Grid.Column="1" Content="Filters" 
- Command="{Binding CloseAndOpenDetailedSplitView}"
-HorizontalAlignment="Right" 
-VerticalAlignment="Top" 
-Margin="10"/>
+                               
 
-                        </StackPanel>
-                    </ScrollViewer>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
                 </Border>
             </SplitView.Pane>
             <SplitView.Content>
@@ -355,142 +456,24 @@ Margin="10"/>
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>
 
-
-
-
-
-                    <!--<Border x:Name="LightDismissLayer" Grid.ColumnSpan="2" Grid.Row="1" Background="#66000000" Canvas.ZIndex="99" Visibility="Collapsed"-->
-                    <!--Tapped="{x:Bind ViewModel.CloseMenu}" />-->
-
-
-
-
-
-
-
-
-                    <!--<Grid uen:Region.Attached="True"                          
-uen:Region.Navigator="Visibility"
-Grid.Row="1"  Grid.Column="1">
-                    
-                    </Grid>-->
-
-
-
-
-
-                    <!--<Grid x:Name="TaskContentGrid"
-          Grid.Column="1" Grid.Row="1"
-          uen:Region.Attached="True"
-       uen:Region.Name="TaskContentRegion" 
-          uen:Region.Navigator="Visibility" />-->
-
-                    <!--<Grid uen:Region.Attached="True" x:Name="TaskContentGrid"
-                                Grid.Column="1" Grid.Row="1"
-                uen:Region.Name="TaskContentRegion"
-                uen:Region.Navigator="Visibility" />-->
-
-
                     <Grid Padding="1 0 1 0"  x:Name="TaskContentGrid"
                        Grid.Column="1" Grid.Row="1"
 uen:Region.Attached="True"  Visibility="{Binding IsVisibilityTabBar, Converter={StaticResource BoolToVisibilityConverter}}"
 uen:Region.Navigator="Visibility" />
 
 
-                    <!--<Frame x:Name="TaskContentFrame" 
-           uen:Region.Attached="True"
-           uen:Region.Name="TaskContentRegion" 
-           HorizontalAlignment="Stretch"
-           VerticalAlignment="Stretch" uen:Region.Navigator="Frame"   Grid.Column="1" Grid.Row="1" />-->
-
-
-
-
-
                     <Frame  Visibility="{Binding IsVisibilityFrame, Converter={StaticResource BoolToVisibilityConverter}}"  x:Name="ContentFrame" Grid.Column="1" Grid.Row="1" />
 
 
 
+                    <Button  Content="Добавить запись" Command="{Binding CreatNewTask}" HorizontalAlignment="Right"  VerticalAlignment="Top"
+                             Margin="10" Background="{StaticResource DividerLightBrush}" CornerRadius="0" Padding="3" helperstyle:ButtonHelper.IconGlyph="&#xE710;"
+                             Visibility="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                             Style="{StaticResource StampWithIconButtonStyle}" FontSize="15" Tag="{StaticResource AccentBlueLightBrush}"
+                             Foreground="{StaticResource InkBlueLightBrush}"  Grid.Column="1" Grid.Row="1"/>
 
-
-
-
-                    <!--<NavigationView OpenPaneLength="170"  IsBackButtonVisible="Collapsed" uen:Region.Attached="true"
-                  Grid.Row="1" IsSettingsVisible="False">
-                        <NavigationView.MenuItems>
-                            -->
-                    <!-- Tag должен совпадать с именами в маршрутах -->
-                    <!--
-                            <NavigationViewItem Icon="List" Content="Все задания"
-                              uen:Region.Name="TaskList" />
-                            <NavigationViewItem Icon="List" Content="На сегодня"
-              uen:Region.Name="Today" />
-                            <NavigationViewItem Icon="List" Content="Выполненные"
-              uen:Region.Name="Complete" />
-                            <NavigationViewItem Icon="List" Content="Просроченные"
-uen:Region.Name="Overdue" />
-                            <NavigationViewItemSeparator/>
-                            <NavigationViewItemHeader Content="Категории" />
-                        </NavigationView.MenuItems>
-                        <Grid uen:Region.Attached="True"
-            uen:Region.Navigator="Visibility"
-            Grid.Row="1">
-                        </Grid>
-                    </NavigationView>-->
-
-
-
-
-
-
-                    
                     <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane" >
-                        <!--<VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="PaneStates">
-                            <VisualState x:Name="Open">
-                                <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsSplitViewPaneOpen}" />
-                                </VisualState.StateTriggers>
-                                <Storyboard>
-                                    -->
-                        <!-- Анимируем ширину Border от 0 до расчетного значения -->
-                        <!--
-                                    <DoubleAnimation Storyboard.TargetName="DetailsPane"
-                         Storyboard.TargetProperty="Width"
-                         To="{Binding SplitViewOpenPaneLength}" 
-                         Duration="0:0:0.4">
-                                        <DoubleAnimation.EasingFunction>
-                                            <CubicEase EasingMode="EaseOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
 
-                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DetailsPane" Storyboard.TargetProperty="Visibility">
-                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                    </ObjectAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </VisualState>
-
-                            <VisualState x:Name="Closed">
-                                <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolConverter}}" />
-                                </VisualState.StateTriggers>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="DetailsPane"
-                         Storyboard.TargetProperty="Width"
-                         To="0" 
-                         Duration="0:0:0.3">
-                                        <DoubleAnimation.EasingFunction>
-                                            <CubicEase EasingMode="EaseIn"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-
-                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DetailsPane" Storyboard.TargetProperty="Visibility">
-                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="Collapsed"/>
-                                    </ObjectAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>-->
 
                         <Frame x:Name="ContentFrameTask"/>
                         <Button Command="{Binding CloseAndOpenDetailedSplitView}" Content="&#xE10A;" FontSize="30" FontWeight="ExtraBlack" Foreground="{StaticResource ClueRedLightBrush}"
@@ -498,23 +481,7 @@ uen:Region.Name="Overdue" />
                     </Grid>
 
 
-                    <!--</Grid>-->
-
-                    <!--<Grid Grid.Column="2" Grid.Row="1">-->
-
-                    <!--</Grid>-->
-
-
-                    <!--<SplitView x:Name="FilterSplitView" DisplayMode="{Binding SplitViewDisplayMode}"
-             PanePlacement="Right" OpenPaneLength="{Binding SplitViewOpenPaneLength}"  IsPaneOpen="{Binding IsSplitViewPaneOpen, Mode=TwoWay}">
-
-                <SplitView.Pane>
-                    <Grid>
-                        <Frame x:Name="ContentFrameTask"/>
-                        <Button Command="{Binding CloseAndOpenDetailedSplitView}" Content="Cancel" VerticalAlignment="Top"/>
-                    </Grid>
-                </SplitView.Pane>
-            </SplitView>-->
+             
 
                 </Grid>
             </SplitView.Content>
@@ -587,28 +554,44 @@ uen:Region.Name="Overdue" />
                Grid.ColumnSpan="2"
                Visibility="Collapsed"
                Content="{Binding CurPageCategory}" />-->
+       
 
-        <Grid x:Name="CatBanner" Visibility="{Binding IsVisibleCat,Converter={StaticResource BoolToVisibilityConverter}}">
+        <Button x:Name="HamburgerBtn" Content="&#xE71D;" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" CornerRadius="0" Padding="3" Margin="10"
+        HorizontalAlignment="Left" VerticalAlignment="Top"  Style="{StaticResource StampButtonStyle}" FontSize="25" 
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}">
+            <!--<SymbolIcon Symbol="GlobalNavigationButton" />-->
+        </Button>
+
+
+        <!--<Button x:Name="ButtonKanban" Content="Доска" Command="{Binding GoToKanbanBoard}" 
+        VerticalAlignment="Bottom"  Style="{StaticResource StampButtonStyle}" FontSize="25" 
+  Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}">
+            --><!--<SymbolIcon Symbol="GlobalNavigationButton" />--><!--
+        </Button>-->
+
+        <Grid x:Name="CatBanner" Visibility="{Binding IsVisibleCat,Converter={StaticResource BoolToVisibilityConverter}}" >
             <Grid Background="Gray" Opacity="0.6"  Tapped="{x:Bind ViewModel.CloseCategoryPanel}"/>
             <!--Tapped="{Binding CloseAndOpenAddCategoryPanel}"-->
-            <Border CornerRadius="20" Height="200" Width="500" Background="PaleVioletRed">
-                <Grid>
-                    <TextBox PlaceholderText="Название категории"
-                             Text="{Binding Category.Title, Mode=TwoWay}"
-                             Width="400" Height="40" FontSize="20" />
-                    <Button Content="Сохранить"
-                            Margin="20"
+            <ContentControl Style="{StaticResource StickerContainerStyle}" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center">
+                <Border CornerRadius="20" Height="300" Width="600" Background="Transparent">
+                    <Grid>
+                        <TextBox Header="Название категории" Style="{StaticResource NotebookTextBoxStyle}"
+                             Text="{Binding Category.Title, Mode=TwoWay}" MinWidth="150" MinHeight="30"  Height="75" Margin="20"
+                             FontSize="18" /> <!--Width="400" Height="40"-->
+                        <Button Content="Сохранить"
+                            Margin="20"  Style="{StaticResource DetectiveSaveButtonStyle}"
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Right"
-                            Height="30" Width="150"
+                            Height="45"
                             Command="{Binding CreateCat}" />
-                </Grid>
-            </Border>
+                    </Grid>
+                </Border>
+            </ContentControl>
         </Grid>
 
         <!--Click="HamburgerBtn_Click"-->
-        <Button x:Name="HamburgerBtn" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <SymbolIcon Symbol="GlobalNavigationButton" />
-        </Button>
+        
     </Grid>
 </Page>

@@ -15,7 +15,29 @@ namespace DailyUnoThesis.Models.DobleClasses
         private TimeSpan remainingTime;
 
         public DispatcherTimer Timer { get; set; }
-        public bool IsPaused { get; set; } = false;
+
+        private bool isPaused = true;
+        public bool IsPaused
+        {
+            get => isPaused;
+            set
+            {
+                isPaused = value;
+                Signal();
+            }
+        }
+
+        private bool restart = false;
+        public bool Restart
+        {
+            get => restart;
+            set
+            {
+                restart = value;
+                Signal();
+            }
+        }
+
         public TimeSpan RemainingTime /*{ get; set; }*/
         {
             get => remainingTime;
@@ -43,7 +65,7 @@ namespace DailyUnoThesis.Models.DobleClasses
             RemainingTime = new TimeSpan(hours, minutes, seconds);
             SpecifiedTime = new TimeSpan(hours, minutes, seconds);
             //Timer.Start();
-            IsPaused = false;
+            
         }
 
     }

@@ -72,9 +72,9 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="5"/>
-        <Setter Property="CornerRadius" Value="15"/>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="Padding" Value="5 5 5 2"/>
+        <Setter Property="CornerRadius" Value="3"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -93,7 +93,7 @@
                                 <!-- Состояние, когда фильтр включен -->
                                 <VisualState x:Name="FilterActive">
                                     <VisualState.StateTriggers>
-                                        <!-- Магия здесь: триггер следит за Tag родителя (кнопки) -->
+                                        <!--здесь: триггер следит за Tag родителя (кнопки) -->
                                         <StateTrigger IsActive="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </VisualState.StateTriggers>
 
@@ -116,9 +116,9 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <Border x:Name="HoverBackground" Background="Gray" Opacity="0"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0" Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0" Margin="0 -3 0 0" Padding="{TemplateBinding Padding}">
                             <PathIcon Data="M3 17V19H9V17H3ZM3 5V7H13V5H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9V11H3V13H7V15H9V9H7ZM21 13V11H11V13H21ZM15 9H17V7H21V5H17V3H15V9Z"
-                                      x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="3 3 0 0"/>
+                                      x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="3 2 0 0"/>
                             <ContentPresenter x:Name="ContentPresenter" Margin="0"
                                       Content="{TemplateBinding Content}"
                                       ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -131,6 +131,156 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+
+
+    <Style x:Key="StampToggleButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="Padding" Value="5 5 5 2"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="FontFamily" Value="Segoe Print"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" 
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                     >
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="FilterStates">
+                                <!-- Обычное состояние (Фильтр выключен) -->
+                                <VisualState x:Name="FilterOff"/>
+
+                                <!-- Состояние, когда фильтр включен -->
+                                <VisualState x:Name="FilterActive">
+                                    <VisualState.StateTriggers>
+                                        <!-- Магия здесь: триггер следит за Tag родителя (кнопки) -->
+                                        <StateTrigger IsActive="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </VisualState.StateTriggers>
+
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{StaticResource InkBlueLightBrush}"/>
+                                        <Setter Target="ContentPresenter.Foreground" Value="White"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <!--Стандартные состояния наведения (чтобы не ломались)-->
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="HoverBackground.Opacity" Value="0.3"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Border x:Name="HoverBackground" Background="Gray" Opacity="0"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0" Margin="0 -3 0 0" Padding="{TemplateBinding Padding}">
+                            <SymbolIcon Symbol="Calendar" 
+                            x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="0 2 0 0"/>
+                            <ContentPresenter x:Name="ContentPresenter" Margin="0"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    
+
+    <Style x:Key="StampDayToggleButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="Padding" Value="5 5 5 2"/>
+        <Setter Property="CornerRadius" Value="3"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" 
+                 Background="{TemplateBinding Background}"
+                 BorderBrush="{TemplateBinding BorderBrush}"
+                 BorderThickness="{TemplateBinding BorderThickness}"
+                 CornerRadius="{TemplateBinding CornerRadius}">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="FilterStates">
+                                <!-- Обычное состояние (Фильтр выключен) -->
+                                <VisualState x:Name="FilterOff"/>
+
+                                <!-- Состояние, когда фильтр включен -->
+                                <VisualState x:Name="FilterActive">
+                                    <VisualState.StateTriggers>
+                                        <!-- Магия здесь: триггер следит за Tag родителя (кнопки) -->
+                                        <StateTrigger IsActive="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </VisualState.StateTriggers>
+
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{StaticResource InkBlueLightBrush}"/>
+                                        <Setter Target="ContentPresenter.Foreground" Value="White"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <!--Стандартные состояния наведения (чтобы не ломались)-->
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="HoverBackground.Opacity" Value="0.3"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Border x:Name="HoverBackground" Background="Gray" Opacity="0"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0" Margin="0 -3 0 0" Padding="{TemplateBinding Padding}">
+                            <SymbolIcon Symbol="Calendar" 
+                         x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="3 2 0 0"/>
+                            <ContentPresenter x:Name="ContentPresenter" Margin="0"
+                                 Content="{TemplateBinding Content}"
+                                 ContentTemplate="{TemplateBinding ContentTemplate}"
+                                 Padding="{TemplateBinding Padding}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="NoirDialogButtonStyle" TargetType="Button">
+        <Setter Property="FontFamily" Value="Segoe Print"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <!-- Растягиваем кнопки -->
     </Style>
 
 </ResourceDictionary>

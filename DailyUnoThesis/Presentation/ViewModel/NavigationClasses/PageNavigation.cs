@@ -1,18 +1,33 @@
-using DailyUnoThesis.Models.MainClasses;
-using DailyUnoThesis.Presentation.View.Pages;
-using DailyUnoThesis.Presentation.View.Timer;
-using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using Android.Graphics.Drawables;
+//using Android.OS;
+using DailyUnoThesis.Models.DobleClasses;
+using DailyUnoThesis.Models.MainClasses;
+using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
+using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 
 namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 public partial class PageNavigation : Base
 {
 private INavigator _navigator;
+
+    private int namderMainPanel = 1;
+    public int NamderMainPanel
+    {
+        get => namderMainPanel;
+        set
+        {
+            namderMainPanel = value;
+            Signal();
+        }
+    }
 
     private string? name;
 
@@ -50,7 +65,7 @@ private INavigator _navigator;
 
         PageCategory = pageCategory;
         CategotyControle = pageCategory.DataContext as TaskCategotyControle;
-        CategotyControle.GetIdCategory(1);
+        CategotyControle.GetIdCategory(CategoryService.Instance.FilterCategories[1]);
     }
 
 
@@ -88,6 +103,121 @@ private INavigator _navigator;
     //        CurPage = TaskPages;
     //    }
     //}
+
+    private bool isMenuTimerOpen = true;
+    public bool IsMenuTimerOpen
+    {
+        get => isMenuTimerOpen;
+        set
+        {
+            isMenuTimerOpen = value;
+            Signal();
+        }
+    }
+
+    private bool isMenuTimer = false;
+    public bool IsMenuTimer
+    {
+        get => isMenuTimer;
+        set
+        {
+            isMenuTimer = value;
+            Signal();
+        }
+    }
+
+    private bool isPause = true;
+    public bool IsPause
+    {
+        get => isPause;
+        set
+        {
+            isPause = value;
+            Signal();
+        }
+    }
+
+    private bool isEnd = false;
+    public bool IsEnd
+    {
+        get => isEnd;
+        set
+        {
+            isEnd = value;
+            Signal();
+            //Test();
+            //if (IsEnd && ViewModelStore.GetInstance().PomodoroTime.IsAbsoluteEnd)
+            //{
+            //    AbsoluteEnd();
+            //}
+        }
+    }
+
+    public void AbsoluteEnd()
+    {
+        IsPause = false;
+        ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = false;
+        //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = false;
+            //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Start();
+            ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
+        //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.PauseTimer();
+        ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+    }
+
+    private void Test()
+    {
+      bool end = ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsEnd;
+
+    }
+
+
+    private bool stopForBreak = false;
+    public bool StopForBreak
+    {
+        get => stopForBreak;
+        set
+        {
+            stopForBreak = value;
+            Signal();
+            //if (StopForBreak && !ViewModelStore.GetInstance().PomodoroTime.IsStopForBreak)
+            //{
+            //    StopRegular();
+            //}
+            //else if (!StopForBreak && !ViewModelStore.GetInstance().PomodoroTime.IsStopForBreak)
+            //{
+            //    StartRegular();
+            //}
+        }
+    }
+
+    public void StopRegular()
+    {
+        ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = false;
+        ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
+        ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+    }
+
+    public void StartRegular()
+    {
+        if (ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer != null)
+        {
+            ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = true;
+            ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Stop();
+            ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+        }
+    }
+
+    private bool isIcon = true;
+    public bool IsIcon
+    {
+        get => isIcon;
+        set
+        {
+            isIcon = value;
+            Signal();
+        }
+    }
+
     private Page curPage { get; set; }
     public Page CurPage
     {
@@ -119,6 +249,129 @@ private INavigator _navigator;
             curPageCategory = value;
             Signal();
         }
+    }
+
+    private RelayCommand openMenuTimer;
+    public RelayCommand OpenMenuTimer
+    {
+        get
+        {
+            return openMenuTimer ?? new RelayCommand(async () =>
+            {
+                IsMenuTimerOpen = IsMenuTimerOpen ? false : true;
+            }
+            );
+        }
+    }
+
+    private RelayCommand stopTimers;
+
+    public RelayCommand StopTimers
+    {
+        get
+        {
+            return stopTimers ?? new RelayCommand(async () =>
+            {
+                if (ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused && ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused)
+                {
+                    IsPause = false;
+                    ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.PauseTimer();
+                    if (!ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.BreakTimer)
+                        ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+
+                }
+                else
+                {
+                    IsPause = IsPause ? false : true;
+                    if (!ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.BreakTimer)
+                        ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = !IsPause;
+                    ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = !IsPause;
+
+                    if (IsPause)
+                    {
+                        ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Start();
+                        if(!ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.BreakTimer)
+                        ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
+                    }
+                    else
+                    {
+                        ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Stop();
+                        if (!ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.BreakTimer)
+                            ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Stop();
+                    }
+                    ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.PauseTimer();
+                    if (!ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.BreakTimer)
+                        ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+                }
+
+                //if (IsPause)
+                //{
+                //    IsIcon = true;
+                //}
+                //else
+                //{
+                //    IsIcon = false;
+                //}
+
+                
+            }
+
+            );
+
+        }
+
+    }
+
+    private RelayCommand restartTimers;
+    public RelayCommand RestartTimers
+    {
+        get
+        {
+            return restartTimers ?? new RelayCommand(async () =>
+            {
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsEnd = false;
+                IsEnd = false;
+                StopForBreak = false;
+                IsPause = false;
+                ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = IsPause;
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = IsPause;
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Stop();
+                ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Stop();
+                ViewModelStore.GetInstance().PomodoroTime.RestartCountdownTimer.Execute(null);
+                ViewModelStore.GetInstance().RegularTimer.RestartCountupTimer.Execute(null);
+            }
+            );
+        }
+    }
+
+       private RelayCommand closeMenuTimer;
+    public RelayCommand CloseMenuTimer
+    {
+        get
+        {
+            return closeMenuTimer ?? new RelayCommand(async () =>
+            {
+                IsMenuTimer = false;
+                IsPause = true;
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = false;
+                ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
+                ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
+
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = false;
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Start();
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.PauseTimer();
+                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.WithTheSecondTimer = false;
+                ViewModelStore.GetInstance().PomodoroTime.IsDoubleTimer = false; 
+
+
+
+
+            }
+
+            );
+
+        }
+
     }
 
     public Pomodoro PomodoroPage { get; private set; }

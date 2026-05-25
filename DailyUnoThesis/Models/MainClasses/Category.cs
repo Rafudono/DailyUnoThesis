@@ -8,10 +8,9 @@ public partial class Category: INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+   
+
+
     public int Id { get; set; }
 
     public string Title { get; set; } = null!;
@@ -24,6 +23,16 @@ public partial class Category: INotifyPropertyChanged
     public virtual ICollection<Mission>? Missions { get; set; } = new List<Mission>();
 
     public virtual ICollection<User>? Users { get; set; } = new List<User>();
+
+    public string? Icon { get; set; }
+
+    public bool IsProgect { get; set; }
+
+
+
+
+
+
 
     private bool? isCheack = false;
     public bool? IsCheack
@@ -54,6 +63,10 @@ public partial class Category: INotifyPropertyChanged
     public bool IsEmpty => !HasAnyContent;
 
     // Метод для обновления всех флагов (вызывать при загрузке или изменениях)
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public void RefreshDeleteMenu()
     {
         OnPropertyChanged(nameof(HasSubCategories));

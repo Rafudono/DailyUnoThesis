@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Linq;
 using CommunityToolkit.Mvvm.Messaging.Internals;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
@@ -364,6 +365,24 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         }
 
+    private RelayCommand creatNewTask;
+    public RelayCommand CreatNewTask
+    {
+        get
+        {
+            return creatNewTask ?? new RelayCommand(async () =>
+            {
+                ViewModelStore.GetInstance().DetailedTask.CreatNewTaskoutside();
+                IsSplitViewPaneOpen = IsSplitViewPaneOpen ? false : true;
+
+            }
+
+            );
+
+        }
+
+    }
+
 
     private RelayCommand closeAndOpenAddCategoryPanel;
     public RelayCommand CloseAndOpenAddCategoryPanel
@@ -372,7 +391,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         {
             return closeAndOpenAddCategoryPanel ?? new RelayCommand(async () =>
             {
-                Category = new();
+                Category = new() { IsProgect= false};
                 IsVisibleCat = IsVisibleCat ? false : true;
             }
 
@@ -502,7 +521,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
             {
                 if (category != null)
                 {
-                    Category = new() {IdUpCategory = category.Id };
+                    Category = new() {IdUpCategory = category.Id, IsProgect = false };
                     //Category.IdUpCategory = category.Id;
                     IsVisibleCat = IsVisibleCat ? false : true;
                 }
@@ -514,6 +533,31 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         }
 
     }
+
+
+    private RelayCommand<Category> goToKanbanBoard;
+    public RelayCommand<Category> GoToKanbanBoard
+    {
+        get
+        {
+            return goToKanbanBoard ?? new RelayCommand<Category>(async (category) =>
+            {
+
+                GoToKanban();
+            }
+
+            );
+
+        }
+
+    }
+
+    private async Task GoToKanban()
+    {
+        await _navigator.NavigateViewModelAsync<KanbanBoardViewModel>(this);
+    }
+
+
 
     [ObservableProperty]
         private ObservableCollection<NavMenuItem> menuItemsNav;
@@ -527,10 +571,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         //}
 
 
-        public TaskPageControle(/*INavigator navigator*/)
+        public TaskPageControle(INavigator navigator)
         {
-            //_navigator = navigator;
-            SelectedCategory = new();
+        _navigator = navigator;
+        SelectedCategory = new();
             MenuItemsNav = new();
 
             ListNavigations = new()
@@ -607,7 +651,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
                 var vm = ViewModelStore.GetInstance().Category;
                 CategotyControle = vm;
-                await CategotyControle.GetIdCategory(category.Id);
+                await CategotyControle.GetIdCategory(category);
             }
             TaskPages.GridStatic.Visibility = Visibility.Collapsed;
             //TaskPages.CollapsedStaticTabBar();
@@ -689,7 +733,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         private async void GoToSelectCategory(Category value)
         {
-           await CategotyControle.GetIdCategory(value.Id);
+           await CategotyControle.GetIdCategory(value);
         }
 
 
@@ -822,8 +866,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         public async Task CreateCategory()
         {
-            //Category category = new Category() { Title = CategoryTitle };
-            await APIHost.GetInstance().CreateCategory(Category);
+        //Category category = new Category() { Title = CategoryTitle };
+        Category.IsProgect = false;
+        await APIHost.GetInstance().CreateCategory(Category);
         //await GetCaterogy();
         await CategoryService.Instance.RefreshFromDatabaseAsync();
         IsVisibleCat = false;
@@ -856,17 +901,20 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     }
 
 
+
+
     public async void SetControl(TaskPages pass)
-        {
-            //this.Navigation = PageNavigation.GetInstance().;
-            if(TaskPages == null)   
+    {
+        //this.Navigation = PageNavigation.GetInstance().;
+        if (TaskPages == null)
             TaskPages = pass;
-            SelectedBaseCategory = ListNavigations[0];
+        SelectedBaseCategory = ListNavigations[0];
         TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
         var vm = ViewModelStore.GetInstance().Category;
-            TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
-            CategotyControle = vm;
-        
+        TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
+        ViewModelStore.GetInstance().DetailedTask.GetBoolProject(false);
+        CategotyControle = vm;
+
     }
 
 

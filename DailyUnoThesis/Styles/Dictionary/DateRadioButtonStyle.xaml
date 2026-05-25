@@ -4,11 +4,13 @@
 
     <Style x:Key="DateRadioButtonStyle" TargetType="RadioButton">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseLowBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="12,6"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Padding" Value="3"/>
+        <Setter Property="FontFamily" Value="Comic Sans MS"/>
+        <!--<Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>-->
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -30,7 +32,7 @@
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <VisualState.Setters>
-                                        <Setter Target="HoverBackground.Background" Value="{ThemeResource SystemControlBackgroundListMediumBrush}"/>
+                                        <Setter Target="HoverBackground.Background" Value="#8B5E3C"/>
                                         <Setter Target="HoverBackground.Opacity" Value="1"/>
                                     </VisualState.Setters>
                                 </VisualState>
@@ -40,9 +42,11 @@
                                 <VisualState x:Name="Checked">
                                     <VisualState.Setters>
                                         <!-- Теперь мы меняем прозрачность слоя выделения -->
-                                        <Setter Target="CheckedBackground.Opacity" Value="1"/>
-                                        <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ContentControlSelectedForeground}"/>
+                                        <Setter Target="CheckedBackground.Opacity" Value="0.4"/>
+                                        <Setter Target="RootGrid.BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
+                                        <Setter Target="CheckedBorder.Opacity" Value="1"/>
+                                        <Setter Target="RootGrid.Background" Value="{StaticResource InkBlueLightBrush}"/>
+                                        <Setter Target="ContentPresenter.Foreground" Value="White"/>
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Unchecked"/>
@@ -50,16 +54,12 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <!-- Слой ВЫДЕЛЕНИЯ (Checked) -->
-                        <Border x:Name="CheckedBackground" 
-                Background="{ThemeResource SystemControlHighlightAccentBrush}"
-                Opacity="0" 
-                CornerRadius="{TemplateBinding CornerRadius}"/>
-
+                        <Border x:Name="CheckedBackground" Background="{StaticResource InkBlueLightBrush}" Opacity="0" BorderThickness="0"
+                                CornerRadius="{TemplateBinding CornerRadius}"/>
+                        <Border x:Name="CheckedBorder"  Background="Transparent" Opacity="0" BorderThickness="3" BorderBrush="{StaticResource InkBlueLightBrush}" CornerRadius="8"/>
                         <!-- Слой НАВЕДЕНИЯ (Hover) -->
-                        <Border x:Name="HoverBackground" 
-                Background="{ThemeResource SystemControlBackgroundListLowBrush}"
-                Opacity="0" 
-                CornerRadius="{TemplateBinding CornerRadius}"/>
+                        <Border x:Name="HoverBackground" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Opacity="0"
+                                BorderThickness="{TemplateBinding BorderThickness}" Margin="0"  CornerRadius="6"/>
 
                         <StackPanel Orientation="Horizontal" 
             HorizontalAlignment="Center" 
@@ -68,8 +68,8 @@
             Padding="{TemplateBinding Padding}">
 
                             <!-- Иконка, которая берет символ из свойства Tag кнопки -->
-                            <SymbolIcon x:Name="Icon" 
-                Symbol="{TemplateBinding Tag}" 
+                            <PathIcon x:Name="Icon" 
+                Data="{TemplateBinding Tag}" Margin="-5 0 0 0"
                 Foreground="{Binding Foreground, ElementName=ContentPresenter}"/>
                             <ContentPresenter x:Name="ContentPresenter"
               Content="{TemplateBinding Content}"
