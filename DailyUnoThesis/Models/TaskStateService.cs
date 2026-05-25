@@ -63,14 +63,12 @@ public class TaskStateService
     {
         if (task == null)
             return;
-
+        task.UserId = 1;
         await APIHost.GetInstance().CreateMission(task);
-        var savedMission = await APIHost.GetInstance().GetLastMission(task.UserId, task.Title);
 
-        var missionToAdd = savedMission?.Id > 0 ? savedMission : task;
-        SubscribeMission(missionToAdd);
-        Tasks.Add(missionToAdd);
-        RaiseTasksChanged(TaskStateChangeType.Added, missionToAdd);
+        SubscribeMission(task);
+        Tasks.Add(task);
+        RaiseTasksChanged(TaskStateChangeType.Added, task);
     }
     public async Task UpdateAsync(Mission task)
     {

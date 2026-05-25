@@ -20,6 +20,7 @@ public partial class Mission: INotifyPropertyChanged
 
     public string Title { get; set; } = null!;
 
+
     public DateTime? StartDate { get; set; }
 
     public DateTime? EndDate { get; set; }
@@ -36,17 +37,27 @@ public partial class Mission: INotifyPropertyChanged
 
     public int? TagId { get; set; }
 
+    public int? DurationMinutes { get; set; }
+
+    public bool IsProject { get; set; }
+
     public virtual Category? Category { get; set; }
+
+    public virtual ICollection<Focustimer> Focustimers { get; set; } = new List<Focustimer>();
 
     public virtual Mission? IdUpMissionNavigation { get; set; }
 
-    public virtual ICollection<Mission> InverseIdUpMissionNavigation { get; set; } = new ObservableCollection<Mission>();
+    public virtual ICollection<Mission> InverseIdUpMissionNavigation { get; set; } = new List<Mission>();
+
+    public virtual ICollection<Missionstimer> Missionstimers { get; set; } = new List<Missionstimer>();
 
     public virtual Notification? Notification { get; set; }
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-    public virtual Tag? Tag { get; set; } = null!;
+    public virtual Tag? Tag { get; set; }
+
+    public virtual ICollection<TaskCompletionTime> TaskCompletionTimes { get; set; } = new List<TaskCompletionTime>();
 
     public virtual User? User { get; set; } = null!;
     public virtual int? LevelUp { get; set; } = 0;

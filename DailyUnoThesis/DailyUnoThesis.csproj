@@ -76,6 +76,7 @@
     <PRIResource Remove="Platforms\Desktop\ViewModel\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Kiota.Abstractions" />
     <PackageReference Include="MvvmLightLibs" />
     <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
     <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
@@ -177,6 +178,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\Dictionary\NotebookTextBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Calendar\MonthCalendarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Presentation\View\Calendar\WeekCalendarView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

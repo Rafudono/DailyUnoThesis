@@ -17,7 +17,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 {
     public partial class TaskViewModel : ObservableObject
     {
-
+        private readonly TaskStateService _taskState = TaskStateService.GetInstance();
         private CoreDispatcher dispatcher { get; set; }
         private SelectedAndNewTask Page;
 
@@ -45,7 +45,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         [ObservableProperty]
         private string taskDateSettings;
-
 
 
 
@@ -504,12 +503,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public TaskViewModel()
         {
+            _taskState.TasksChanged += OnTasksChanged;
             Task = new Mission();
             GetCategories();
             SelectedCategory = new();
             Task = new() { LevelUp = 1 };
         }
-
+        private void OnTasksChanged(object? sender, TaskStateChangedEventArgs e)
+        {
+            //получение заново коллекций для обновления из сервиса
+        }
         public void GetTask(Mission mission)
         {
             Task = mission;
@@ -557,11 +560,43 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                 if (SelectedDate != DateTimeOffset.MinValue && SelectedDate != null)
                 {
                     if (!UseTime)
+                    {
                         Task.EndDate = SelectedDate.Value.Date;
+                        Task.StartDate = SelectedDate.Value.Date;
+                    }
                     else
+                    {
                         Task.EndDate = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day,
                               SelectedTime.Hours, SelectedTime.Minutes, 0);
+                        Task.StartDate = new DateTime(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day,
+                     SelectedTime.Hours, SelectedTime.Minutes, 0);
+                    }
 
+
+                    if (Task.StartDate.HasValue && Task.EndDate.HasValue) //запланирована?
+                    {
+                        if (Task.TaskCompletionTimes == null)
+                            Task.TaskCompletionTimes = new List<TaskCompletionTime>();
+
+                        var existingSession = Task.TaskCompletionTimes.FirstOrDefault(s =>
+                            s.StartExecution == Task.StartDate && s.EndExecution == Task.EndDate);  //есть уже такая сессия?
+
+                        if (existingSession == null)
+                        {
+                            if (Task.StartDate.Value.Date == Task.EndDate.Value.Date) //вот здесь проверка можно ли эту миссию выполнить за сессию, нужно отдельно написать 
+                            {                                                        //тк она не должна перекрывать другие сессии это все нужно проверять 
+                                Task.TaskCompletionTimes.Add(new TaskCompletionTime
+                                {
+                                    StartExecution = Task.StartDate,
+                                    EndExecution = Task.EndDate
+                                });
+                            }
+                        }
+                    }
+                    //if (Task.TaskCompletionTimes is not null && Task.TaskCompletionTimes.Count() == 0)
+                    //{
+                    //    Task.TaskCompletionTimes.Add(new TaskCompletionTime() { StartExecution = Task.StartDate, EndExecution = Task.EndDate });
+                    //}
                 }
                 else
                 {
@@ -576,11 +611,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
                 if (Task.Id == 0)
                 {
-                    await APIHost.GetInstance().CreateMission(Task);
+                    await _taskState.AddAsync(Task);
+                    //await APIHost.GetInstance().CreateMission(Task);
                 }
                 else
                 {
-                    await APIHost.GetInstance().EditMission(Task);
+                    await _taskState.UpdateAsync(Task);
+                   //await APIHost.GetInstance().EditMission(Task);
                 }
 
                 if (Task == null)

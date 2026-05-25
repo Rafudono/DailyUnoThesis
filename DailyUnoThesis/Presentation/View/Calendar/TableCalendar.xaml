@@ -14,10 +14,11 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
+      Loaded="OnLoaded" 
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <control:MonthCalendarViewModel/>
+        <control:TableCalendarViewModel/>
     </Page.DataContext>
 
     <Page.Resources>
@@ -25,6 +26,110 @@
         <con:BoolToColorConverter x:Key="BoolToColorConverter"/>
         <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
+
+        <Style x:Key="CalendarTabButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceSecondaryBrush}"/>
+            
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                                <TextBlock x:Name="ContentText"
+                                   Text="{TemplateBinding Content}"
+                                   FontFamily="{TemplateBinding FontFamily}"
+                                   FontSize="{TemplateBinding FontSize}"
+                                   FontWeight="{TemplateBinding FontWeight}"
+                                   Foreground="{TemplateBinding Foreground}"/>
+                            </Border>
+                            <Border x:Name="Underline"
+                            Height="2"
+                            Background="{StaticResource InkBlueLightBrush}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Bottom"
+                            Margin="8,-2,8,0"
+                            Opacity="0"/>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.Foreground" 
+                                            Value="{StaticResource InkBlueLightBrush}"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.Foreground" 
+                                            Value="{StaticResource InkBlueLightBrushOver}"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SelectedTabButtonStyle" TargetType="Button" BasedOn="{StaticResource CalendarTabButtonStyle}">
+            <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                                <TextBlock x:Name="ContentText"
+                                   Text="{TemplateBinding Content}"
+                                   FontFamily="{TemplateBinding FontFamily}"
+                                   FontSize="{TemplateBinding FontSize}"
+                                   FontWeight="{TemplateBinding FontWeight}"
+                                   Foreground="{TemplateBinding Foreground}"/>
+                            </Border>
+                            <Border x:Name="Underline"
+                            Height="2"
+                            Background="{StaticResource InkBlueLightBrush}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Bottom"
+                            Margin="8,0,8,0"
+                            Opacity="1"/>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.Foreground" 
+                                            Value="{StaticResource InkBlueLightBrushOver}"/>
+                                            <Setter Target="Underline.Opacity" Value="0.7"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.Foreground" 
+                                            Value="{StaticResource InkBlueLightBrushOver}"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="CalendarDayGridStyle" TargetType="Grid">
             <Setter Property="Background">
@@ -75,197 +180,83 @@
 
     <ScrollViewer IsTabStop="True">
         <Grid utu:SafeArea.Insets="VisibleBounds">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0" Margin="0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" 
-            Content="&#xE76B;" 
-            FontFamily="Segoe MDL2 Assets" 
-            FontSize="16"
-            Style="{StaticResource IconButtonStyle}"
-            Command="{Binding PreviousMonthCommand}"
-            Margin="10,0,0,0"/>
-
-                    <TextBlock Grid.Column="1" 
-               Text="{Binding MonthHeader, Mode=OneWay}" 
-               HorizontalAlignment="Center" 
-               VerticalAlignment="Center"
-               FontFamily="Segoe Print" 
-               FontSize="18"/>
-
-                    <Button Grid.Column="2" 
-            Content="&#xE76C;" 
-            FontFamily="Segoe MDL2 Assets" 
-            FontSize="16"
-            Style="{StaticResource IconButtonStyle}"
-            Command="{Binding NextMonthCommand}"
-            Margin="0,0,10,0"/>
-                </Grid>
-
-                <!-- Дни недели (7 колонок) -->
-                <Grid Grid.Row="1" Margin="4,0,4,5" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Пн" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="1" Text="Вт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="2" Text="Ср" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="3" Text="Чт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="4" Text="Пт" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="5" Text="Сб" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                    <TextBlock Grid.Column="6" Text="Вс" Style="{StaticResource DayOfWeekHeaderStyle}"/>
-                </Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
 
                 <!-- Календарь -->
-                <ItemsControl x:Name="CalendarDaysGrid" Grid.Row="2" ItemsSource="{Binding Days, Mode=OneWay}">
-                        <interactivity:Interaction.Behaviors>
-                            <pro:CalendarWidthBehavior/>
-                        </interactivity:Interaction.Behaviors>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0" Margin="10,0" Spacing="8">
+                        <Button x:Name="MonthViewBtn" Content="Месяц"   Style="{StaticResource SelectedTabButtonStyle}"   Click="MonthView_Click"/>
+                        <Button x:Name="WeekViewBtn"    Content="Неделя"   Style="{StaticResource CalendarTabButtonStyle}"  Click="WeekView_Click"/>
+                    </StackPanel>
+                    <Frame x:Name="CalendarViewFrame" Grid.Row="1"/>
+                </Grid>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Padding="4" Margin="0,0,0,2"
-                                      Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightGray'}">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
+                <!-- Inbox с кнопкой добавления -->
+                <Grid Grid.Column="1" Grid.RowSpan="2" Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                    <TextBlock Text="{Binding DayNumber}"
-                                               FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
-                                               Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"
-                                               FontSize="12"
-                                               Margin="2,0,0,2"/>
+                    <Button Grid.Row="0" 
+             Content="+ Добавить задачу" 
+             Margin="10" 
+             HorizontalAlignment="Stretch"
+             Click="OpenNewTaskFrame_Click"
+             Style="{StaticResource AccentButtonStyle}"/>
 
-                                    <ListView Grid.Row="1"
-                                              ItemsSource="{Binding Tasks}"
-                                              MinHeight="20"
-                                              HorizontalAlignment="Stretch"
-                                              SelectedItem="{Binding SelectedMission}"
-                                              AllowDrop="True"
-                                              Drop="PlannedListView_Drop"
-                                              DragOver="PlannedListView_DragOver"
-                                              DragLeave="PlannedListView_DragLeave"
-                                              Background="Transparent">
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate x:DataType="mod:Mission">
-                                                <Border x:Name="RootBorder"
-                                                        Background="{StaticResource StickerBrush}"
-                                                        Margin="0,2,0,2"
-                                                        CornerRadius="8,4,8,4">
-                                                    <StackPanel CanDrag="True"
-                                                                DragStarting="StackPanel_DragStarting"
-                                                                IsHitTestVisible="True"
-                                                                Margin="4">
-                                                        <TextBlock Text="{Binding Title}"
-                                                                   FontSize="10"
-                                                                   FontFamily="Segoe Print"
-                                                                   FontWeight="SemiBold"
-                                                                   Foreground="{StaticResource InkBlueLightBrush}"
-                                                                   TextTrimming="CharacterEllipsis"
-                                                                   Margin="2"/>
-                                                        <TextBlock Text="{Binding FormattedTime}"
-                                                                   FontSize="8"
-                                                                   FontFamily="Comic Sans MS"
-                                                                   Foreground="{StaticResource ClueRedLightBrush}"
-                                                                   TextTrimming="CharacterEllipsis"
-                                                                   Margin="2"/>
-                                                    </StackPanel>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-            </Grid>
+                    <Grid Grid.Row="1">
+                        <TreeView x:Name="InboxTree"
+                   ItemsSource="{Binding InboxTreeMissions}"
+                   SelectionMode="Single"
+                   SelectedItem="{Binding SelectedMission, Mode=TwoWay}"
+                   MinWidth="260">
+                            <TreeView.ItemTemplate>
+                                <DataTemplate x:DataType="mod:Mission">
+                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" IsExpanded="True">
+                                        <StackPanel CanDrag="True"
+                                     DragStarting="InboxMission_DragStarting"
+                                     Margin="2,4">
+                                            <TextBlock Text="{Binding Title}"
+                                        FontFamily="Segoe Print"
+                                        FontWeight="SemiBold"
+                                        TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding FormattedTime}"
+                                        FontSize="11"
+                                        Foreground="{StaticResource ClueRedLightBrush}"/>
+                                        </StackPanel>
+                                    </TreeViewItem>
+                                </DataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
 
-            <!-- Inbox с кнопкой добавления -->
-            <Grid Grid.Column="1" Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Button Grid.Row="0" 
-                        Content="+ Добавить задачу" 
-                        Margin="10" 
-                        HorizontalAlignment="Stretch"
-                        Click="OpenNewTaskFrame_Click"
-                        Style="{StaticResource AccentButtonStyle}"/>
-
-                <Grid Grid.Row="1">
-                    <TreeView x:Name="InboxTree"
-                              ItemsSource="{Binding InboxTreeMissions}"
-                              SelectionMode="Single"
-                              SelectedItem="{Binding SelectedMission, Mode=TwoWay}"
-                              MinWidth="260">
-                        <TreeView.ItemTemplate>
-                            <DataTemplate x:DataType="mod:Mission">
-                                <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" IsExpanded="True">
-                                    <StackPanel CanDrag="True"
-                                                DragStarting="InboxMission_DragStarting"
-                                                Margin="2,4">
-                                        <TextBlock Text="{Binding Title}"
-                                                   FontFamily="Segoe Print"
-                                                   FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding FormattedTime}"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource ClueRedLightBrush}"/>
-                                    </StackPanel>
-                                </TreeViewItem>
-                            </DataTemplate>
-                        </TreeView.ItemTemplate>
-                    </TreeView>
-
-                    <Border x:Name="NewTaskFrameHost"
-                            Visibility="Collapsed"
-                            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                            BorderBrush="{StaticResource DividerLightBrush}"
-                            BorderThickness="1,0,0,0">
-                        <Grid>
-                            <Frame x:Name="NewTaskFrame"/>
-                            <Button Content="&#xE10A;"
-                                    Click="CloseNewTaskFrame_Click"
-                                    FontSize="24"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Top"
-                                    Margin="0,12,8,0"
-                                    Style="{StaticResource RedTextButtonStyle}"/>
-                        </Grid>
-                    </Border>
+                        <Border x:Name="NewTaskFrameHost"
+                 Visibility="Collapsed"
+                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                 BorderBrush="{StaticResource DividerLightBrush}"
+                 BorderThickness="1,0,0,0">
+                            <Grid>
+                                <Frame x:Name="NewTaskFrame"/>
+                                <Button Content="&#xE10A;"
+                         Click="CloseNewTaskFrame_Click"
+                         FontSize="24"
+                         FontFamily="Segoe MDL2 Assets"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Top"
+                         Margin="0,12,8,0"
+                         Style="{StaticResource RedTextButtonStyle}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
