@@ -63,7 +63,11 @@ public class TaskStateService
     {
         if (task == null)
             return;
-        task.UserId = 1;
+        task.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        if(task.StartDate!=null&&task.StartDate!=DateTime.MinValue&& task.StartDate==task.EndDate) //когда содали миссию с одинаковым временем начала и конца
+        {
+            task.EndDate=task.EndDate.Value.AddHours(1);
+        }
         await APIHost.GetInstance().CreateMission(task);
 
         SubscribeMission(task);

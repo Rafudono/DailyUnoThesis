@@ -124,6 +124,20 @@ namespace DailyUnoThesis.Models;
         else
             ;
     }
+
+    public async Task<bool> UsernameExist(string username)
+    {
+        var resp = await client.GetAsync($"Users/UsernameExist?username={username}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось получить подтверждение \t  {Error} " };
+            return true;
+        }
+        else
+            return await resp.Content.ReadFromJsonAsync<bool>(options);
+    }
+
     #endregion
 
     #region Missions
@@ -132,7 +146,8 @@ namespace DailyUnoThesis.Models;
     //получения списка всех задач пользователя (не забыть поменять, чтоб разные пользователи получали свои задачи)
     public async Task<List<Mission>> GetMissions()
     {
-        var res = await client.GetAsync($"Missions?id={1}");
+        
+        var res = await client.GetAsync($"Missions?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -151,7 +166,7 @@ namespace DailyUnoThesis.Models;
     // получение списка заданий на сегодня (тоже не забыть указывать пользователя)
     public async Task<List<Mission>> GetTodayList()
     {
-        var res = await client.GetAsync($"Missions/GetToday?id={1}");
+        var res = await client.GetAsync($"Missions/GetToday?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -168,8 +183,8 @@ namespace DailyUnoThesis.Models;
     //  получение списка просроченных заданий 
     internal async Task<List<Mission>> GetOverdue()
     {
-
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
+       //int id = 1;
         var resp = await client.GetAsync($"Missions/GetOverdue?id={id}");
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
@@ -185,7 +200,7 @@ namespace DailyUnoThesis.Models;
     public async Task<List<Mission>> GetMCompleteList()
     {
 
-        var res = await client.GetAsync($"Missions/GetComplete?id={1}");
+        var res = await client.GetAsync($"Missions/GetComplete?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -253,7 +268,7 @@ namespace DailyUnoThesis.Models;
     public async Task CreateMission(Mission mission)
     {
         //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        mission.UserId = 1;
+        mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         mission.User = null;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
@@ -285,7 +300,7 @@ namespace DailyUnoThesis.Models;
     //получение подсказки задач в строке поиска
     public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestions(MissionSuggestionDto missionSuggestion)
     {
-        missionSuggestion.UserId = 1;
+        missionSuggestion.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         var arg = JsonSerializer.Serialize(missionSuggestion, options);
         var resp = await client.PostAsync($"Missions/SearchSuggestions", new StringContent(arg, Encoding.UTF8, "application/json"));
 
@@ -306,7 +321,7 @@ namespace DailyUnoThesis.Models;
     // получение фильтрованных задач
     public async Task<ObservableCollection<Mission>> GetSearchMission(MissionSuggestionDto missionSuggestion)
     {
-        missionSuggestion.UserId = 1;
+        missionSuggestion.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         var arg = JsonSerializer.Serialize(missionSuggestion, options);
         var res = await client.PostAsync($"Missions/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
 
@@ -346,7 +361,7 @@ namespace DailyUnoThesis.Models;
     public async Task NewCreateMission(Mission mission)
     {
         //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        mission.UserId = 1;
+        mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
         var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
@@ -386,7 +401,7 @@ namespace DailyUnoThesis.Models;
     internal async Task<ObservableCollection<Category>> GetCategories()
     {
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         ObservableCollection<Category> categories = new ObservableCollection<Category>();
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Categories/GetMyCategory?id={id}");
@@ -407,7 +422,7 @@ namespace DailyUnoThesis.Models;
     public async Task<ObservableCollection<Category>> GetFiltersSubCategories(int id)
     {
         ObservableCollection<Category> categories = new ObservableCollection<Category>();
-        var resp = await client.GetAsync($"Categories/GetSubCategory?id={1}&idCategory={id}");
+        var resp = await client.GetAsync($"Categories/GetSubCategory?id={AuthorizedUser.GetInstance().AuthUser.Id}&idCategory={id}");
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await resp.Content.ReadAsStringAsync();
@@ -429,7 +444,7 @@ namespace DailyUnoThesis.Models;
     internal async Task CreateCategory(Category category)
     {
         //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        category.IdBigBoss = 1;
+        category.IdBigBoss = AuthorizedUser.GetInstance().AuthUser.Id;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(category, options);
         var res = await client.PostAsync($"Categories", new StringContent(arg, Encoding.UTF8, "application/json"));
@@ -482,7 +497,7 @@ namespace DailyUnoThesis.Models;
     {
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         List<Focustimer> focustimers = new List<Focustimer>();
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Focustimers?id={id}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -497,7 +512,7 @@ namespace DailyUnoThesis.Models;
     }
     internal async Task CreateFocustimer(Focustimer focustimer)
     {
-        focustimer.UserId = 1;
+        focustimer.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(focustimer, options);
         var res = await client.PostAsync($"Focustimers", new StringContent(arg, Encoding.UTF8, "application/json"));
@@ -536,7 +551,7 @@ namespace DailyUnoThesis.Models;
     public async Task CreateMissionTimer(Missionstimer missionstimer)
     {
         //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        missionstimer.UserId = 1;
+        missionstimer.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(missionstimer, options);
         var res = await client.PostAsync($"Missionstimers", new StringContent(arg, Encoding.UTF8, "application/json"));
@@ -553,7 +568,7 @@ namespace DailyUnoThesis.Models;
     {
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //List<Focustimer> focustimers = new List<Focustimer>();
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Missionstimers/GetSummary/{id}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -576,7 +591,7 @@ namespace DailyUnoThesis.Models;
         string to = toDate.ToString("yyyy-MM-dd");
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //List<Focustimer> focustimers = new List<Focustimer>();
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Missionstimers/GetDailyWorkHours/{id}?fromDate={from}&toDate={to}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -600,7 +615,7 @@ namespace DailyUnoThesis.Models;
         string to = toDate.ToString("yyyy-MM-dd");
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //List<Focustimer> focustimers = new List<Focustimer>();
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Missionstimers/GetWeeklyTimeline/{id}?fromDate={from}&toDate={to}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -624,7 +639,7 @@ namespace DailyUnoThesis.Models;
         string to = toDate.ToString("yyyy-MM-dd");
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //List<Focustimer> focustimers = new List<Focustimer>();
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Missionstimers/GetTaskDistribution/{id}?fromDate={from}&toDate={to}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -645,7 +660,7 @@ namespace DailyUnoThesis.Models;
     public async Task<ObservableCollection<Missionstimer>> GetTitlesMissionsTimer()
     {
 
-        var res = await client.GetAsync($"Missionstimers/GetTitlesMissionsTimer/{1}");
+        var res = await client.GetAsync($"Missionstimers/GetTitlesMissionsTimer/{AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();
@@ -664,7 +679,7 @@ namespace DailyUnoThesis.Models;
     {
         string from = fromDate.ToString("yyyy-MM-dd");
         string to = toDate.ToString("yyyy-MM-dd");
-        int id = 1;
+        int id = AuthorizedUser.GetInstance().AuthUser.Id;
         //var req = JsonSerializer.Serialize(id, options);
         var resp = await client.GetAsync($"Missionstimers/GetTaskDeepAnalysis/{id}?missionId={missionstimer.MissionId}&title={missionstimer.TitleMission}&fromDate={from}&toDate={to}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
@@ -686,7 +701,7 @@ namespace DailyUnoThesis.Models;
 
     public async Task<ObservableCollection<MissionSuggestionDto>> GetSuggestionsTimer(MissionSuggestionDto missionSuggestion)
     {
-        missionSuggestion.UserId = 1;
+        missionSuggestion.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         var arg = JsonSerializer.Serialize(missionSuggestion, options);
         var resp = await client.PostAsync($"Missionstimers/SearchSuggestions", new StringContent(arg, Encoding.UTF8, "application/json"));
 
@@ -708,7 +723,7 @@ namespace DailyUnoThesis.Models;
 
     public async Task<ObservableCollection<Missionstimer>> GetSearchMissionTimer(MissionSuggestionDto missionSuggestion)
     {
-        missionSuggestion.UserId = 1;
+        missionSuggestion.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         var arg = JsonSerializer.Serialize(missionSuggestion, options);
         var res = await client.PostAsync($"Missionstimers/GetFilterMission", new StringContent(arg, Encoding.UTF8, "application/json"));
 
@@ -756,7 +771,7 @@ namespace DailyUnoThesis.Models;
     #region Sessions
     public async Task<List<TaskCompletionTime>> GetSessions()
     {
-        var res = await client.GetAsync($"TaskCompletionTimes?id={1}");
+        var res = await client.GetAsync($"TaskCompletionTimes?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             ContentDialog contentDialog = new ContentDialog()
@@ -771,6 +786,7 @@ namespace DailyUnoThesis.Models;
         }
         return Sessions;
     }
+
     #endregion
 
 

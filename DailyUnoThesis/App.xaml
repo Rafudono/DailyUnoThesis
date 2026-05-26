@@ -33,6 +33,7 @@
                 <ResourceDictionary Source="/Styles/Dictionary/DetectiveComboBoxItemStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/Dictionary/DetectiveTabBarItemStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/Dictionary/TextBoxHeaderStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Dictionary/TextBoxWithPlaceholder.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
       <!-- Add resources here -->

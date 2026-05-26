@@ -153,11 +153,10 @@ public partial class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested: new RouteMap[]
                 {
-
-                    //new("Login", View: views.FindByViewModel<LoginViewModel>()),
-                    //new("Registration", View: views.FindByViewModel<RegistrationViewModel>()),
-                   // new("Login", View: views.FindByViewModel<LoginViewModel>(), IsDefault:true,
-                    new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:true,
+                   new("Login", View: views.FindByViewModel<LoginViewModel>(), IsDefault:true),
+                   new("Registration", View: views.FindByViewModel<RegistrationViewModel>()),
+                   new ("Main", View: views.FindByViewModel<PageNavigation>(), IsDefault:false,
+                    
                      Nested: new RouteMap[] // Просто используем массив
                      {
                          new("TaskPage", View: views.FindByViewModel<TaskPageControle>()/*, IsDefault:true*/,

@@ -23,53 +23,39 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalContentAlignment="Center">
-        <StackPanel MaxWidth="360" Margin="40,40,40,40" Spacing="16">
+        <StackPanel MaxWidth="360" Margin="40,40,40,40" Spacing="16" VerticalAlignment="Center">
 
-            <!-- Заголовок -->
-            <TextBlock Text="&#x270D; Новое дело"
+            <TextBlock Text="Регистрация"
                        FontFamily="Segoe Print"
                        FontSize="28"
                        FontWeight="Bold"
                        Foreground="{StaticResource InkBlueLightBrush}"
                        TextAlignment="Center"
                        Margin="0,0,0,8"/>
-            <Border Height="2"
-                    Background="#A3B1C6"
-                    Margin="40,0,40,0"
-                    CornerRadius="1"/>
 
-            <!-- Имя -->
-            <TextBox PlaceholderText="Имя"
-                     Style="{StaticResource NotebookTextBoxStyle}"
+            <TextBox PlaceholderText="Имя пользователя" Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource TextBoxWithPlaceholderStyle}"
                      IsSpellCheckEnabled="False"/>
 
-            <!-- Фамилия -->
-            <TextBox PlaceholderText="Фамилия"
-                     Style="{StaticResource NotebookTextBoxStyle}"
+            <TextBox PlaceholderText="Электронная почта" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource TextBoxWithPlaceholderStyle}"
                      IsSpellCheckEnabled="False"/>
 
-            <!-- Email -->
-            <TextBox PlaceholderText="Электронная почта"
-                     Style="{StaticResource NotebookTextBoxStyle}"
-                     IsSpellCheckEnabled="False"/>
-
-            <!-- Пароль -->
-            <PasswordBox PlaceholderText="Придумайте кодовое слово"
+            <PasswordBox PlaceholderText="Придумайте пароль" Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource RegPasswordBoxStyle}"/>
 
-            <!-- Подтверждение пароля -->
-            <PasswordBox PlaceholderText="Повторите кодовое слово"
+            <PasswordBox PlaceholderText="Повторите пароль" Text="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource RegPasswordBoxStyle}"/>
+            
+            <TextBlock Visibility="{Binding ErrorVisibility}" Text="{Binding ErrorMessage}"  FontFamily="Segoe Print" FontSize="14"
+                       Foreground="{StaticResource ClueRedLightBrush}"/>
+          
+            <Button Content="Зарегистрироваться"
+                        Style="{StaticResource NoirDialogButtonStyle}" Command="{Binding RegistrationStart}"
+                    Margin="0,8,0,0"/>
 
-            <!-- Создать -->
-            <Button Content="Открыть дело"
-                    Style="{StaticResource DetectiveSaveButtonStyle}"
-                    Margin="0,8,0,0"
-                    HorizontalAlignment="Stretch"/>
-
-            <!-- Ссылка на вход -->
-            <Button Content="Уже есть дело? Войти"
-                    Style="{StaticResource TextButtonStyle}"
+            <Button Content="Уже есть аккаунт? Войти"
+                    Style="{StaticResource TextButtonStyle}" Command="{Binding BackToLoginPage}"
                     FontFamily="Segoe Print"
                     FontSize="13"
                     HorizontalAlignment="Center"/>

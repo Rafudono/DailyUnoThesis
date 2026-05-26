@@ -602,12 +602,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
                         if (existingSession == null)
                         {
-                            if (Task.StartDate.Value.Date == Task.EndDate.Value.Date) //вот здесь проверка можно ли эту миссию выполнить за сессию, нужно отдельно написать 
-                            {                                                        //тк она не должна перекрывать другие сессии это все нужно проверять 
+                            if (Task.StartDate.Value.Date == Task.EndDate.Value.Date) 
+                            {
                                 Task.TaskCompletionTimes.Add(new TaskCompletionTime
                                 {
                                     StartExecution = Task.StartDate,
-                                    EndExecution = Task.EndDate
+                                    EndExecution = Task.EndDate.Value.AddHours(1)
                                 });
                             }
                         }
