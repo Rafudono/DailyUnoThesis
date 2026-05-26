@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
+
 //using Android.Health.Connect.DataTypes.Units;
 using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
 using Microsoft.UI.Xaml;
@@ -33,7 +35,7 @@ public sealed partial class ProjectFolder : Page
         DataContext = new ProjectFolderViewModel();
 
         this.DataContextChanged += OnDataContextChanged;
-        //ViewModelStore.GetInstance().GetPageCategory(this);
+        ViewModelStore.GetInstance().ProjectFolder = DataContext as ProjectFolderViewModel;
         ViewModel = DataContext as ProjectFolderViewModel;
         //pass = this;
     }

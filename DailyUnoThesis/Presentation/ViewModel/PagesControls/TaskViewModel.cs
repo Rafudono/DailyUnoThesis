@@ -21,12 +21,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         private CoreDispatcher dispatcher { get; set; }
         private SelectedAndNewTask Page;
 
-        //[ObservableProperty]
-        //private ObservableCollection<Category> categories;
-        public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
+        [ObservableProperty]
+        private ObservableCollection<Category> categories;
+        //public ObservableCollection<Category> Categories => CategoryService.Instance.Categories;
 
         [ObservableProperty]
         private Category selectedCategory;
+
+        [ObservableProperty]
+        private Category mainSelectedCategory;
 
         [ObservableProperty]
         private Category selectedFilterCategory;
@@ -249,14 +252,22 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
             if (SelectedCategory != null && Task != null)
             {
-                if (Task.Category != null)
+                if (Categories != null)
                 {
-                    //int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
-                    SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id); /*Categories[index];*/
-                }
-                else
-                {
-                    SelectedCategory = Categories[0];
+                    if (Task.Category != null)
+                    {
+                        //int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
+                        SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id); /*Categories[index];*/
+                    }
+                    else
+                    {
+                        if (IsProject)
+                        {
+                            SelectedCategory = MainSelectedCategory;
+                        }
+                        else
+                        SelectedCategory = Categories[0];
+                    }
                 }
             }
 
@@ -333,7 +344,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     }
                     Mission mission = new();
                     if (Task.Id != null)
+                    {
                         mission.IdUpMission = Task.Id;
+                        mission.IsProject = IsProject;
+                    }
                     Subtasks.Add(mission);
                     Subtasks = new(Subtasks);
                 }
@@ -349,10 +363,21 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             
             NewTask.Execute(null);
         }
-        public void GetBoolProject(bool boolProject)
+        public async Task GetBoolProject(bool boolProject)
         {
             IsProject = boolProject;
+            await GetCategories();
+
         }
+
+        public async Task GetMainProject(Category category)
+        {
+            SelectedCategory = category;
+            MainSelectedCategory = category;
+
+
+        }
+        
 
 
         private RelayCommand newTask;
@@ -362,7 +387,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 return newTask ?? new RelayCommand(async () =>
                 {
-                    Task = new() { LevelUp = 1 };
+                    Task = new() { LevelUp = 1, IsProject = IsProject };
                     //SelectedCategory = Categories[0];
                 }
                 );
@@ -411,6 +436,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         }
 
                         await APIHost.GetInstance().EditMission(Mission);
+                        await ViewModelStore.GetInstance().FillDataViewModels();
+
                         //await System.Threading.Tasks.Task.Delay(400);
                         //FillData();
 
@@ -516,7 +543,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         {
             _taskState.TasksChanged += OnTasksChanged;
             Task = new Mission();
-            GetCategories();
             SelectedCategory = new();
             Task = new() { LevelUp = 1 };
         }
@@ -553,6 +579,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //Categories = await APIHost.GetInstance().GetCategories();
             //Categories = new ObservableCollection<Category>(Categories);
             //Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
+            if(IsProject)
+            {
+                Categories = CategoryService.Instance.AssignmentOfProjects;
+            }
+            else
+            {
+                Categories = CategoryService.Instance.Categories;
+
+            }
             SelectedCategory = Categories[0];
             SelectedFilterCategory = Categories[0];
 

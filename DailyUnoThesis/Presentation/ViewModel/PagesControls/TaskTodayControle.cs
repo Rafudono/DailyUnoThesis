@@ -249,18 +249,28 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
         }
 
-        public async void OnItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
+        //public async void OnItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
+        //{
+        //    // args.InvokedItem — это объект задачи или категории, на который кликнули
+        //    var clickedItem = args.InvokedItem as Mission;
+
+        //    // Открываем панель подробностей
+        //    if (Task.Id != 0)
+        //        ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
+
+        //}
+
+        public void OnItemInvoked(object sender, ItemClickEventArgs e)
         {
             // args.InvokedItem — это объект задачи или категории, на который кликнули
-            var clickedItem = args.InvokedItem as Mission;
+            var clickedItem = e.ClickedItem as Mission;
 
             // Открываем панель подробностей
-            if (Task.Id != 0)
+
+            if (Task != null && Task.Id != 0)
                 ViewModelStore.GetInstance().PanelTask.IsSplitViewPaneOpen = true;
 
         }
-
-
 
 
 

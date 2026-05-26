@@ -419,6 +419,29 @@ namespace DailyUnoThesis.Models;
         return categories;
     }
 
+    
+    internal async Task<ObservableCollection<Category>> GetProject()
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        int id = 1;
+        ObservableCollection<Category> categories = new ObservableCollection<Category>();
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Categories/GetMyProject?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить категориии \t  {Error} "
+            };
+        }
+        else
+            categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
+        return categories;
+    }
+
+
     public async Task<ObservableCollection<Category>> GetFiltersSubCategories(int id)
     {
         ObservableCollection<Category> categories = new ObservableCollection<Category>();

@@ -35,6 +35,9 @@
         <con:BoolToCompletedConverter x:Key="BoolToCompletedConverter"/>
         <con:DateTextToDateConverter x:Key="DateTextToDateConverter"/>
 
+        <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
         <SolidColorBrush x:Key="TimePickerLightDismissOverlayBackground"
                  Color="Pink" />
 
@@ -373,11 +376,15 @@ HorizontalAlignment="Stretch"/>
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
                                                         
-                                                        <CheckBox CommandParameter="{Binding}"
-          Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" Style="{StaticResource NoirCheckBoxStyle}"
+                                                        <CheckBox CommandParameter="{Binding}" Visibility="{Binding IsProject, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+          Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" Style="{StaticResource NoirCircleCheckBoxStyle}"
           IsChecked="{Binding IsComplete, Mode=TwoWay}" Tag="&#xE73E;" VerticalAlignment="Bottom"/>
                                                         
-                                                        <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,6" 
+                                                    <CheckBox CommandParameter="{Binding}"
+          Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" Style="{StaticResource NoirCheckBoxStyle}" Visibility="{Binding IsProject, Converter={StaticResource BoolToVisibilityConverter}}"
+          IsChecked="{Binding IsComplete, Mode=TwoWay}" Tag="&#xE73E;" VerticalAlignment="Bottom"/>
+
+                                                    <TextBox MinWidth="150" Grid.Column="1" MinHeight="30"  Width="Auto" Margin="0,0,0,6" 
                          Text="{Binding Title, Mode=TwoWay}" VerticalContentAlignment="Bottom" Padding="3 0 0 0" HorizontalAlignment="Stretch"
                          PlaceholderText="Новая подзадача" VerticalAlignment="Bottom"
                          FontSize="16" FontWeight="Bold" Style="{StaticResource NotebookTextBoxStyle}"/>

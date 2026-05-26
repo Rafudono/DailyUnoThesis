@@ -881,8 +881,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
         }
 
-        public async Task GetCaterogy()
-        {
+    public async Task GetCaterogy()
+    {
         await CategoryService.Instance.RefreshFromDatabaseAsync();
         //Categories = await APIHost.GetInstance().GetCategories();
         //Categories = new ObservableCollection<Category>(Categories);

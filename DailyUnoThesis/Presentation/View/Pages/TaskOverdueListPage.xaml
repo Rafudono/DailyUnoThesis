@@ -445,46 +445,46 @@ Height="600">
                             <ColumnDefinition Width="0.01*" x:Name="EmptySpace"/>
                         </Grid.ColumnDefinitions>
 
-                        <TreeView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
-          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}" ItemInvoked="{x:Bind ViewModel.OnItemInvoked}">
+                        <ListView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
+          SelectionMode="Single"  SelectedItem="{Binding Task, Mode=TwoWay}" ItemClick="{x:Bind ViewModel.OnItemInvoked}" IsItemClickEnabled="True">
 
-                            <TreeView.Resources>
-                                <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
-                                 Код символа ">"-->
+                            <!--<ListView.Resources>
+                                --><!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
+                                 Код символа ">"--><!--
                                 <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
                                 <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
 
                                 <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
                                 <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
 
-                                <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
+                                --><!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК--><!--
                                 <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
                                 <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
 
-                                <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
+                                --><!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
                                 <!--Цвет фона при наведении-->
                                 <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
-                                <!--Цвет фона при выделении-->
+                                <!--Цвет фона при выделении--><!--
                                 <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" />
                                 <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListMediumBrush}" />
 
                                 <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
-                                <!--Или ваш InkBlueBrush-->
+                                --><!--Или ваш InkBlueBrush-->
 
-                                <!--Убираем системные отступы, которые могут мешать нитям-->
+                                <!--Убираем системные отступы, которые могут мешать нитям--><!--
                                 <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
-                            </TreeView.Resources>
+                            </ListView.Resources>
 
-                            <TreeView.ItemContainerStyle>
+                            <ListView.ItemContainerStyle>
                                 <Style TargetType="TreeViewItem">
-                                    <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
+                                    --><!--Убираем стандартные отступы, которые могут мешать схлопыванию--><!--
                                     <Setter Property="MinHeight" Value="0"/>
                                     <Setter Property="IsExpanded" Value="True" />
                                 <Setter Property="Transitions">
                                     <Setter.Value>
                                         <TransitionCollection>
                                              
-                                    <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                    --><!--Эта штука заставляет соседей плавно ехать на свободное место--><!--
                                      
                                             <AddDeleteThemeTransition />
                                         </TransitionCollection>
@@ -492,14 +492,14 @@ Height="600">
                                 </Setter>
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                     <Setter Property="Padding" Value="0" />
-                                    <!--Убираем лишние падинги-->
+                                    --><!--Убираем лишние падинги--><!--
 
                                 </Style>
-                            </TreeView.ItemContainerStyle>
+                            </ListView.ItemContainerStyle>-->
 
-                            <TreeView.ItemTemplate>
+                            <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
-                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+                                    <ListViewItem x:Name="TreeViewItem" MinHeight="0">
 
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="LifeCycleStatesGrid">
@@ -745,17 +745,17 @@ Height="600">
                                                 </Grid>
 
                                             </Border>
-                                            <Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
-                                                <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
+                                            <!--<Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                --><!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>--><!--
                                                 <Grid Background="{StaticResource TransparentGridBrush}"/>
                                                 <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" RenderTransformOrigin="0.5,0.5">
                                                 </FontIcon>
-                                            </Grid>
+                                            </Grid>-->
                                         </Grid>
-                                    </TreeViewItem>
+                                    </ListViewItem>
                                 </DataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Grid>
 
                     <!--<ListView ItemsSource="{Binding Missions}"

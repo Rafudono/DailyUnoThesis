@@ -143,7 +143,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             set => SetValue(PanelProjectProperty, value);
         }
 
+        
+        //список задач в проекте 
+        public static readonly DependencyProperty ProjectFolderProperty =
+           DependencyProperty.Register("ProjectFolder", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
 
+        public ProjectFolderViewModel ProjectFolder
+        {
+            get => (ProjectFolderViewModel)GetValue(ProjectFolderProperty);
+            set => SetValue(ProjectFolderProperty, value);
+        }
 
 
 
@@ -197,6 +206,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             if (DetailedTask != null && mission.Id != 0)
             {
                 DetailedTask.GetTask(mission);
+
+            }
+        }
+
+        public void ChangeSelectedProject(Mission mission)
+        {
+            if (DetailedProject != null && mission.Id != 0)
+            {
+                DetailedProject.GetTask(mission);
 
             }
         }
