@@ -94,9 +94,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
 
         private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            //  (d as TimelinePanel)?.InvalidateArrange();
             var panel = d as TimelinePanel;
-            panel?.InvalidateMeasure();  // Добавьте эту строку
+            panel?.InvalidateMeasure();  
             panel?.InvalidateArrange();
         }
 
@@ -135,8 +134,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
             {
                 child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
             }
-
-            // Вычисляем общую высоту через Hours, а не через StartHour/EndHour
             double totalHeight = GetTotalHeight();
             return new Size(availableSize.Width, totalHeight);
         }
@@ -167,7 +164,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         {
             foreach (UIElement child in Children)
             {
-                var task = (child as FrameworkElement)?.DataContext as TaskCompletionTime;
+                var element = child as FrameworkElement;
+                var task = element?.DataContext as TaskCompletionTime;
 
                 if (task == null || !task.StartExecution.HasValue || !task.EndExecution.HasValue)
                 {
@@ -175,14 +173,27 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                     continue;
                 }
 
-                // Вычисляем top с учетом свернутых часов
-                double top = GetAccumulatedHeight(task.StartExecution.Value.Hour);
+                var hourSlot = GetHourSlot(task.StartExecution.Value.Hour);
+                bool isNonWorking = hourSlot != null && !hourSlot.IsWorkingHour;
 
-                // Добавляем минуты
+                if (isNonWorking && !hourSlot.IsExpanded)
+                {
+                    element.Visibility = Visibility.Collapsed;
+                    child.Arrange(new Rect(0, 0, 0, 0));
+                    continue;
+                }
+
+                element.Visibility = Visibility.Visible;
+               // element.IsHitTestVisible = !isNonWorking;
+
+                int endHour = task.EndExecution.Value.Hour;
+                if (endHour == 0 && task.EndExecution.Value.Date > task.StartExecution.Value.Date)
+                    endHour = 24;
+
+                double top = GetAccumulatedHeight(task.StartExecution.Value.Hour);
                 top += (task.StartExecution.Value.Minute / 60.0) * HourHeight;
 
-                // Вычисляем высоту (с учетом свернутых часов в конце)
-                double bottom = GetAccumulatedHeight(task.EndExecution.Value.Hour);
+                double bottom = GetAccumulatedHeight(endHour);
                 bottom += (task.EndExecution.Value.Minute / 60.0) * HourHeight;
                 double height = bottom - top;
 
@@ -194,9 +205,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
             return finalSize;
         }
 
-        //public static readonly DependencyProperty HoursProperty =
-        //DependencyProperty.Register(nameof(Hours), typeof(IEnumerable), typeof(TimelinePanel),
-        //    new PropertyMetadata(null, OnLayoutPropertyChanged));
+        private HourSlot GetHourSlot(int hour)
+        {
+            if (Hours == null) return null;
+            foreach (HourSlot slot in Hours)
+            {
+                if (slot.Hour == hour) return slot;
+            }
+            return null;
+        }
+
         public static readonly DependencyProperty HoursProperty =
         DependencyProperty.Register(nameof(Hours), typeof(IEnumerable), typeof(TimelinePanel),
         new PropertyMetadata(null, OnHoursChanged));

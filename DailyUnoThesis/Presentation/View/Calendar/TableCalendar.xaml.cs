@@ -8,6 +8,7 @@ using DailyUnoThesis.Models.Conventers;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -41,6 +42,8 @@ public sealed partial class TableCalendar : Page
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         _viewModel?.RegisterNewTaskFrame(NewTaskFrame);
+        _viewModel?.RegisterNewTaskFrameHost(NewTaskFrameHost, InboxTree);
+        ViewModelStore.GetInstance().CalendarViewModel = _viewModel;
         if (_viewModel != null)
             await _viewModel.LoadDataFromApi();
     }
@@ -81,7 +84,11 @@ public sealed partial class TableCalendar : Page
     {
         NewTaskFrameHost.Visibility = Visibility.Collapsed;
         if (_viewModel != null)
+        {
+            _viewModel.NewTaskFrameVisibility = Visibility.Collapsed;
+            _viewModel.InboxVisibility = Visibility.Visible;
             await _viewModel.BuildInboxTreeMissions();
+        }
         InboxTree.ItemsSource = null;
         InboxTree.ItemsSource = _viewModel?.InboxTreeMissions;
         InboxTree.Visibility = Visibility.Visible;

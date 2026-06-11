@@ -9,6 +9,7 @@ using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
 using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
+using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
 
 namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 {
@@ -175,6 +176,15 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
         {
             get => (RegularTimerControle)GetValue(RegularTimerProperty);
             set => SetValue(RegularTimerProperty, value);
+        }
+
+        // Календарь (TableCalendar)
+        public static readonly DependencyProperty CalendarViewModelProperty =
+            DependencyProperty.Register("CalendarViewModel", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+        public TableCalendarViewModel CalendarViewModel
+        {
+            get => (TableCalendarViewModel)GetValue(CalendarViewModelProperty);
+            set => SetValue(CalendarViewModelProperty, value);
         }
         #endregion
 

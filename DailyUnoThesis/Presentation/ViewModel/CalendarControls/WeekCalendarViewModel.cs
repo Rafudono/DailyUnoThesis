@@ -68,7 +68,7 @@ public partial class WeekCalendarViewModel : ObservableObject
         }
     }
 
-    public event EventHandler<double> ScrollToCurrentTimeRequested;
+  //  public event EventHandler<double> ScrollToCurrentTimeRequested;
 
     public WeekCalendarViewModel()
     {
@@ -78,6 +78,12 @@ public partial class WeekCalendarViewModel : ObservableObject
         LoadWeekData();
     }
 
+    private void OnTasksChanged(object sender, TaskStateChangedEventArgs e)
+    {
+        LoadWeekData();
+    }
+
+    #region Отрисовка
     private static DateTime GetWeekStart(DateTime date)
     {
         var diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
@@ -103,14 +109,14 @@ public partial class WeekCalendarViewModel : ObservableObject
         //PopulateSessions();
 
         // Автопрокрутка к текущему времени
-        var now = DateTime.Now;
-        if (now >= CurrentWeekStart && now <= CurrentWeekStart.AddDays(7))
-        {
+        //var now = DateTime.Now;
+        //if (now >= CurrentWeekStart && now <= CurrentWeekStart.AddDays(7))
+        //{
             //var minutesFromStart = (now.Hour - AuthUser.DayStartTime.Value.Hour) * 60 + now.Minute;
             //var minutesFromStart = (now.Hour - 9) * 60 + now.Minute;
             //var scrollOffset = (minutesFromStart / 60.0) * HourSlotHeight;
             //ScrollToCurrentTimeRequested?.Invoke(this, scrollOffset);
-        }
+       //}
         OnPropertyChanged(nameof(MondayDate));
         OnPropertyChanged(nameof(TuesdayDate));
         OnPropertyChanged(nameof(WednesdayDate));
@@ -163,21 +169,30 @@ public partial class WeekCalendarViewModel : ObservableObject
         LoadWeekData();
     });
 
-    public ICommand TodayCommand => new RelayCommand(() =>
+    public Action RefreshTimelinePanels { get; set; }
+
+    [ObservableProperty]
+    private bool _isNonWorkingHoursExpanded = true;
+    public ICommand ToggleNonWorkingHoursCommand => new RelayCommand(() =>
     {
-        CurrentWeekStart = GetWeekStart(DateTime.Today);
-        LoadWeekData();
+        IsNonWorkingHoursExpanded = !IsNonWorkingHoursExpanded;
+
+        foreach (var hour in Hours)
+        {
+            if (!hour.IsWorkingHour)
+            {
+                hour.IsExpanded = IsNonWorkingHoursExpanded;
+            }
+        }
+
+        RefreshTimelinePanels?.Invoke();
     });
+    #endregion
 
-    public bool CanDropAtTimeSlot(DateTime targetDay, int hour, object draggedItem)
-    {
-        if (targetDay.Date < DateTime.Today.Date)
-            return false;
 
-        return draggedItem is TaskCompletionTime or Mission;
-    }
+  
 
-    public async void DropAtTimeSlot(DateTime targetDay, int hour, object draggedItem)
+    public async void DropAtTimeSlot(DateTime targetDay, double hour, object draggedItem)
     {
         var startTime = targetDay.Date.AddHours(hour);
         var duration = TimeSpan.FromHours(1);
@@ -198,53 +213,68 @@ public partial class WeekCalendarViewModel : ObservableObject
                 EndExecution = endTime,
                 IdMissionNavigation = mission
             };
-
-            mission.TaskCompletionTimes ??= new List<TaskCompletionTime>();
+          
+            mission.TaskCompletionTimes ??= new List<TaskCompletionTime>(); 
             mission.TaskCompletionTimes.Add(newSession);
+            UpdateMissionDatesFromSessions(mission);
             await _taskState.UpdateAsync(mission);
         }
 
         LoadWeekData();
+    }
+    private Mission UpdateMissionDatesFromSessions(Mission mission)
+    {
+        if (mission.TaskCompletionTimes == null || !mission.TaskCompletionTimes.Any())
+        {
+            mission.StartDate = null;
+            mission.EndDate = null;
+            return mission;
+        }
+
+        // находим самую раннюю и самую позднюю сессию
+        var minStart = mission.TaskCompletionTimes
+            .Where(s => s.StartExecution.HasValue)
+            .Min(s => s.StartExecution.Value);
+
+        var maxEnd = mission.TaskCompletionTimes
+            .Where(s => s.EndExecution.HasValue)
+            .Max(s => s.EndExecution.Value);
+
+        mission.StartDate = minStart;
+        mission.EndDate = maxEnd;
+        return mission;
     }
     public async Task UpdateTaskTime(TaskCompletionTime task)
     {
         if (task?.IdMissionNavigation != null)
         {
             await _taskState.UpdateAsync(task.IdMissionNavigation);
-            await LoadWeekData(); // Перезагружаем данные
+            await LoadWeekData(); 
         }
     }
-    private void OnTasksChanged(object sender, TaskStateChangedEventArgs e)
-    {
-        LoadWeekData();
-    }
-    public Action RefreshTimelinePanels { get; set; }
-    //public ICommand ToggleNonWorkingHoursCommand => new RelayCommand(() =>
-    //{
-    //    foreach (var hour in Hours)
-    //    {
-    //        if (!hour.IsWorkingHour)
-    //        {
-    //            hour.IsExpanded = !hour.IsExpanded;
-    //        }
-    //    }
-
-    //    RefreshTimelinePanels?.Invoke();
-    //});
-    [ObservableProperty]
-    private bool _isNonWorkingHoursExpanded = true;
-    public ICommand ToggleNonWorkingHoursCommand => new RelayCommand(() =>
-    {
-        IsNonWorkingHoursExpanded = !IsNonWorkingHoursExpanded;
-
-        foreach (var hour in Hours)
-        {
-            if (!hour.IsWorkingHour)
-            {
-                hour.IsExpanded = IsNonWorkingHoursExpanded;
-            }
-        }
-
-        RefreshTimelinePanels?.Invoke();
-    });
+   
 }
+//public ICommand TodayCommand => new RelayCommand(() =>
+//{
+//    CurrentWeekStart = GetWeekStart(DateTime.Today);
+//    LoadWeekData();
+//});
+//public ICommand ToggleNonWorkingHoursCommand => new RelayCommand(() =>
+//{
+//    foreach (var hour in Hours)
+//    {
+//        if (!hour.IsWorkingHour)
+//        {
+//            hour.IsExpanded = !hour.IsExpanded;
+//        }
+//    }
+
+//    RefreshTimelinePanels?.Invoke();
+//});
+//public bool CanDropAtTimeSlot(DateTime targetDay, double hour, object draggedItem)
+//{
+//    if (targetDay.Date < DateTime.Today.Date)
+//        return false;
+
+//    return draggedItem is TaskCompletionTime or Mission;
+//}

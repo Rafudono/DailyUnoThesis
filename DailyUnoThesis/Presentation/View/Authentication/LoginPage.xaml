@@ -22,6 +22,102 @@
             <Setter Property="Padding" Value="0,4,0,2"/>
             <Setter Property="PlaceholderForeground" Value="#A3B1C6"/>
         </Style>
+
+        <Style x:Key="AuthCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{StaticResource InkBlueLightBrush}"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="Gray"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <VisualState.Setters>
+                                            <Setter Target="CheckGlyph.Foreground" Value="Red"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid x:Name="RootGrid" Padding="0"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          Width="23" Height="23">
+                                <Border x:Name="CheckedBackground" 
+                            BorderBrush="{StaticResource InkBlueLightBrush}"
+                            Opacity="1" BorderThickness="2" CornerRadius="2"/>
+                                <FontIcon x:Name="CheckGlyph" 
+                                  Glyph="{TemplateBinding Tag}" 
+                                  FontSize="20" FontWeight="Bold"
+                                  Foreground="Transparent" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center"/>
+                            </Grid>
+                            <Border  Padding="0 0 0 -3" Margin="8 0 0 0">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                          FontFamily="{TemplateBinding FontFamily}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          FontWeight="DemiBold"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LinkTextButtonStyle" TargetType="Button" BasedOn="{StaticResource TextButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.TextDecorations" Value="Underline"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <TextBlock x:Name="ContentText"
+                                       Text="{TemplateBinding Content}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       Margin="{TemplateBinding Padding}"
+                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" 
                   HorizontalContentAlignment="Center">
@@ -60,20 +156,17 @@
                     Style="{StaticResource NoirDialogButtonStyle}"
                     Command="{Binding Login}"
                     Margin="0,8,0,0"/>
+            <StackPanel>
+                <CheckBox  Content="Запомнить меня" IsEnabled="True" Tag="&#xE73E;" Style="{StaticResource AuthCheckBoxStyle}" 
+            IsChecked="{Binding UserCredentials.SaveCredentials, Mode=TwoWay}"/>
             
-            <CheckBox Content="Запомнить меня" IsEnabled="False"
-            IsChecked="{Binding UserCredentials.SaveCredentials, Mode=TwoWay}"
-            FontFamily="Segoe Print"
-            FontSize="14"
-            Foreground="{StaticResource InkBlueLightBrush}"/>
-            
-            <StackPanel Spacing="4" Margin="0,8,0,0">
-                <Button Content="Забыли пароль?" IsEnabled="False"
-                        Style="{StaticResource TextButtonStyle}"
+      
+                <Button Content="Забыли пароль?" 
+                        Style="{StaticResource LinkTextButtonStyle}"
                         FontFamily="Segoe Print"
                         FontSize="13"/>
                 <Button Content="Регистрация"  Command="{Binding OpenRegistrationPage}"
-                        Style="{StaticResource TextButtonStyle}"
+                        Style="{StaticResource LinkTextButtonStyle}"
                         FontFamily="Segoe Print"
                         FontSize="13"/>
             </StackPanel>
