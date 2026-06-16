@@ -68,12 +68,13 @@ public class TaskStateService
         {
             task.EndDate=task.EndDate.Value.AddHours(1);
         }
-        await APIHost.GetInstance().CreateMission(task);
+         await APIHost.GetInstance().CreateMission(task);
         var savedMission = await APIHost.GetInstance().GetLastMission(task);
+        if (savedMission == null) return;
 
-        SubscribeMission(task);
-        Tasks.Add(task);
-        RaiseTasksChanged(TaskStateChangeType.Added, task);
+        SubscribeMission(savedMission);
+        Tasks.Add(savedMission);
+        RaiseTasksChanged(TaskStateChangeType.Added, savedMission);
     }
     public async Task UpdateAsync(Mission task)
     {

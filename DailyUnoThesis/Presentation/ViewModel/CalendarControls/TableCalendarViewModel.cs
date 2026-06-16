@@ -4,7 +4,10 @@ using System.Collections.ObjectModel;
 using System.Text;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
 {
@@ -28,6 +31,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
 
         private readonly TaskStateService _taskState = TaskStateService.GetInstance();
         private Frame _newTaskFrame;
+        private Border _newTaskFrameHost;
+        private UIElement _inboxTree;
         public ObservableCollection<Mission> PlannedMissions { get; set; } = new ObservableCollection<Mission>();
         public ObservableCollection<Mission> InboxMissions { get; set; } = new ObservableCollection<Mission>();
         public TableCalendarViewModel()
@@ -62,6 +67,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         {
             _newTaskFrame = frame;
         }
+        public void RegisterNewTaskFrameHost(Border host, UIElement inboxTree)
+        {
+            _newTaskFrameHost = host;
+            _inboxTree = inboxTree;
+        }
 
         public ICommand OpenNewTaskCommand => new RelayCommand(() =>
         {
@@ -77,6 +87,18 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
             await BuildInboxTreeMissions(); 
         });
 
+        public void OpenTaskEditor(Mission mission)
+        {
+            ViewModelStore.GetInstance().DetailedTask = null;
+            _newTaskFrame?.Navigate(typeof(SelectedAndNewTask));
+            ViewModelStore.GetInstance().DetailedTask?.GetTask(mission);
+
+            if (_newTaskFrameHost != null)
+                _newTaskFrameHost.Visibility = Visibility.Visible;
+            if (_inboxTree != null)
+                _inboxTree.Visibility = Visibility.Collapsed;
+        }
+
         public async Task BuildInboxTreeMissions()
         {
             var result = new ObservableCollection<Mission>();
@@ -85,6 +107,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                 if (SubtreeContainsInboxMission(root, new HashSet<int>()))
                     result.Add(root);
             }
+            
             InboxTreeMissions = result;
         }
 
@@ -131,5 +154,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         {
             return !IsPlannedMission(mission);
         }
+
+       
     }
 }

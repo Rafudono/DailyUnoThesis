@@ -10,15 +10,15 @@ public partial class HourSlot   :  ObservableObject
     private int _hour;
 
     [ObservableProperty]
-    private bool _isExpanded = true;  // развернут ли этот час
+    private bool _isExpanded = true; 
 
     public string Label => $"{Hour:D2}:00";
 
-    public bool IsWorkingHour => Hour >= 8 && Hour <= 22;
-    public bool IsWorkingHourStart => Hour == 8;    
-    public bool IsWorkingHourEnd => Hour == 22;
-    // Для нерабочих часов: 2px если свернуто, 60px если развернуто
-    public double Height => IsWorkingHour || IsExpanded ? 60 : 2;
+    public bool IsWorkingHour => Hour >= AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour && Hour <= AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour;
+    public bool IsNonWorkingHour => !IsWorkingHour;
+    public bool IsWorkingHourStart => Hour == AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour;    
+    public bool IsWorkingHourEnd => Hour == AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour;
+    public double Height => IsWorkingHour || IsExpanded ? 60 : 0;
     partial void OnIsExpandedChanged(bool value)
     {
         OnPropertyChanged(nameof(Height));

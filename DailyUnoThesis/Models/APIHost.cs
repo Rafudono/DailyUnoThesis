@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+//using Android.App;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using Microsoft.Extensions.Options;
@@ -73,22 +74,29 @@ namespace DailyUnoThesis.Models;
     }
     public async Task<bool> AuthUser(string password, string emailOrusername)
     {
-        AuthUserData userData = new AuthUserData() { EmailOrLogin = emailOrusername, Password = password };
-        var arg = JsonSerializer.Serialize(userData, options);
-        var res = await client.PostAsync($"Users/AuthUser", new StringContent(arg, Encoding.UTF8, "application/json"));
-        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        try
         {
-            ContentDialog contentDialog = new ContentDialog()
+            AuthUserData userData = new AuthUserData() { EmailOrLogin = emailOrusername, Password = password };
+            var arg = JsonSerializer.Serialize(userData, options);
+            var res = await client.PostAsync($"Users/AuthUser", new StringContent(arg, Encoding.UTF8, "application/json"));
+            if (res.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                Content = "не удалось авторизоваться \t  {Error}"
-            };
-            return false;
+                ContentDialog contentDialog = new ContentDialog()
+                {
+                    Content = "не удалось авторизоваться \t  {Error}"
+                };
+                return false;
+            }
+            else
+            {
+                var user = await res.Content.ReadFromJsonAsync<User>(options);
+                AuthorizedUser.GetInstance().AuthUser = user;
+                return true;
+            }
         }
-        else
+        catch( Exception ex)
         {
-            var user = await res.Content.ReadFromJsonAsync<User>(options);
-            AuthorizedUser.GetInstance().AuthUser = user;
-            return true;
+            return false;
         }
     }
     public async Task<bool> RegUser(string password, string email, string username)

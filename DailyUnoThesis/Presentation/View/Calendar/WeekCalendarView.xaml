@@ -47,34 +47,32 @@
         <Style x:Key="TaskItemStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
             <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Margin" Value="2,1,2,1"/>
+            <!--<Setter Property="Margin" Value="2,1,2,1"/>-->
         </Style>
 
-        <!--<DataTemplate x:Key="TaskTemplate" x:DataType="mod:TaskCompletionTime">
-            <Border Style="{StaticResource TaskItemStyle}">
-
-                <StackPanel Margin="4,2">
-                    <TextBlock Text="{Binding IdMissionNavigation.Title}"
-                               FontSize="11" FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis"
-                               Foreground="{StaticResource InkBlueLightBrush}"/>
-                    <TextBlock Text="{Binding FormattedTime}" FontSize="9"
-                               Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
-                </StackPanel>
-            </Border>
-        </DataTemplate>-->
 
         <DataTemplate x:Key="TaskTemplate" x:DataType="mod:TaskCompletionTime">
             <Border Style="{StaticResource TaskItemStyle}"
             CanDrag="True"
-            DragStarting="Task_DragStarting">
+            DragStarting="Task_DragStarting" DoubleTapped="OpenEditTaskFrame">
+                <ToolTipService.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock Text="{Binding IdMissionNavigation.Title}" FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource InkBlueLightBrush}"/>
+                            <TextBlock Text="{Binding FormattedTime}" FontSize="11"
+                                       Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </ToolTipService.ToolTip>
                 <StackPanel Margin="4,2">
                     <TextBlock Text="{Binding IdMissionNavigation.Title}"
-                       FontSize="11" FontWeight="SemiBold"
-                       TextTrimming="CharacterEllipsis"
-                       Foreground="{StaticResource InkBlueLightBrush}"/>
+                        FontSize="11" FontWeight="SemiBold"
+                        TextTrimming="CharacterEllipsis"
+                        Foreground="{StaticResource InkBlueLightBrush}"/>
                     <TextBlock Text="{Binding FormattedTime}" FontSize="9"
-                       Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
+                        Foreground="{StaticResource OnSurfaceSecondaryBrush}"/>
                 </StackPanel>
             </Border>
         </DataTemplate>
@@ -211,10 +209,16 @@
                 <ItemsControl Grid.Row="1" Grid.Column="0" 
               ItemsSource="{Binding Hours}" 
               VerticalAlignment="Top">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Height="{Binding Height}" 
-                    BorderBrush="{StaticResource DividerStrokeBrush}" 
+                    Background="Transparent"
+                    BorderBrush="#FFCCCCCC" 
                     BorderThickness="0,0,1,1">
                                 <TextBlock Text="{Binding Label}" 
                            FontSize="11"
@@ -239,15 +243,21 @@
                         HourHeight="60"
                         Background="Transparent"
                         AllowDrop="True"
+                        VerticalAlignment="Top"
                        DragOver="Timeline_DragOver"
                        Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top"  IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
                             BorderBrush="#FFCCCCCC" 
                             BorderThickness="0,0,1,1" 
-                            Background="Transparent"/>
+                             Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -260,14 +270,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding TuesdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="TuesdayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -280,14 +295,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding WednesdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="WednesdayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -300,14 +320,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding ThursdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="ThursdayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -320,14 +345,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding FridaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="FridayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -340,14 +370,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding SaturdaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="SaturdayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -360,14 +395,19 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                          <control:TimelinePanel ItemsSource="{Binding SundaySessions}"  ItemTemplate="{StaticResource TaskTemplate}" Hours="{Binding Hours}"
               StartHour="0" EndHour="24" HourHeight="60" x:Name="SundayTimeline"
               Background="Transparent"
-              AllowDrop="True" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
+              AllowDrop="True" VerticalAlignment="Top" DragOver="Timeline_DragOver" Drop="Timeline_Drop"/>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Height="{Binding Height}" 
               BorderBrush="#FFCCCCCC" 
               BorderThickness="0,0,1,1" 
-              Background="Transparent"/>
+               Background="{Binding IsNonWorkingHour, Converter={StaticResource BoolToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

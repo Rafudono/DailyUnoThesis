@@ -1,19 +1,50 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DailyUnoThesis.Models.MainClasses;
 
-public partial class TaskCompletionTime
+public partial class TaskCompletionTime : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public int Id { get; set; }
 
     public int IdMission { get; set; }
 
-    public DateTime? StartExecution { get; set; }
+    private DateTime? _startExecution;
+    public DateTime? StartExecution
+    {
+        get => _startExecution;
+        set
+        {
+            if (_startExecution != value)
+            {
+                _startExecution = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FormattedTime));
+            }
+        }
+    }
 
-    public DateTime? EndExecution { get; set; }
+    private DateTime? _endExecution;
+    public DateTime? EndExecution
+    {
+        get => _endExecution;
+        set
+        {
+            if (_endExecution != value)
+            {
+                _endExecution = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FormattedTime));
+            }
+        }
+    }
 
     public virtual Mission? IdMissionNavigation { get; set; } = null!;
+
     public string FormattedTime
     {
         get
@@ -28,5 +59,10 @@ public partial class TaskCompletionTime
             }
             return string.Empty;
         }
+    }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
