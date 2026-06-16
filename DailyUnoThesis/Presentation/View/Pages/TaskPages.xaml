@@ -74,22 +74,22 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                 <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="1300" />
+                        <AdaptiveTrigger MinWindowWidth="1500" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
                         <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
-                        <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                     </VisualState.Setters>
                 </VisualState>
 
                 <VisualState x:Name="AverageState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="1000" />
+                        <AdaptiveTrigger MinWindowWidth="1100" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
-                        <Setter Target="RootSplitView.OpenPaneLength" Value="160" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="230" />
                         <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
                     </VisualState.Setters>
                 </VisualState>
@@ -101,7 +101,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     <VisualState.Setters>
 
                         <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />-->
-                        <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                         <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
                         <Setter Target="HamburgerBtn.Visibility" Value="Visible" />
                     </VisualState.Setters>
@@ -116,7 +116,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
-                        <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                        <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                     </VisualState.Setters>
                 </VisualState>
                 
@@ -137,11 +137,11 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
             
         </Grid>-->
 
-        <SplitView x:Name="RootSplitView" OpenPaneLength="260"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
+        <SplitView x:Name="RootSplitView" OpenPaneLength="300"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
                    CompactPaneLength="0" CornerRadius="0,8,8,0" >
-            <SplitView.Pane MaxWidth="260">
+            <SplitView.Pane MaxWidth="300">
                 <Border  BorderThickness="0,0,1,0" BorderBrush="{StaticResource DarkGrayBrown}" Padding="0 0 1 0">
-                <Border x:Name="MenuBorder" MaxWidth="260"  Background="#e9e9e9" BorderThickness="0,0,2,0" BorderBrush="{StaticResource DarkGrayBrown}" uen:Region.Attached="True">
+                <Border x:Name="MenuBorder" MaxWidth="300"  Background="#e9e9e9" BorderThickness="0,0,2,0" BorderBrush="{StaticResource DarkGrayBrown}" uen:Region.Attached="True">
                         <Border.Transitions>
                             <TransitionCollection>
                                 <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
@@ -291,7 +291,7 @@ Margin="0,0,1,0"/>
                                                         <Grid.ContextFlyout>
                                                             <MenuFlyout>
                                                                 <MenuFlyoutItem Text="Редактировать" Background="#ecf1ff" FontFamily="Segoe Print"
-                                Command="{Binding DataContext.EditMissionCommand, ElementName=MyTreeView}"
+                                Command="{Binding PanelTask.OpenPanelEditCategory,Source={StaticResource GlobalStore}}" 
                                 CommandParameter="{Binding}">
                                                                     <MenuFlyoutItem.Icon>
                                                                         <SymbolIcon Symbol="Edit" />

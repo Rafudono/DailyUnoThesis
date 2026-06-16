@@ -134,7 +134,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private bool isVisibleCat;
 
     [ObservableProperty]
-    private bool isMenuOpen = true;
+    private bool isMenuOpen = false;
 
     [ObservableProperty]
     private bool isVisibilityTabBar = true;
@@ -535,6 +535,30 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     }
 
 
+    private RelayCommand<Category> openPanelEditCategory;
+    public RelayCommand<Category> OpenPanelEditCategory
+    {
+        get
+        {
+            return openPanelEditCategory ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    Category = category;
+                    //Category.IdUpCategory = category.Id;
+                    IsVisibleCat = true;
+                }
+
+            }
+
+            );
+
+        }
+
+    }
+
+    
+
     private RelayCommand<Category> goToKanbanBoard;
     public RelayCommand<Category> GoToKanbanBoard
     {
@@ -868,7 +892,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         {
         //Category category = new Category() { Title = CategoryTitle };
         Category.IsProgect = false;
-        await APIHost.GetInstance().CreateCategory(Category);
+        if (Category.Id != 0)
+        {
+            await APIHost.GetInstance().EditCategory(Category);
+
+        }
+        else
+            await APIHost.GetInstance().CreateCategory(Category);
         //await GetCaterogy();
         await CategoryService.Instance.RefreshFromDatabaseAsync();
         IsVisibleCat = false;

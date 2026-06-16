@@ -17,12 +17,16 @@ public partial class Category: INotifyPropertyChanged
 
     public int IdBigBoss { get; set; }
     public int? IdUpCategory { get; set; }
+    public int? ProgressstatesId { get; set; }
+
     public virtual Category? IdUpCategoryNavigation { get; set; }
     public virtual ICollection<Category> InverseIdUpCategoryNavigation { get; set; } = new List<Category>();
 
     public virtual ICollection<Mission>? Missions { get; set; } = new List<Mission>();
 
     public virtual ICollection<User>? Users { get; set; } = new List<User>();
+
+    public virtual Progressstate? Progressstates { get; set; }
 
     public string? Icon { get; set; }
 
@@ -48,6 +52,19 @@ public partial class Category: INotifyPropertyChanged
         }
     }
 
+    private bool? isOpenPanel = true;
+    public bool? IsOpenPanel
+    {
+        get => isOpenPanel;
+        set
+        {
+            if (isOpenPanel != value)
+            {
+                isOpenPanel = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     // 1. Есть ли подкатегории?
     public bool HasSubCategories => InverseIdUpCategoryNavigation.Any();

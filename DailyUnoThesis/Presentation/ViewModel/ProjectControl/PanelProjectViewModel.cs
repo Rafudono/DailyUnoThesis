@@ -43,11 +43,26 @@ public partial class PanelProjectViewModel : ObservableObject
     private ProjectFolderViewModel ProjectControle;
 
     public ObservableCollection<Category> Categories => CategoryService.Instance.Projects;
-  
+    public ObservableCollection<Category> ArchivalProjects => CategoryService.Instance.ArchivalProjects;
+
+    
+
     [ObservableProperty]
     private Category selectedCategory;
 
+    [ObservableProperty]
+    private Progressstate selectedProgressStates;
 
+    [ObservableProperty]
+    private Progressstate selectedArchivalProgressStates;
+    
+
+    [ObservableProperty]
+    private ObservableCollection<Progressstate> progressStates = new();
+    [ObservableProperty]
+    private ObservableCollection<Progressstate> fullProgressStates = new();
+    [ObservableProperty]
+    private ObservableCollection<Progressstate> archivalProgressStates = new();
 
     [ObservableProperty]
     private Category category;
@@ -75,12 +90,15 @@ public partial class PanelProjectViewModel : ObservableObject
     private bool isVisibleCat;
 
     [ObservableProperty]
-    private bool isMenuOpen = true;
+    private bool isMenuOpen = false;
 
     [ObservableProperty]
     private bool isVisibilityTabBar = true;
     [ObservableProperty]
     private bool isVisibilityFrame = false;
+    [ObservableProperty]
+    private bool visibilityArchivalBar = false;
+    
 
     public async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
     {
@@ -194,6 +212,41 @@ public partial class PanelProjectViewModel : ObservableObject
     }
 
 
+
+    private RelayCommand<Category> openPanelEditCategory;
+    public RelayCommand<Category> OpenPanelEditCategory
+    {
+        get
+        {
+            return openPanelEditCategory ?? new RelayCommand<Category>(async (category) =>
+            {
+                if (category != null)
+                {
+                    Category = category;
+
+                    ProgressStates.Clear();
+                    if (category.Progress < 100)
+                    {
+                        ProgressStates.AddRange(FullProgressStates.Where(s => s.Id != (int)ProgressStateEnum.Completed));
+                    }
+                    else
+                        ProgressStates.AddRange(FullProgressStates);
+                    if (category.Progressstates != null)
+                        SelectedProgressStates = ProgressStates.FirstOrDefault(s => s.Id == category.Progressstates.Id);
+
+                    //Category.IdUpCategory = category.Id;
+                    IsVisibleCat = true;
+                }
+
+            }
+
+            );
+
+        }
+
+    }
+
+
     private RelayCommand closeAndOpenAddCategoryPanel;
     public RelayCommand CloseAndOpenAddCategoryPanel
     {
@@ -202,6 +255,10 @@ public partial class PanelProjectViewModel : ObservableObject
             return closeAndOpenAddCategoryPanel ?? new RelayCommand(async () =>
             {
                 Category = new() { IsProgect = true };
+                ProgressStates.Clear() ;
+                ProgressStates.AddRange(FullProgressStates.Where(s => s.Id != (int)ProgressStateEnum.Completed));
+
+                SelectedProgressStates = ProgressStates.FirstOrDefault(s=>s.Id == (int)ProgressStateEnum.InProgress);
                 IsVisibleCat = IsVisibleCat ? false : true;
             }
 
@@ -361,6 +418,25 @@ public partial class PanelProjectViewModel : ObservableObject
 
     }
 
+
+    private RelayCommand<Category> openingArchivalBar;
+    public RelayCommand<Category> OpeningArchivalBar
+    {
+        get
+        {
+            return openingArchivalBar ?? new RelayCommand<Category>(async (category) =>
+            {
+                VisibilityArchivalBar = VisibilityArchivalBar ? false : true;
+            }
+
+            );
+
+        }
+
+    }
+
+    
+
     private async Task GoToKanban()
     {
         await _navigator.NavigateViewModelAsync<KanbanBoardViewModel>(this);
@@ -405,7 +481,19 @@ public partial class PanelProjectViewModel : ObservableObject
     public async Task CreateCategory()
     {
         Category.IsProgect = true;
-        await APIHost.GetInstance().CreateCategory(Category);
+        if (Category.Id != 0)
+        {
+            Category.ProgressstatesId = SelectedProgressStates.Id;
+            await APIHost.GetInstance().EditCategory(Category);
+
+        }
+        else
+        {
+            Category.ProgressstatesId = SelectedProgressStates.Id;
+            //Category.ProgressstatesId = (int?)ProgressStateEnum.InProgress;
+            await APIHost.GetInstance().CreateCategory(Category);
+
+        }
         await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
         IsVisibleCat = false;
         Category = new();
@@ -414,6 +502,11 @@ public partial class PanelProjectViewModel : ObservableObject
     public async Task GetCaterogy()
     {
         await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
+        FullProgressStates = await APIHost.GetInstance().GetStatusCategories();
+        ProgressStates.AddRange(FullProgressStates);
+        ArchivalProgressStates.AddRange(FullProgressStates.Where(s=>s.Id != (int)ProgressStateEnum.InProgress));
+        ArchivalProgressStates.Insert(0, new Progressstate { Id = 0, Title = "Все" });
+
     }
 
 

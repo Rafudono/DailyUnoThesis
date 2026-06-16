@@ -234,6 +234,27 @@ namespace DailyUnoThesis.Models;
         return Missions;
     }
 
+    
+    // получение списка задач категории (тоже надо передавать пльзователя)
+    public async Task<List<Mission>> GetMissionProject(int id)
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missions/GetMissionProject?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить список категорий заданий \t  {Error} "
+            };
+        }
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
+
     // получение изменённого или созданного задания
     public async Task<Mission> GetLastMission(/*int id, string title*/ Mission getMission)
     {
@@ -338,6 +359,28 @@ namespace DailyUnoThesis.Models;
 
         return new ObservableCollection<Mission>();
     }
+
+    // получение фильтрованных задач проектов
+    public async Task<ObservableCollection<Category>> GetSearchMissionProjects(MissionSuggestionDto missionSuggestion)
+    {
+        missionSuggestion.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        var arg = JsonSerializer.Serialize(missionSuggestion, options);
+        var res = await client.PostAsync($"Missions/GetFilterProjects", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await res.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
+            return result ?? new ObservableCollection<Category>();
+        }
+
+        return new ObservableCollection<Category>();
+    }
+    
     #endregion
 
     #region Put
@@ -441,6 +484,26 @@ namespace DailyUnoThesis.Models;
         return categories;
     }
 
+    internal async Task<ObservableCollection<Category>> GetProjectsWithMissions(int id)
+    {
+        //int id = AuthorizedUser.GetInstance().AuthUser.Id;
+        //int id = 1;
+        ObservableCollection<Category> categories = new ObservableCollection<Category>();
+        //var req = JsonSerializer.Serialize(id, options);
+        var resp = await client.GetAsync($"Missions/GetMissionsProjects?id={id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить категориии \t  {Error} "
+            };
+        }
+        else
+            categories = await resp.Content.ReadFromJsonAsync<ObservableCollection<Category>>(options);
+        return categories;
+    }
 
     public async Task<ObservableCollection<Category>> GetFiltersSubCategories(int id)
     {
@@ -495,6 +558,20 @@ namespace DailyUnoThesis.Models;
     #endregion
 
     #region Put
+
+    public async Task EditCategory(Category category)
+    {
+        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
+        //mission.UserId = 1;
+        //mission.User = AuthorizedUser.GetInstance().AuthUser;
+        var arg = JsonSerializer.Serialize(category, options);
+        var resp = await client.PutAsync($"Categories", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog() { Content = $"не удалось редактировать миссию \t  {Error} " };
+        }
+    }
     #endregion
 
     #region Delete
@@ -762,6 +839,26 @@ namespace DailyUnoThesis.Models;
         }
 
         return new ObservableCollection<Missionstimer>();
+    }
+    #endregion
+
+    #region Статусы
+    
+    public async Task<ObservableCollection<Progressstate>> GetStatusCategories()
+    {
+
+        var res = await client.GetAsync($"Categories/GetStatusCategories");
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+
+        }
+        else
+        {
+            var missions = await res.Content.ReadFromJsonAsync<ObservableCollection<Progressstate>>(options);
+            return missions;
+        }
+        return new ObservableCollection<Progressstate>();
     }
     #endregion
 

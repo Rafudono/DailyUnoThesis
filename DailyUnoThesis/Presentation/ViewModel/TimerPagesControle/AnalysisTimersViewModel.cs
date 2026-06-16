@@ -575,7 +575,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
             SelectSearchMission = true;
             //MissionSuggestion.IdMission = selected.IdMission;
             MissionSuggestion.Title = selected.Title;
-            MissionSuggestion.IsChosen = false;
             IsSearchFilter = true;
             await SubmitFilters();
             //Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.IdMission);
@@ -598,7 +597,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
             string finalQuery = args.QueryText;
             MissionSuggestion.IdMission = 0;
             MissionSuggestion.Title = finalQuery;
-            MissionSuggestion.IsChosen = false;
             IsSearchFilter = true;
             await SubmitFilters();
             //Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
