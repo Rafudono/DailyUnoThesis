@@ -72,6 +72,12 @@ namespace DailyUnoThesis.Models;
         }
         return Users;
     }
+    public async Task Logout()
+    {
+        var token = AuthorizedUser.GetInstance().RefreshToken;
+        await client.PostAsync($"Tokens/Revoke?request={Uri.EscapeDataString(token)}", null);
+        client.DefaultRequestHeaders.Authorization = null;
+    }
     public async Task<(bool,string)> AuthUser(string password, string emailOrusername)
     {
         try

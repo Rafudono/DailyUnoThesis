@@ -26,6 +26,7 @@
         <con:BoolToColorConverter x:Key="BoolToColorConverter"/>
         <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
+        <con:TagColorToBrushConverter x:Key="TagColorToBrushConverter"/>
 
         <Style TargetType="ListViewItem">
             <Setter Property="Padding" Value="0"/>
@@ -214,7 +215,7 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
                                     <Border x:Name="RootBorder"
-                                                  Background="{StaticResource StickerBrush}"
+                                                   Background="{Binding IdMissionNavigation.Tag, Converter={StaticResource TagColorToBrushConverter}}"
                                                   Margin="0,2,0,2"
                                                   CornerRadius="8,4,8,4">
                                         <StackPanel CanDrag="True"

@@ -20,6 +20,7 @@
         <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
         <con:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
+        <con:TagColorToBrushConverter x:Key="TagColorToBrushConverter"/>
 
         <Style x:Key="IconButtonStyleNoHover" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
             <Setter Property="Background" Value="Transparent"/>
@@ -45,14 +46,13 @@
         </Style>
 
         <Style x:Key="TaskItemStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
             <Setter Property="CornerRadius" Value="6"/>
-            <!--<Setter Property="Margin" Value="2,1,2,1"/>-->
         </Style>
 
 
         <DataTemplate x:Key="TaskTemplate" x:DataType="mod:TaskCompletionTime">
             <Border Style="{StaticResource TaskItemStyle}"
+            Background="{Binding IdMissionNavigation.Tag, Converter={StaticResource TagColorToBrushConverter}}"
             CanDrag="True"
             DragStarting="Task_DragStarting" DoubleTapped="OpenEditTaskFrame">
                 <ToolTipService.ToolTip>
