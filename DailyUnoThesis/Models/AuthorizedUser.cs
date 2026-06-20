@@ -14,6 +14,8 @@ namespace DailyUnoThesis.Models
             instance = this;
         }
         public User AuthUser { get; set; }
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
 
         private static AuthorizedUser instance;
         public static AuthorizedUser GetInstance()

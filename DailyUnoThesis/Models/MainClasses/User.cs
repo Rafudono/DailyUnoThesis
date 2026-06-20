@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DailyThesisAPI;
 
 namespace DailyUnoThesis.Models.MainClasses;
 
@@ -30,6 +31,8 @@ public partial class User
     public virtual ICollection<Mission> Missions { get; set; } = new List<Mission>();
 
     public virtual ICollection<Missionstimer> Missionstimers { get; set; } = new List<Missionstimer>();
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
 }

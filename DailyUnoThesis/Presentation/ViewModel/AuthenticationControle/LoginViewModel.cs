@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Uno.Extensions.Navigation;
+using Windows.Storage;
 
 namespace DailyUnoThesis.Presentation.ViewModel.AuthenticationControle;
 public partial class LoginViewModel : ObservableObject
@@ -20,6 +21,20 @@ public partial class LoginViewModel : ObservableObject
     {
         _navigator = navigator;
     }
+
+    public async Task TryAutoLogin()
+    {
+        var savedRefreshToken = ApplicationData.Current.LocalSettings.Values["RefreshToken"] as string;
+        if (string.IsNullOrEmpty(savedRefreshToken)) return;
+
+        AuthorizedUser.GetInstance().RefreshToken = savedRefreshToken;
+        var success = await APIHost.GetInstance().RefreshToken();
+        if (success)
+        {
+            await _navigator.NavigateRouteAsync(this, "Main");
+        }
+    }
+
     public ICommand Login => new RelayCommand(async () =>
     {
         ErrorMessage = "";
@@ -29,13 +44,16 @@ public partial class LoginViewModel : ObservableObject
             ErrorVisibility = Visibility.Visible;
             return;
         }
-        if (await APIHost.GetInstance().AuthUser(Username, Password))
+        var (isSucced, resp)=await APIHost.GetInstance().AuthUser(Username, Password);
+        if (isSucced)
         {
+            ApplicationData.Current.LocalSettings.Values["RefreshToken"] =
+                AuthorizedUser.GetInstance().RefreshToken;
             await _navigator.NavigateRouteAsync(this, "Main");
         }
         else
         {
-            ErrorMessage = "🛈 Неверный логин или пароль";
+            ErrorMessage = $"🛈 {resp}";
             ErrorVisibility = Visibility.Visible;
         }
     });

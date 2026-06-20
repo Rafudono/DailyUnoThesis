@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DailyUnoThesis.Models
+namespace DailyUnoThesis.Models.AuthModels
 {
     public class AuthUserData
     {

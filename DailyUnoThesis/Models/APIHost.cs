@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
@@ -12,12 +13,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
-//using Android.App;
+using DailyUnoThesis.Models.AuthModels;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using Microsoft.Extensions.Options;
-//using Tmds.DBus.Protocol;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Windows.Storage;
 
 namespace DailyUnoThesis.Models;
 
@@ -72,53 +72,53 @@ namespace DailyUnoThesis.Models;
         }
         return Users;
     }
-    public async Task<bool> AuthUser(string password, string emailOrusername)
+    public async Task<(bool,string)> AuthUser(string password, string emailOrusername)
     {
         try
         {
             AuthUserData userData = new AuthUserData() { EmailOrLogin = emailOrusername, Password = password };
             var arg = JsonSerializer.Serialize(userData, options);
             var res = await client.PostAsync($"Users/AuthUser", new StringContent(arg, Encoding.UTF8, "application/json"));
-            if (res.StatusCode != System.Net.HttpStatusCode.OK)
+            if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return (false,"Неверный логин или пароль");
+            else if(res.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                ContentDialog contentDialog = new ContentDialog()
-                {
-                    Content = "не удалось авторизоваться \t  {Error}"
-                };
-                return false;
+                var authResponse = await res.Content.ReadFromJsonAsync<AuthResponse>(options);
+                AuthorizedUser.GetInstance().AuthUser = authResponse.User;
+                // Сохрани токен — он понадобится для всех следующих запросов
+                AuthorizedUser.GetInstance().AccessToken = authResponse.AccessToken;
+                AuthorizedUser.GetInstance().RefreshToken = authResponse.RefreshToken;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthorizedUser.GetInstance().AccessToken);
+                return (true, "Успех");
             }
+            else if(res.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                return (false, "Внутренняя ошибка сервера, обратитесь к администратору");
             else
-            {
-                var user = await res.Content.ReadFromJsonAsync<User>(options);
-                AuthorizedUser.GetInstance().AuthUser = user;
-                return true;
-            }
+                return (false, "Что-то пошло не так");
         }
         catch( Exception ex)
         {
-            return false;
+            return (false, "Ошибка при подключении к серверу");
         }
     }
-    public async Task<bool> RegUser(string password, string email, string username)
+    public async Task<(bool,string)> RegUser(string password, string email, string username)
     {
         AuthUserData userData = new AuthUserData() { Email = email, Password = password, Login = username };
         var arg = JsonSerializer.Serialize(userData, options);
         var res = await client.PostAsync($"Users", new StringContent(arg, Encoding.UTF8, "application/json"));
-        if (res.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            string Error = await res.Content.ReadAsStringAsync();
-            ContentDialog contentDialog = new ContentDialog()
-            {
-                Content = $"не удалось зарегистрироваться \t  {Error} "
-            };
-            return false;
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+        { 
+            var response = await res.Content.ReadFromJsonAsync<AuthResponse>(options);
+            AuthorizedUser.GetInstance().AuthUser = response.User;
+            AuthorizedUser.GetInstance().AccessToken = response.AccessToken;
+            AuthorizedUser.GetInstance().RefreshToken = response.RefreshToken;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthorizedUser.GetInstance().AccessToken);
+            return (true,"Успех");
         }
+        else if (res.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            return (false, "Внутренняя ошибка сервера, обратитесь к администратору");
         else
-        {
-            var user = await res.Content.ReadFromJsonAsync<User>(options);
-            AuthorizedUser.GetInstance().AuthUser = user;
-            return true;
-        }
+            return (false, "Что-то пошло не так");
     }
 
     public async Task SendApproval(string Email)
@@ -145,7 +145,21 @@ namespace DailyUnoThesis.Models;
         else
             return await resp.Content.ReadFromJsonAsync<bool>(options);
     }
+    public async Task<bool> RefreshToken()
+    {
+        var token = AuthorizedUser.GetInstance().RefreshToken;
+        var res = await client.PostAsync($"Tokens/Refresh?request={Uri.EscapeDataString(token)}", null);
+        if (!res.IsSuccessStatusCode) return false;
+        var data = await res.Content.ReadFromJsonAsync<AuthResponse>(options);
+        if (data == null) return false;
+        AuthorizedUser.GetInstance().AccessToken = data.AccessToken;
+        AuthorizedUser.GetInstance().RefreshToken = data.RefreshToken;
+        AuthorizedUser.GetInstance().AuthUser = data.User;
+        ApplicationData.Current.LocalSettings.Values["RefreshToken"] = data.RefreshToken;
 
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", data.AccessToken);
+        return true;
+    }
     #endregion
 
     #region Missions
@@ -154,7 +168,6 @@ namespace DailyUnoThesis.Models;
     //получения списка всех задач пользователя (не забыть поменять, чтоб разные пользователи получали свои задачи)
     public async Task<List<Mission>> GetMissions()
     {
-        
         var res = await client.GetAsync($"Missions?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {

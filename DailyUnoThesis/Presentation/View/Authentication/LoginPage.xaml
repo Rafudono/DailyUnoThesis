@@ -166,7 +166,7 @@
                         FontFamily="Segoe Print"
                         FontSize="13"/>
                 <Button Content="Регистрация"  Command="{Binding OpenRegistrationPage}"
-                        Style="{StaticResource LinkTextButtonStyle}"
+                        Style="{StaticResource TextButtonStyle}"
                         FontFamily="Segoe Print"
                         FontSize="13"/>
             </StackPanel>
