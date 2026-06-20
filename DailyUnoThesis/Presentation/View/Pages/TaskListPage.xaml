@@ -276,8 +276,8 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
                     <StackPanel Orientation="Horizontal" Spacing="0">
                         <TextBlock FontFamily="Segoe Print" FontWeight="Bold" VerticalAlignment="Top" FontSize="16" Text="Фильтры" IsHitTestVisible="False" Background="Transparent" Padding="0" Margin="2 -5 0 0" ></TextBlock>
                         <Button Content="&#xE106;" Visibility="{Binding AllTasks.IsFilter, Source={StaticResource GlobalStore},  Converter={StaticResource BoolToVisibilityConverter}}"
-             x:Name="ClearButFilter" CommandParameter="{Binding ElementName=CalendarView}" Command="{Binding AllTasks.DeleteFilter, Source={StaticResource GlobalStore}}" 
-         Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="20" FontWeight="Bold" Foreground="White" FontSize="15" FontFamily="Segoe MDL2 Assets">
+             x:Name="ClearButFilter" CommandParameter="{Binding ElementName=CalendarView}" Command="{Binding AllTasks.DeleteFilter, Source={StaticResource GlobalStore}}" HorizontalContentAlignment="Right"
+         Style="{StaticResource IconButtonForCrossStyle}" Margin="0 0 -10 0"  Height="23" Width="23" FontWeight="Bold" Foreground="White" FontSize="18" FontFamily="Segoe MDL2 Assets" Tag="White">
                             <!--<SymbolIcon Symbol="Clear" />-->
                         </Button>
 

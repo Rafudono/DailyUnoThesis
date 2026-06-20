@@ -9,5 +9,7 @@ public partial class Progressstate
 
     public string Title { get; set; } = null!;
 
+    public virtual ICollection<Category>? Categories { get; set; } = new List<Category>();
+
     public virtual ICollection<Mission> Missions { get; set; } = new List<Mission>();
 }

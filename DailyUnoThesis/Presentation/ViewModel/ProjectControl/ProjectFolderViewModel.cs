@@ -66,7 +66,12 @@ public partial class ProjectFolderViewModel : ObservableObject
         MissionSuggestion.IdMission = 0;
         MissionSuggestion.Title = null;
         IsSearchFilter = false;
+        if (!IsFilter)
+        {
+            MissionSuggestion = new();
+        }
         await SubmitFilters();
+        
     }
     [ObservableProperty]
     private ObservableCollection<MissionSuggestionDto> suggestions = new();
@@ -99,8 +104,8 @@ public partial class ProjectFolderViewModel : ObservableObject
 
                 categories.AddRange(Categories.Where(s => s.IsCheack == true).Select(s => s.Id));
                 if (categories.Count == 0)
-                    categories.Add(IdCategory);
-                MissionSuggestionDto missionSuggestion = new MissionSuggestionDto() { Title = query, PageMode = PageMode.CategoryTasks, CateroriesId = categories };
+                    categories.Add(СurrentCategory.Id);
+                MissionSuggestionDto missionSuggestion = new MissionSuggestionDto() { Title = query, PageMode = PageMode.ProjectTask, CateroriesId = categories };
                 var results = await APIHost.GetInstance().GetSuggestions(missionSuggestion);
 
                 //if (!token.IsCancellationRequested)
@@ -200,6 +205,12 @@ public partial class ProjectFolderViewModel : ObservableObject
     private ObservableCollection<Mission> missions;
 
     [ObservableProperty]
+    private ObservableCollection<Category> projectsWithMissions = new();
+
+    [ObservableProperty]
+    private Category selectedProjectsWithMissions = new();
+
+    [ObservableProperty]
     private Mission task;
 
     //public Mission Task
@@ -263,7 +274,15 @@ public partial class ProjectFolderViewModel : ObservableObject
     }
 
 
+    public async void OnItemInvoked()
+    {
+        // args.InvokedItem — это объект задачи или категории, на который кликнули
 
+        // Открываем панель подробностей
+        if (Task.Id != 0)
+            ViewModelStore.GetInstance().PanelProject.IsSplitViewPaneOpen = true;
+
+    }
 
 
 
@@ -289,6 +308,25 @@ public partial class ProjectFolderViewModel : ObservableObject
 
     [ObservableProperty]
     public User authPerson;
+
+
+    
+    private RelayCommand<Category> collapsedListMissions;
+    public RelayCommand<Category> CollapsedListMissions
+    {
+        get
+        {
+            return collapsedListMissions ?? new RelayCommand<Category>(async (Category) =>
+            {
+                if (Category != null)
+                {
+                    Category.IsOpenPanel = (bool)Category.IsOpenPanel ? false: true;
+                }
+
+            }
+            );
+        }
+    }
 
 
 
@@ -406,8 +444,8 @@ public partial class ProjectFolderViewModel : ObservableObject
                         {
                             ChangeOfCompletionStatusAndRemoving(Mission);
                             Mission.IsRemoving = true;
-                            await System.Threading.Tasks.Task.Delay(400);
-                            Missions.Remove(Mission);
+                            //await System.Threading.Tasks.Task.Delay(400);
+                            //Missions.Remove(Mission);
                         }
                         else
                         {
@@ -417,6 +455,7 @@ public partial class ProjectFolderViewModel : ObservableObject
                     }
 
                     await APIHost.GetInstance().EditMission(Mission);
+                    await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
                     //await System.Threading.Tasks.Task.Delay(400);
                     //FillData();
 
@@ -500,6 +539,7 @@ public partial class ProjectFolderViewModel : ObservableObject
                 }
                 List<int> categories = new List<int>();
                 categories.AddRange(Categories.Where(s => s.IsCheack == true).Select(s => s.Id));
+             
                 MissionSuggestion.CateroriesId = categories;
                 await SubmitFilters();
             }
@@ -588,8 +628,8 @@ public partial class ProjectFolderViewModel : ObservableObject
 
 
 
-
-    private int IdCategory { get; set; }
+    [ObservableProperty]
+    private Category сurrentCategory = new Category();
     public ProjectFolderViewModel()
     {
 
@@ -604,10 +644,10 @@ public partial class ProjectFolderViewModel : ObservableObject
     public async Task GetIdCategory(Category category)
     {
 
-        if (category.Id == IdCategory)
+        if (category.Id == СurrentCategory.Id)
             return;
-        IdCategory = category.Id;
-
+        СurrentCategory = category;
+        //Categories = new();
         Categories = await APIHost.GetInstance().GetFiltersSubCategories(category.Id);
         GetCategories();
         await FillData();
@@ -618,10 +658,16 @@ public partial class ProjectFolderViewModel : ObservableObject
         Mission mission = Task;
         Task = new() { LevelUp = 1 };
 
-        List<Mission> missions = new List<Mission>();
-        missions = await APIHost.GetInstance().GetMissionCategiry(IdCategory);
+        //List<Mission> missions = new List<Mission>();
+        //missions = await APIHost.GetInstance().GetMissionProject(СurrentCategory.Id);
+
         Missions = new();
-        Missions.AddRange(missions);
+        //Missions.AddRange(missions);
+        var projects =  await APIHost.GetInstance().GetProjectsWithMissions(СurrentCategory.Id);
+        ProjectsWithMissions.Clear();
+        ProjectsWithMissions.AddRange(projects);
+        ProjectsWithMissions = new(ProjectsWithMissions);
+
         //GetCategories();
         //await UpdateLists(mission, missions);
 
@@ -875,8 +921,14 @@ public partial class ProjectFolderViewModel : ObservableObject
         //IsFilter = true;
         if (MissionSuggestion.IsEmpty())
             FillData();
-        Missions = await APIHost.GetInstance().GetSearchMission(MissionSuggestion);
 
+
+        if (MissionSuggestion.CateroriesId.Count == 0)
+            MissionSuggestion.CateroriesId.Add(СurrentCategory.Id);
+        var projects = await APIHost.GetInstance().GetSearchMissionProjects(MissionSuggestion);
+        ProjectsWithMissions.Clear();
+        ProjectsWithMissions.AddRange(projects);
+        ProjectsWithMissions = new(ProjectsWithMissions);
         MissionSuggestion.UserId = 0;
     }
 

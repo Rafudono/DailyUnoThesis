@@ -17,6 +17,8 @@ namespace DailyUnoThesis.Models.DobleClasses
         public ObservableCollection<Category> FilterCategories { get; } = new();
         public ObservableCollection<Category> Projects { get; } = new();
         public ObservableCollection<Category> AssignmentOfProjects { get; } = new();
+        public ObservableCollection<Category> ArchivalProjects { get; } = new();
+
 
         private CategoryService() { }
 
@@ -28,7 +30,7 @@ namespace DailyUnoThesis.Models.DobleClasses
             Categories.Clear();
             NavCategories.Clear();
             var data = await APIHost.GetInstance().GetCategories();
-            Categories.AddRange(data.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
+            Categories.AddRange(data);
             Categories.Insert(0, new Category { Id = 0, Title = "Без категории" });
             //data.AddRange(s => s.IdUpCategory != null);
             NavCategories.AddRange(data.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
@@ -45,11 +47,11 @@ namespace DailyUnoThesis.Models.DobleClasses
         public async Task RefreshFromProjectsDatabaseAsync()
         {
             Projects.Clear();
-          
-            var dataProj = await APIHost.GetInstance().GetProject();
+            ArchivalProjects.Clear();
+              var dataProj = await APIHost.GetInstance().GetProject();
             AssignmentOfProjects.AddRange(dataProj);
-            Projects.AddRange(dataProj.Where(s => s.IdUpCategory == null || s.IdUpCategory == 0));
-
+            Projects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId == (int)ProgressStateEnum.InProgress));
+            ArchivalProjects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId != (int)ProgressStateEnum.InProgress));
 
         }
 

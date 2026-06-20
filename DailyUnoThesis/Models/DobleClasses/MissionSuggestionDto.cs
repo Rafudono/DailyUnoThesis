@@ -11,8 +11,7 @@ public class MissionSuggestionDto()
     public DateTime? End { get; set; } 
     public int UserId { get; set; }
     public List<int>?  CateroriesId { get; set; } = new List<int>();
-    public PageMode PageMode { get; set; }
-    public bool? IsChosen { get; set; } = false;
+    public PageMode? PageMode { get; set; } = null;
 
 
 

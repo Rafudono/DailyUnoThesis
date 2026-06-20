@@ -72,4 +72,9 @@ public sealed partial class ProjectFolder : Page
         Grid g = sender as Grid;
         g.Tag = false;
     }
+
+    private void TreeView_ItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
+    {
+        ViewModel.OnItemInvoked();
+    }
 }

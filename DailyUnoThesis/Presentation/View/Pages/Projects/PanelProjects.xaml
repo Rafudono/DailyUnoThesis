@@ -37,7 +37,9 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
-        
+        <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+
+
 
     </Page.Resources>
 
@@ -50,22 +52,22 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                     <VisualState x:Name="WideState">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="1300" />
+                            <AdaptiveTrigger MinWindowWidth="1500" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
                             <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
-                            <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                            <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                         </VisualState.Setters>
                     </VisualState>
 
                     <VisualState x:Name="AverageState">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="1000" />
+                            <AdaptiveTrigger MinWindowWidth="1300" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
-                            <Setter Target="RootSplitView.OpenPaneLength" Value="180" />
+                            <Setter Target="RootSplitView.OpenPaneLength" Value="230" />
                             <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
                         </VisualState.Setters>
                     </VisualState>
@@ -77,7 +79,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                         <VisualState.Setters>
 
                             <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />-->
-                            <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                            <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                             <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
                             <Setter Target="HamburgerBtn.Visibility" Value="Visible" />
 
@@ -96,7 +98,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.IsPaneOpen" Value="True" />
-                            <Setter Target="RootSplitView.OpenPaneLength" Value="260" />
+                            <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
                         </VisualState.Setters>
                     </VisualState>
 
@@ -117,11 +119,11 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
             
         </Grid>-->
 
-            <SplitView x:Name="RootSplitView" OpenPaneLength="260"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
+            <SplitView x:Name="RootSplitView" OpenPaneLength="300"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
                    CompactPaneLength="0" CornerRadius="0,8,8,0" >
-                <SplitView.Pane MaxWidth="260">
+                <SplitView.Pane MaxWidth="300">
                     <Border  BorderThickness="0,0,1,0" BorderBrush="{StaticResource DarkGrayBrown}" Padding="0 0 1 0">
-                        <Border x:Name="MenuBorder" MaxWidth="260"  Background="#e9e9e9" BorderThickness="0,0,2,0" BorderBrush="{StaticResource DarkGrayBrown}" uen:Region.Attached="True">
+                        <Border x:Name="MenuBorder" MaxWidth="300"  Background="#e9e9e9" BorderThickness="0,0,2,0" BorderBrush="{StaticResource DarkGrayBrown}" uen:Region.Attached="True">
                             <Border.Transitions>
                                 <TransitionCollection>
                                     <!-- Это заставит список задач плавно менять размер, когда панель его толкает -->
@@ -136,7 +138,7 @@ Fill="{StaticResource DarkGrayBrown}"
 Opacity="0.1" 
 Margin="0,0,1,0"/>
 
-                                <ScrollViewer  Padding="0 5" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
+                                <ScrollViewer  Padding="0 15" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollMode="Enabled" 
               VerticalScrollMode="Enabled">
@@ -160,9 +162,262 @@ Margin="0,0,1,0"/>
 
                                                 <StackPanel Grid.Row="0" Padding="10,0,10,20" Spacing="0">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
-                                                        <Button Content="&#xE70D;" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource TextsButtonStyle}" Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
-                                                        <TextBlock Text="АРХИВ ПРОЕКТОВ" FontSize="14" FontFamily="Consolas" FontWeight="Bold" Opacity="0.8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button Content="{Binding VisibilityArchivalBar, Converter={StaticResource BoolToAngleConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                                Style="{StaticResource TextsButtonStyle}" Tag="{StaticResource AccentBlueLightBrush}"
+                                                                Foreground="{StaticResource InkBlueLightBrush}" Command="{Binding OpeningArchivalBar}"/> <!--&#xE70D;-->
+                                                        <TextBlock Text="АРХИВ ПРОЕКТОВ" FontSize="14" FontFamily="Comic Sans MS" FontWeight="Bold" Opacity="0.8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                                                      
                                                     </StackPanel>
+                                                    <ScrollViewer x:Name="ArchivalBar" MaxHeight="400" Height="Auto" Margin="0 5">
+
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="ListMissionsOpened">
+                                                                <VisualState x:Name="ListClosed">
+                                                                    <VisualState.StateTriggers>
+                                                                        <StateTrigger IsActive="{Binding VisibilityArchivalBar, Converter={StaticResource InverseBoolConverter}}" />
+                                                                    </VisualState.StateTriggers>
+                                                                    <VisualState.Setters>
+                                                                        <Setter Target="ArchivalBar.Height" Value="0"/>
+                                                                    </VisualState.Setters>
+                                                                </VisualState>
+
+                                                                <!--<VisualState x:Name="ListOpen">
+                                                                        <VisualState.StateTriggers>
+                                                                            <StateTrigger IsActive="{Binding BoolToVisibilityConverter, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                                        </VisualState.StateTriggers>
+                                                                        <VisualState.Setters>
+                                                                            <Setter Target="ArchivalBar.Height" Value="0"/>
+                                                                        </VisualState.Setters>
+                                                                    </VisualState>-->
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+
+                                                        <StackPanel   VerticalAlignment="Top" Margin="0 5">
+
+                                                            <ComboBox FontSize="20" Height="40" Margin="20 0 20 20"
+                                                                      DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xEADF;"
+                                                                      SelectedItem="{Binding SelectedArchivalProgressStates, Mode=TwoWay}"
+                                                                      ItemsSource="{Binding ArchivalProgressStates, Mode=TwoWay}"/>
+
+
+                                                            <TreeView x:Name="ArchivalProjectList" ItemsSource="{Binding ArchivalProjects}" MinHeight="60" MaxHeight="400"
+          SelectionMode="Single"  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
+
+                                                            <TreeView.Resources>
+                                                                <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
+         Код символа ">"-->
+                                                                <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
+                                                                <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
+
+                                                                <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
+                                                                <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
+
+                                                                <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
+                                                                <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
+                                                                <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
+
+                                                                <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
+                                                                <!--Цвет фона при наведении-->
+                                                                <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
+                                                                <!--Цвет фона при выделении-->
+                                                                <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" Opacity="0.8"/>
+                                                                <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListLowBrush}" Opacity="1"/>
+
+                                                                <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
+                                                                <!--Или ваш InkBlueBrush-->
+
+                                                                <!--Убираем системные отступы, которые могут мешать нитям-->
+                                                                <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
+                                                            </TreeView.Resources>
+
+                                                            <TreeView.ItemContainerStyle>
+                                                                <Style TargetType="TreeViewItem">
+                                                                    <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
+                                                                    <Setter Property="MinHeight" Value="0"/>
+                                                                    <!--<Setter Property="IsExpanded" Value="True" />-->
+                                                                    <Setter Property="Transitions">
+                                                                        <Setter.Value>
+                                                                            <TransitionCollection>
+                                                                                <!--Эта штука заставляет соседей плавно ехать на свободное место-->
+                                                                                <AddDeleteThemeTransition />
+                                                                            </TransitionCollection>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                                    <Setter Property="Padding" Value="0" />
+                                                                    <!--Убираем лишние падинги-->
+
+                                                                </Style>
+                                                            </TreeView.ItemContainerStyle>
+
+
+
+
+                                                            <TreeView.ItemTemplate>
+                                                                <DataTemplate x:DataType="mod:Category">
+                                                                    <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" x:Name="TreeViewItem">
+
+                                                                        <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid"  Height="65" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
+
+                                                                            <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateGroup x:Name="CommonStates">
+                                                                                    <!-- Обычное состояние -->
+                                                                                    <VisualState x:Name="Normal"/>
+                                                                                    <VisualState x:Name="IsSelected">
+                                                                                        <VisualState.StateTriggers>
+                                                                                            <StateTrigger IsActive="{Binding IsSelected, ElementName=TreeViewItem}" />
+                                                                                        </VisualState.StateTriggers>
+                                                                                        <VisualState.Setters>
+                                                                                            <!-- Текст становится красным -->
+                                                                                            <Setter Target="ContentPresenter.Foreground" Value="{StaticResource ClueRedLightBrush}"/>
+                                                                                            <!-- Показываем красную черту -->
+                                                                                            <Setter Target="Underline.BorderThickness" Value="0 0 0 2"/>
+                                                                                            <!--<Setter Target="CheckedBackground.Opacity" Value="0.5"/>-->
+                                                                                            <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
+                     <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
+                                                                                            <Setter Target="Underline.Opacity" Value="1"/>
+                                                                                            <Setter Target="RootGrid.Height" Value="63"/>
+                                                                                            <Setter Target="ChevronPath.Opacity" Value="1"/>
+                                                                                            <Setter Target="ChevronPath.Visibility" Value="Visible"/>
+
+                                                                                            <!--<Setter Target="HoverBackground.Opacity" Value="0.8"/>-->
+                                                                                        </VisualState.Setters>
+                                                                                    </VisualState>
+                                                                                    <!--PointerOverAndSelected-->
+                                                                                    <VisualState x:Name="PointerOver">
+                                                                                        <VisualState.StateTriggers>
+                                                                                            <StateTrigger IsActive="{Binding Tag, ElementName=RootGrid}" />
+                                                                                        </VisualState.StateTriggers>
+                                                                                        <VisualState.Setters>
+                                                                                            <!-- Цвет текста становится темнее при наведении -->
+                                                                                            <!--<Setter Target="ContentPresenter.Foreground" Value="#051a35"/>-->
+                                                                                            <Setter Target="Underline.BorderThickness" Value="0 0 0 2"/>
+                                                                                            <Setter Target="Underline.Opacity" Value="1"/>
+                                                                                            <!--<Setter Target="HoverBackground.Opacity" Value="0.5"/>-->
+                                                                                            <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
+<Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
+                                                                                            <Setter Target="RootGrid.Height" Value="63"/>
+                                                                                        </VisualState.Setters>
+                                                                                    </VisualState>
+                                                                                </VisualStateGroup>
+                                                                            </VisualStateManager.VisualStateGroups>
+
+                                                                            <Grid.ContextFlyout>
+                                                                                <MenuFlyout>
+                                                                                    <MenuFlyoutItem Text="Редактировать" Background="#ecf1ff" FontFamily="Segoe Print"
+Command="{Binding PanelProject.OpenPanelEditCategory,Source={StaticResource GlobalStore}}" 
+CommandParameter="{Binding}">
+                                                                                        <MenuFlyoutItem.Icon>
+                                                                                            <SymbolIcon Symbol="Edit" />
+                                                                                        </MenuFlyoutItem.Icon>
+                                                                                    </MenuFlyoutItem>
+
+
+                                                                                    <MenuFlyoutItem Text="Создать подкатегорию проекта" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                        Command="{Binding PanelProject.CreateSubcategory,Source={StaticResource GlobalStore}}"
+                                                                        CommandParameter="{Binding}">
+                                                                                        <MenuFlyoutItem.Icon>
+                                                                                            <SymbolIcon Symbol="List" />
+                                                                                        </MenuFlyoutItem.Icon>
+                                                                                    </MenuFlyoutItem>
+
+
+
+                                                                                    <MenuFlyoutSeparator />
+
+
+                                                                                    <MenuFlyoutItem Text="Удалить проект" Foreground="Red" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                        Command="{Binding PanelProject.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Visibility="{Binding IsEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                                        <MenuFlyoutItem.Icon>
+                                                                                            <SymbolIcon Symbol="Delete" />
+                                                                                        </MenuFlyoutItem.Icon>
+                                                                                    </MenuFlyoutItem>
+
+
+                                                                                    <!--<MenuFlyoutSubItem Text="Удалить"  Foreground="Red" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                           Visibility="{Binding HasAnyContent, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                                                <MenuFlyoutSubItem.Icon>
+                                                                                    <SymbolIcon Symbol="Delete" />
+                                                                                </MenuFlyoutSubItem.Icon>
+                                                                                <MenuFlyoutItem Text="Удалить только категорию" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                            Command="{Binding PanelProject.DeleteCategoryMoveToParent, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}"/>
+
+                                                                                <MenuFlyoutItem Text="Удалить всё" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                            Command="{Binding PanelProject.DeleteCategoryCascade, Source={StaticResource GlobalStore}}"
+                                                                            CommandParameter="{Binding}" IsEnabled="{Binding HasAllContent, Mode=OneWay}"/>
+
+                                                                                <MenuFlyoutSubItem Text="Удалить c вложеннотями" Background="#ecf1ff" FontFamily="Segoe Print"  Foreground="Red" >
+
+                                                                                    <MenuFlyoutItem Text="Удалить только категории" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                                Command="{Binding PanelProject.DeleteCategoryOrphanTasks, Source={StaticResource GlobalStore}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                IsEnabled="{Binding HasSubCategories, Mode=OneWay}" />
+
+                                                                                    <MenuFlyoutItem Text="Удалить с задачами" Background="#ecf1ff" FontFamily="Segoe Print"
+                                                                                Command="{Binding PanelProject.DeleteCategoryWithMissions, Source={StaticResource GlobalStore}}"
+                                                                                CommandParameter="{Binding}"
+                                                                                IsEnabled="{Binding HasMissions, Mode=OneWay}"/>
+                                                                                </MenuFlyoutSubItem>
+
+                                                                            </MenuFlyoutSubItem>-->
+
+
+                                                                                </MenuFlyout>
+                                                                            </Grid.ContextFlyout>
+
+
+                                                                            <Grid IsHitTestVisible="False" Margin="0,3,25,2" HorizontalAlignment="Left" Background="Transparent">
+
+                                                                                <StackPanel >
+                                                                                    <StackPanel Orientation="Horizontal" >
+                                                                                        <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
+                                                                                    </StackPanel>
+                                                                                    <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}">
+                                                                                <Run Text="СТАТУС:"/>
+                                                                                <Run Text="{Binding Progressstates.Title}"/>
+                                                                                    </TextBlock>
+                                                                                        <Grid Width="205" Height="15" HorizontalAlignment="Left">
+                                                                                        <Rectangle Height="5" HorizontalAlignment="Left" Background="Transparent" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="1" />
+                                                                                        <Grid HorizontalAlignment="Left" Width="200">
+                                                                                            <muxc:ProgressBar HorizontalAlignment="Left" Foreground="{StaticResource InkBlueLightBrush}" Background="Transparent" Value="{Binding Progress}" Minimum="0" Maximum="120" Style="{StaticResource MaterialProgressBarStyle}" Width="200" Height="10" Margin="0 -1 0 0">
+                                                                                                <ProgressBar.Resources>
+                                                                                                    <!-- Задаем высоту внутренней полосы (например, 8 пикселей) -->
+                                                                                                    <x:Double x:Key="ProgressBarTrackHeight">15</x:Double>
+                                                                                                </ProgressBar.Resources>
+                                                                                            </muxc:ProgressBar>
+                                                                                        </Grid>
+                                                                                    </Grid>
+                                                                                </StackPanel>
+
+
+                                                                                <Border x:Name="Underline" Opacity="0" Margin="-25 -20 -25 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
+                                                                            </Grid>
+                                                                            <Grid Background="Transparent" IsHitTestVisible="False" Margin="-25 -2 0 0" Height="20" Width="20" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpCategoryNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                                                <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
+                                                                                <Grid Background="{StaticResource TransparentGridBrushCat}" Width="20" Height="15"/>
+                                                                                <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" HorizontalAlignment="Center" Width="10" Height="10" RenderTransformOrigin="0.5,0.5">
+                                                                                </FontIcon>
+                                                                            </Grid>
+                                                                            <Path IsHitTestVisible="False" Data="M 0,0 L 10,10 L 0,20 Z"  Fill="{StaticResource ClueRedLightBrush}" HorizontalAlignment="Left"  Stretch="Uniform" x:Name="ChevronPath"  Width="10" Height="17"  Margin="-35 2 0 0" Opacity="0"  Visibility="Visible"/>
+
+                                                                            <!--<CheckBox x:Name="ToggleBut" IsHitTestVisible="False" Visibility="Collapsed" IsChecked="True" />-->
+
+                                                                            <ToolTipService.ToolTip>
+                                                                                <ToolTip Content="{Binding Title}"/>
+                                                                            </ToolTipService.ToolTip>
+                                                                        </Grid>
+                                                                    </TreeViewItem>
+
+                                                                </DataTemplate>
+                                                            </TreeView.ItemTemplate>
+                                                        </TreeView>
+                                                        
+                                                    </StackPanel>
+                                                    </ScrollViewer>
                                                     <Border Height="1" Background="{StaticResource DarkGrayBrown}" Margin="-10,0,0,0" HorizontalAlignment="Stretch"/>
 
                                                 </StackPanel>
@@ -183,7 +438,7 @@ Margin="0,0,1,0"/>
                                             Margin="5 0 0 -6" FontSize="18" FontWeight="Black" Padding="0"  Style="{StaticResource TextsButtonStyle}"  
           Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
                                                 </StackPanel>
-                                                <TextBlock Text="АКТИВНЫХ ОБЪЕКТОВ: " FontSize="13" FontFamily="Consolas" Opacity="0.8" Margin="10 0 0 0">
+                                                <TextBlock Text="АКТИВНЫХ ОБЪЕКТОВ: " FontSize="13" FontFamily="Comic Sans MS" Opacity="0.8" Margin="10 0 0 0">
                                                     <Run Text="{Binding Categories.Count}"/>
                                                 </TextBlock>
                                                 <Border Height="1" Background="{StaticResource DarkGrayBrown}" Margin="10,3,10,0" HorizontalAlignment="Stretch"/>
@@ -246,7 +501,7 @@ Margin="0,0,1,0"/>
                                                         <DataTemplate x:DataType="mod:Category">
                                                             <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" x:Name="TreeViewItem">
 
-                                                                <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid"  Height="50" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
+                                                                <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid"  Height="60" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
 
                                                                     <VisualStateManager.VisualStateGroups>
                                                                         <VisualStateGroup x:Name="CommonStates">
@@ -265,7 +520,7 @@ Margin="0,0,1,0"/>
                                                                                     <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
                      <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
                                                                                     <Setter Target="Underline.Opacity" Value="1"/>
-                                                                                    <Setter Target="RootGrid.Height" Value="53"/>
+                                                                                    <Setter Target="RootGrid.Height" Value="63"/>
                                                                                     <Setter Target="ChevronPath.Opacity" Value="1"/>
                                                                                     <Setter Target="ChevronPath.Visibility" Value="Visible"/>
 
@@ -285,7 +540,7 @@ Margin="0,0,1,0"/>
                                                                                     <!--<Setter Target="HoverBackground.Opacity" Value="0.5"/>-->
                                                                                     <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
 <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
-                                                                                    <Setter Target="RootGrid.Height" Value="53"/>
+                                                                                    <Setter Target="RootGrid.Height" Value="63"/>
                                                                                 </VisualState.Setters>
                                                                             </VisualState>
                                                                         </VisualStateGroup>
@@ -294,8 +549,8 @@ Margin="0,0,1,0"/>
                                                                     <Grid.ContextFlyout>
                                                                         <MenuFlyout>
                                                                             <MenuFlyoutItem Text="Редактировать" Background="#ecf1ff" FontFamily="Segoe Print"
-                                Command="{Binding DataContext.EditMissionCommand, ElementName=MyTreeView}"
-                                CommandParameter="{Binding}">
+Command="{Binding PanelProject.OpenPanelEditCategory,Source={StaticResource GlobalStore}}" 
+CommandParameter="{Binding}">
                                                                                 <MenuFlyoutItem.Icon>
                                                                                     <SymbolIcon Symbol="Edit" />
                                                                                 </MenuFlyoutItem.Icon>
@@ -362,17 +617,27 @@ Margin="0,0,1,0"/>
                                                                         
                                                                         <StackPanel >
                                                                             <StackPanel Orientation="Horizontal" >
-                                                                                <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="SemiBold"/>
+                                                                                <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
                                                                             </StackPanel>
-                                                                            <TextBlock Text="СТАТУС: В РАЗРАБОТКЕ" FontSize="8" FontFamily="Consolas" Foreground="#A0AEC0"/>
-                                                                            <Grid Width="200">
-                                                                                <Rectangle Height="2" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="3"/>
-                                                                                <muxc:ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100" Style="{StaticResource MaterialProgressBarStyle}" Width="200"/>
+                                                                            <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}">
+                                                                                <Run Text="СТАТУС:"/>
+                                                                                <Run Text="{Binding Progressstates.Title}"/>
+                                                                            </TextBlock>
+                                                                            <Grid Width="205" Height="15" HorizontalAlignment="Left">
+                                                                                <Rectangle Height="5" HorizontalAlignment="Left" Background="Transparent" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="1" />
+                                                                                <Grid HorizontalAlignment="Left" Width="200">
+                                                                                    <muxc:ProgressBar HorizontalAlignment="Left" Foreground="{StaticResource InkBlueLightBrush}" Background="Transparent" Value="{Binding Progress}" Minimum="0" Maximum="120" Style="{StaticResource MaterialProgressBarStyle}" Width="200" Height="10" Margin="0 -1 0 0">
+                                                                                        <ProgressBar.Resources>
+                                                                                            <!-- Задаем высоту внутренней полосы (например, 8 пикселей) -->
+                                                                                            <x:Double x:Key="ProgressBarTrackHeight">15</x:Double>
+                                                                                        </ProgressBar.Resources>
+                                                                                    </muxc:ProgressBar>
+                                                                                </Grid>
                                                                             </Grid>
                                                                         </StackPanel>
 
                                                                         
-                                                                        <Border x:Name="Underline" Opacity="0" Margin="0 -20 0 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
+                                                                        <Border x:Name="Underline" Opacity="0" Margin="-25 -20 -25 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
                                                                     </Grid>
                                                                     <Grid Background="Transparent" IsHitTestVisible="False" Margin="-25 -2 0 0" Height="20" Width="20" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpCategoryNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
                                                                         <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
@@ -380,9 +645,13 @@ Margin="0,0,1,0"/>
                                                                         <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" HorizontalAlignment="Center" Width="10" Height="10" RenderTransformOrigin="0.5,0.5">
                                                                         </FontIcon>
                                                                     </Grid>
-                                                                    <Path IsHitTestVisible="False" Data="M 0,0 L 10,10 L 0,20 Z"  Fill="{StaticResource ClueRedLightBrush}" HorizontalAlignment="Left"  Stretch="Uniform" x:Name="ChevronPath"  Width="10" Height="17"  Margin="-35 2 0 0" Opacity="0"  Visibility="Collapsed"/>
+                                                                    <Path IsHitTestVisible="False" Data="M 0,0 L 10,10 L 0,20 Z"  Fill="{StaticResource ClueRedLightBrush}" HorizontalAlignment="Left"  Stretch="Uniform" x:Name="ChevronPath"  Width="10" Height="17"  Margin="-35 2 0 0" Opacity="0"  Visibility="Visible"/>
 
                                                                     <!--<CheckBox x:Name="ToggleBut" IsHitTestVisible="False" Visibility="Collapsed" IsChecked="True" />-->
+
+                                                                    <ToolTipService.ToolTip>
+                                                                        <ToolTip Content="{Binding Title}"/>
+                                                                    </ToolTipService.ToolTip>
                                                                 </Grid>
                                                             </TreeViewItem>
 
@@ -587,9 +856,21 @@ uen:Region.Navigator="Visibility">
                 VerticalAlignment="Center">
                     <Border CornerRadius="20" Height="300" Width="600" Background="Transparent">
                         <Grid>
-                            <TextBox Header="Название категории" Style="{StaticResource NotebookTextBoxStyle}"
-                             Text="{Binding Category.Title, Mode=TwoWay}" MinWidth="150" MinHeight="30"  Height="75" Margin="20"
+                            <StackPanel>
+                                <TextBlock Text="Создание проекта" HorizontalAlignment="Center"  FontSize="25" Margin="0 20 0 0" FontFamily="Segoe Print" FontWeight="Medium"/>
+                                <TextBox  Style="{StaticResource NotebookTimerTextBoxStyle}"  PlaceholderText="Название проекта"   HorizontalContentAlignment="Left" TextAlignment="Left"
+                                          Foreground="{StaticResource InkBlueLightBrush}"
+                             Text="{Binding Category.Title, Mode=TwoWay}" MinWidth="150" MinHeight="30"  Height="35" Margin="20"
                              FontSize="18" />
+
+                                
+
+                                <ComboBox FontSize="20" Height="40" Margin="20 0 20 20"
+DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xEADF;"
+SelectedItem="{Binding SelectedProgressStates, Mode=TwoWay}"
+ItemsSource="{Binding ProgressStates, Mode=TwoWay}"/>
+                                
+                            </StackPanel>
                             <!--Width="400" Height="40"-->
                             <Button Content="Сохранить"
                             Margin="20"  Style="{StaticResource DetectiveSaveButtonStyle}"

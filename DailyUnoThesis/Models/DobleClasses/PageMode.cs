@@ -10,6 +10,7 @@ public enum PageMode
     OverdueTasks,
     CompleteTasks,
     CategoryTasks,
+    ProjectTask,
 
 }
 

@@ -8,7 +8,7 @@ namespace DailyUnoThesis.Models.Conventers
     public class RootToMarginConverter : IValueConverter
     {
         // Отступ для главной ветви (сверху 24px)
-        public Thickness RootMargin { get; set; } = new Thickness(0, 50, 0, 0);
+        public Thickness RootMargin { get; set; } = new Thickness(0, 20, 0, 0);
 
         // Отступ для подзадач (сверху 4px)
         public Thickness ChildMargin { get; set; } = new Thickness(0, 4, 0, 0);
