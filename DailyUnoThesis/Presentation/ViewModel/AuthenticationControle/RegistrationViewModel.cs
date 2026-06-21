@@ -16,6 +16,8 @@ public partial class RegistrationViewModel:ObservableObject
     [ObservableProperty]
     private string _confirmPassword;
     [ObservableProperty]
+    private string _confirmEmail;
+    [ObservableProperty]
     private string _errorMessage;
     [ObservableProperty]
     private Visibility _errorVisibility = Visibility.Collapsed;

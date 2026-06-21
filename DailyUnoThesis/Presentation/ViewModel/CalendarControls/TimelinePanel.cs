@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using DailyUnoThesis.Models.MainClasses;
@@ -162,6 +163,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
+            var layout = ComputeOverlapLayout(finalSize.Width);
+
             foreach (UIElement child in Children)
             {
                 var element = child as FrameworkElement;
@@ -176,7 +179,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                 var hourSlot = GetHourSlot(task.StartExecution.Value.Hour);
                 bool isNonWorking = hourSlot != null && !hourSlot.IsWorkingHour;
 
-                if (isNonWorking && !hourSlot.IsExpanded)
+                if (isNonWorking && !hourSlot.IsExpanded && task.Id != 0)
                 {
                     element.Visibility = Visibility.Collapsed;
                     child.Arrange(new Rect(0, 0, 0, 0));
@@ -184,7 +187,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                 }
 
                 element.Visibility = Visibility.Visible;
-               // element.IsHitTestVisible = !isNonWorking;
 
                 int endHour = task.EndExecution.Value.Hour;
                 if (endHour == 0 && task.EndExecution.Value.Date > task.StartExecution.Value.Date)
@@ -197,12 +199,130 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                 bottom += (task.EndExecution.Value.Minute / 60.0) * HourHeight;
                 double height = bottom - top;
 
-                if (height < 4) height = 4;
+                double minHeight = HourHeight;
+                if (height < minHeight) height = minHeight;
 
-                child.Arrange(new Rect(0, top, finalSize.Width, height));
+                if (layout.TryGetValue(child, out var info))
+                {
+                    Canvas.SetZIndex(child, info.zIndex);
+                    child.Arrange(new Rect(info.left, top, info.width, height));
+                }
+                else
+                {
+                    Canvas.SetZIndex(child, 0);
+                    child.Arrange(new Rect(0, top, finalSize.Width, height));
+                }
             }
 
             return finalSize;
+        }
+
+        private const double OverlapIndent = 20.0;
+
+        private Dictionary<UIElement, (double left, double width, int zIndex)> ComputeOverlapLayout(double panelWidth)
+        {
+            var tasks = new List<(UIElement element, double top, double bottom)>();
+
+            foreach (UIElement child in Children)
+            {
+                var element = child as FrameworkElement;
+                var task = element?.DataContext as TaskCompletionTime;
+                if (task == null || !task.StartExecution.HasValue || !task.EndExecution.HasValue)
+                    continue;
+
+                var hourSlot = GetHourSlot(task.StartExecution.Value.Hour);
+                bool isNonWorking = hourSlot != null && !hourSlot.IsWorkingHour;
+                if (isNonWorking && !hourSlot.IsExpanded && task.Id != 0)
+                    continue;
+
+                int endHour = task.EndExecution.Value.Hour;
+                if (endHour == 0 && task.EndExecution.Value.Date > task.StartExecution.Value.Date)
+                    endHour = 24;
+
+                double top = GetAccumulatedHeight(task.StartExecution.Value.Hour)
+                             + (task.StartExecution.Value.Minute / 60.0) * HourHeight;
+                double bottom = GetAccumulatedHeight(endHour)
+                                + (task.EndExecution.Value.Minute / 60.0) * HourHeight;
+
+                tasks.Add((child, top, bottom));
+            }
+
+            tasks.Sort((a, b) => a.top.CompareTo(b.top));
+            if (tasks.Count == 0) return new();
+
+            var result = new Dictionary<UIElement, (double left, double width, int zIndex)>();
+
+            // Build overlap clusters (connected components)
+            var clusters = new List<List<(UIElement element, double top, double bottom)>>();
+            var currentCluster = new List<(UIElement, double, double)> { tasks[0] };
+            double clusterEnd = tasks[0].bottom;
+
+            for (int i = 1; i < tasks.Count; i++)
+            {
+                if (tasks[i].top < clusterEnd)
+                {
+                    currentCluster.Add(tasks[i]);
+                    if (tasks[i].bottom > clusterEnd)
+                        clusterEnd = tasks[i].bottom;
+                }
+                else
+                {
+                    clusters.Add(currentCluster);
+                    currentCluster = new List<(UIElement, double, double)> { tasks[i] };
+                    clusterEnd = tasks[i].bottom;
+                }
+            }
+            clusters.Add(currentCluster);
+
+            // Process each cluster
+            int globalZ = 0;
+            foreach (var cluster in clusters)
+            {
+                if (cluster.Count == 1)
+                {
+                    result[cluster[0].element] = (0, panelWidth, globalZ++);
+                    continue;
+                }
+
+                // Group by exact start time
+                var groups = new Dictionary<double, List<(UIElement element, double bottom)>>();
+                foreach (var t in cluster)
+                {
+                    if (!groups.ContainsKey(t.top))
+                        groups[t.top] = new();
+                    groups[t.top].Add((t.element, t.bottom));
+                }
+
+                var sortedStarts = new List<double>(groups.Keys);
+                sortedStarts.Sort();
+
+                bool isFirst = true;
+                foreach (var start in sortedStarts)
+                {
+                    var group = groups[start];
+                    if (group.Count > 1)
+                    {
+                        double availableWidth = isFirst ? panelWidth : panelWidth - OverlapIndent;
+                        double colWidth = availableWidth / group.Count;
+                        double xOffset = isFirst ? 0 : OverlapIndent;
+                        for (int c = 0; c < group.Count; c++)
+                        {
+                            result[group[c].element] = (xOffset + c * colWidth, colWidth, globalZ++);
+                        }
+                    }
+                    else if (isFirst)
+                    {
+                        result[group[0].element] = (0, panelWidth, globalZ++);
+                    }
+                    else
+                    {
+                        result[group[0].element] = (OverlapIndent, panelWidth - OverlapIndent, globalZ++);
+                    }
+                    isFirst = false;
+                }
+            }
+
+            return result;
         }
 
         private HourSlot GetHourSlot(int hour)

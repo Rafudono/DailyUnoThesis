@@ -27,6 +27,7 @@
         <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
         <con:TagColorToBrushConverter x:Key="TagColorToBrushConverter"/>
+        <con:DateTimeToTimeConverter x:Key="DateTimeToTimeConverter"/>
 
         <Style TargetType="ListViewItem">
             <Setter Property="Padding" Value="0"/>
@@ -68,6 +69,7 @@
                     <Style TargetType="ListViewItem">
                         <Setter Property="Padding" Value="0"/>
                         <Setter Property="Margin" Value="0"/>
+                        <Setter Property="MinHeight" Value="0"/>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                         <Setter Property="Background" Value="Transparent"/>
@@ -190,7 +192,11 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="4" Margin="2" CornerRadius="4"  
-                                Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightBlue'}">
+                                Background="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='LightBlue'}"
+                                AllowDrop="True"
+                                Drop="PlannedListView_Drop"
+                                DragOver="PlannedListView_DragOver"
+                                DragLeave="PlannedListView_DragLeave">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
@@ -200,43 +206,38 @@
                                          FontWeight="{Binding IsToday, Converter={StaticResource BoolToFontWeightConverter}}"
                                          Foreground="{Binding IsOtherMonth, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Gray'}"
                                          FontSize="12"
-                                         Margin="2,0,0,2"/>
+                                         Margin="2,0,0,2"
+                                         HorizontalAlignment="Left"/>
 
                         <ListView Grid.Row="1"  Style="{StaticResource NoPaddingListViewStyle}"
                                         ItemsSource="{Binding TasksSessions}"
                                         MinHeight="20"
                                         HorizontalAlignment="Stretch"
                                         SelectedItem="{Binding SelectedSession}"
-                                        AllowDrop="True"
-                                        Drop="PlannedListView_Drop"
-                                        DragOver="PlannedListView_DragOver"
-                                        DragLeave="PlannedListView_DragLeave"
                                         Background="Transparent">
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="mod:Mission">
-                                    <Border x:Name="RootBorder"
-                                                   Background="{Binding IdMissionNavigation.Tag, Converter={StaticResource TagColorToBrushConverter}}"
-                                                  Margin="0,2,0,2"
-                                                  CornerRadius="8,4,8,4">
-                                        <StackPanel CanDrag="True"
-                                                          DragStarting="StackPanel_DragStarting"
-                                                          IsHitTestVisible="True"
-                                                          Margin="4">
+                                <DataTemplate x:DataType="mod:TaskCompletionTime">
+                                    <Grid PointerEntered="TaskItem_PointerEntered"
+                                              PointerExited="TaskItem_PointerExited">
+                                        <StackPanel Orientation="Horizontal"
+                                                        CanDrag="True"
+                                                        DragStarting="StackPanel_DragStarting"
+                                                        IsHitTestVisible="True"
+                                                        Spacing="2"
+                                                        Margin="2,0">
+                                            <TextBlock Text="{Binding StartExecution, Converter={StaticResource DateTimeToTimeConverter}}"
+                                                           FontSize="10"
+                                                           Foreground="{StaticResource ClueRedLightBrush}"
+                                                           VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding IdMissionNavigation.Title}"
-                                                             FontSize="10"
-                                                             FontFamily="Segoe Print"
-                                                             FontWeight="SemiBold"
-                                                             Foreground="{StaticResource InkBlueLightBrush}"
-                                                             TextTrimming="CharacterEllipsis"
-                                                             Margin="2"/>
-                                            <TextBlock Text="{Binding FormattedTime}"
-                                                             FontSize="8"
-                                                             FontFamily="Comic Sans MS"
-                                                             Foreground="{StaticResource ClueRedLightBrush}"
-                                                             TextTrimming="CharacterEllipsis"
-                                                             Margin="2"/>
+                                                           FontSize="10"
+                                                           FontFamily="Segoe Print"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource InkBlueLightBrush}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           VerticalAlignment="Center"/>
                                         </StackPanel>
-                                    </Border>
+                                    </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -267,7 +268,7 @@
                         MinWidth="260">
                     <TreeView.ItemTemplate>
                         <DataTemplate x:DataType="mod:Mission">
-                            <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" IsExpanded="True">
+                             <TreeViewItem ItemsSource="{Binding ExpandableChildren}" IsExpanded="True">
                                 <StackPanel CanDrag="True"
                                           DragStarting="InboxMission_DragStarting"
                                           Margin="2,4">

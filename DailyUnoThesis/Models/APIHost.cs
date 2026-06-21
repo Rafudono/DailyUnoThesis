@@ -77,6 +77,7 @@ namespace DailyUnoThesis.Models;
         var token = AuthorizedUser.GetInstance().RefreshToken;
         await client.PostAsync($"Tokens/Revoke?request={Uri.EscapeDataString(token)}", null);
         client.DefaultRequestHeaders.Authorization = null;
+        ApplicationData.Current.LocalSettings.Values.Remove("RefreshToken");
     }
     public async Task<(bool,string)> AuthUser(string password, string emailOrusername)
     {
@@ -91,9 +92,9 @@ namespace DailyUnoThesis.Models;
             {
                 var authResponse = await res.Content.ReadFromJsonAsync<AuthResponse>(options);
                 AuthorizedUser.GetInstance().AuthUser = authResponse.User;
-                // Сохрани токен — он понадобится для всех следующих запросов
                 AuthorizedUser.GetInstance().AccessToken = authResponse.AccessToken;
                 AuthorizedUser.GetInstance().RefreshToken = authResponse.RefreshToken;
+
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthorizedUser.GetInstance().AccessToken);
                 return (true, "Успех");
             }
@@ -415,9 +416,6 @@ namespace DailyUnoThesis.Models;
     // редактирование задачи
     public async Task EditMission(Mission mission)
     {
-        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        //mission.UserId = 1;
-        //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
         var resp = await client.PutAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
@@ -430,9 +428,7 @@ namespace DailyUnoThesis.Models;
 
     public async Task NewCreateMission(Mission mission)
     {
-        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
         var res = await client.PostAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
@@ -447,9 +443,6 @@ namespace DailyUnoThesis.Models;
     }
     public async Task NewEditMission(Mission mission)
     {
-        //mission.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
-        //mission.UserId = 1;
-        //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(mission, options);
         var resp = await client.PutAsync($"Missions", new StringContent(arg, Encoding.UTF8, "application/json"));
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
@@ -935,30 +928,6 @@ namespace DailyUnoThesis.Models;
     }
 
     #endregion
-
-
-
-    //#region TaskCompletion
-
-    //public async Task<List<TaskCompletionTime>> GetTaskCompletionTime()
-    //{
-    //    var res = await client.GetAsync($"TaskCompletionTimes?id={1}");
-    //    if (res.StatusCode != System.Net.HttpStatusCode.OK)
-    //    {
-    //        string Error = await res.Content.ReadAsStringAsync();
-    //        ContentDialog contentDialog = new ContentDialog()
-    //        {
-    //            Content = $"не удалось получить миссии \t  {Error} "
-    //        };
-    //        var dialog = new ContentDialog { Title = "Ошибка", Content = Error, CloseButtonText = "Закрыть" };
-    //        await dialog.ShowAsync();
-    //    }
-    //    else
-    //        Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
-    //    return ;
-    //}
-    //#endregion
-
 
 
 }

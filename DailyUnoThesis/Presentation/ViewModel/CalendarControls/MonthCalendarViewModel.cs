@@ -137,10 +137,6 @@ public partial class MonthCalendarViewModel : ObservableObject
 
         var mission = draggedSession.IdMissionNavigation;
 
-        // Сохраняем все сессии миссии (включая другие дни)
-        var allMissionSessions = GetAllMissionSessions(mission);
-
-        // Удаляем эту сессию из всех дней
         foreach (var day in Days)
         {
             var existingSession = day.TasksSessions.FirstOrDefault(s => s.Id == draggedSession.Id);
@@ -149,64 +145,16 @@ public partial class MonthCalendarViewModel : ObservableObject
         }
         if (mission.TaskCompletionTimes?.Contains(draggedSession) == true)
             mission.TaskCompletionTimes.Remove(draggedSession);
-        // Получаем сессии этого дня (кроме перетаскиваемой)
-        var existingSessions = targetDay.TasksSessions
-            .Where(s => s.Id != draggedSession.Id && s.IdMission == mission.Id)
-            .OrderBy(s => s.StartExecution)
-            .ToList();
 
-        DateTime dayStart = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour);
-        DateTime dayEnd = targetDay.Date.Date.AddHours(AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour);
+        var timeOffset = draggedSession.StartExecution.Value.TimeOfDay;
+        var duration = draggedSession.EndExecution.Value - draggedSession.StartExecution.Value;
 
-        // Длительность из миссии или сессии
-        TimeSpan duration;
-        if (mission.DurationMinutes.HasValue && mission.DurationMinutes.Value > 0)
-            duration = TimeSpan.FromMinutes(mission.DurationMinutes.Value);
-        else if (draggedSession.StartExecution.HasValue && draggedSession.EndExecution.HasValue)
-            duration = draggedSession.EndExecution.Value - draggedSession.StartExecution.Value;
-        else
-            duration = TimeSpan.FromHours(1);
+        draggedSession.StartExecution = targetDay.Date.Date.Add(timeOffset);
+        draggedSession.EndExecution = draggedSession.StartExecution.Value.Add(duration);
 
-        DateTime newStartTime, newEndTime;
-
-        // Расчет позиции вставки
-        if (existingSessions.Count == 0)
-        {
-            newStartTime = dayStart;
-            newEndTime = newStartTime.Add(duration);
-        }
-        else if (insertIndex == 0)
-        {
-            newStartTime = existingSessions[0].StartExecution.Value - duration;
-            if (newStartTime < dayStart) newStartTime = dayStart;
-            newEndTime = existingSessions[0].StartExecution.Value;
-        }
-        else if (insertIndex >= existingSessions.Count)
-        {
-            newStartTime = existingSessions.Last().EndExecution.Value;
-            newEndTime = newStartTime.Add(duration);
-        }
-        else
-        {
-            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
-            newEndTime = existingSessions[insertIndex].StartExecution.Value;
-        }
-
-        // Корректируем границы дня
-        if (newEndTime > dayEnd) newEndTime = dayEnd;
-        if (newStartTime < dayStart) newStartTime = dayStart;
-
-        // Обновляем только эту сессию
-        draggedSession.StartExecution = newStartTime;
-        draggedSession.EndExecution = newEndTime;
-
-        // Обновляем общие даты миссии на основе ВСЕХ сессий
-        var last=UpdateMissionDatesFromSessions(mission);
-
-        // Сохраняем в БД
+        var last = UpdateMissionDatesFromSessions(mission);
         await _taskState.UpdateAsync(last);
 
-        // Обновляем отображение
         RebuildMissionBuckets();
         RefreshAllDays();
         SelectedSession = null;
@@ -272,7 +220,6 @@ public partial class MonthCalendarViewModel : ObservableObject
             // 2. Миссии-одиночки (нет IdUpMission и нет подзадач)
             var dayTasks = PlannedMissions
                 .Where(t => t.StartDate.HasValue &&
-                            t.IsProject is not true &&                        //проекты не отображаю на календаре
                             (t.IdUpMission != null && t.IdUpMission != 0 ||  // подзадача
                              (t.IdUpMission == null || t.IdUpMission == 0) &&
                              t.InverseIdUpMissionNavigation.Count == 0))  // одиночка
@@ -298,9 +245,6 @@ public partial class MonthCalendarViewModel : ObservableObject
 
      internal bool CanInsertSessionAt(CalendarDay targetDay, int insertIndex, TaskCompletionTime draggedSession)
     {
-        if (targetDay.Date.Date < DateTime.Today.Date)
-            return false;
-
         var mission = draggedSession.IdMissionNavigation;
         var duration = draggedSession.EndExecution.Value - draggedSession.StartExecution.Value;
 
@@ -336,10 +280,6 @@ public partial class MonthCalendarViewModel : ObservableObject
 
     internal bool CanInsertMissionAt(CalendarDay targetDay, int insertIndex, Mission draggedMission)
     {
-
-        if (targetDay.Date.Date < DateTime.Today.Date)
-            return false;
-
         var realTasks = targetDay.TasksSessions?
             .OrderBy(t => t.StartExecution)
             .ToList() ?? new List<TaskCompletionTime>();
@@ -502,7 +442,6 @@ public partial class MonthCalendarViewModel : ObservableObject
 
         var mission = session.IdMissionNavigation;
 
-        // Удаляем сессию из текущего дня
         foreach (var day in Days)
         {
             var existing = day.TasksSessions.FirstOrDefault(s => s.Id == session.Id);
@@ -510,108 +449,29 @@ public partial class MonthCalendarViewModel : ObservableObject
                 day.TasksSessions.Remove(existing);
         }
 
-        // Рассчитываем новое время
-        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
-        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
-
+        var timeOffset = session.StartExecution.Value.TimeOfDay;
         var duration = session.EndExecution.Value - session.StartExecution.Value;
 
-        var existingSessions = targetDay.TasksSessions
-            .Where(s => s.Id != session.Id)
-            .OrderBy(s => s.StartExecution)
-            .ToList();
+        session.StartExecution = targetDay.Date.Date.Add(timeOffset);
+        session.EndExecution = session.StartExecution.Value.Add(duration);
 
-        DateTime newStartTime;
-
-        if (existingSessions.Count == 0)
-        {
-            newStartTime = dayStart;
-        }
-        else if (insertIndex == 0)
-        {
-            newStartTime = dayStart;
-        }
-        else if (insertIndex >= existingSessions.Count)
-        {
-            newStartTime = existingSessions.Last().EndExecution.Value;
-        }
-        else
-        {
-            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
-        }
-
-        var newEndTime = newStartTime.Add(duration);
-
-        // Корректируем границы дня
-        //if (newEndTime > dayEnd) newEndTime = dayEnd;
-        //if (newStartTime < dayStart) newStartTime = dayStart;
-
-        // Обновляем сессию
-        session.StartExecution = newStartTime;
-        session.EndExecution = newEndTime;
-
-        // Обновляем даты миссии
-       var last= UpdateMissionDatesFromSessions(mission);
-
-        // Сохраняем
+        var last = UpdateMissionDatesFromSessions(mission);
         await _taskState.UpdateAsync(last);
 
-        // Обновляем отображение
         RefreshAllDays();
         SelectedSession = null;
     }
 
     internal async Task CreateSessionFromMission(CalendarDay targetDay, int insertIndex, Mission mission)
     {
-        // Получаем длительность
-        var duration = mission.DurationMinutes > 0
-            ? TimeSpan.FromMinutes(mission.DurationMinutes.Value)
-            : TimeSpan.FromHours(1);
-
-        // Удаляем миссию из Inbox
         InboxMissions.Remove(mission);
 
-        // Рассчитываем время вставки
-        var dayStart = targetDay.Date.Date.AddHours(8/*AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour*/);
-        var dayEnd = targetDay.Date.Date.AddHours(22/*AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour*/);
-
-        var existingSessions = targetDay.TasksSessions
-            .OrderBy(s => s.StartExecution)
-            .ToList();
-
-        DateTime newStartTime;
-
-        if (existingSessions.Count == 0)
-        {
-            newStartTime = dayStart;
-        }
-        else if (insertIndex == 0)
-        {
-            newStartTime = dayStart;
-        }
-        else if (insertIndex >= existingSessions.Count)
-        {
-            newStartTime = existingSessions.Last().EndExecution.Value;
-        }
-        else
-        {
-            newStartTime = existingSessions[insertIndex - 1].EndExecution.Value;
-        }
-
-        var newEndTime = newStartTime.Add(duration);
-
-        // Корректируем, если выходит за границы дня
-        //if (newEndTime > dayEnd)
-        //    newEndTime = dayEnd;
-        //нихрена подобного, если задача длиннее дня предлагаем создать новую сессию для ее выполнения
-        
-
-        // Создаем новую сессию
+        var midnight = targetDay.Date.Date;
         var newSession = new TaskCompletionTime
         {
             IdMission = mission.Id,
-            StartExecution = newStartTime,
-            EndExecution = newEndTime,
+            StartExecution = midnight.AddSeconds(1),
+            EndExecution = midnight.AddSeconds(1),
             IdMissionNavigation = mission
         };
 
@@ -620,18 +480,13 @@ public partial class MonthCalendarViewModel : ObservableObject
 
         mission.TaskCompletionTimes.Add(newSession);
 
-        // Обновляем даты миссии
-        //mission.StartDate = newStartTime;
-        //mission.EndDate = newEndTime;
-        //ЭТА СЕССИЯ МОЖЕТ НЕ ЕДИНСТВЕННОЙ БЫТЬ, А ПРОМЕЖУТОЧНОЙ ТАК НЕЛЬЗЯ
         UpdateMissionDatesFromSessions(mission);
-        // Сохраняем в БД
+
         if (mission.Id == 0)
             await _taskState.AddAsync(mission);
         else
             await _taskState.UpdateAsync(mission);
 
-        // Обновляем отображение
         RebuildMissionBuckets();
         RefreshAllDays();
     }

@@ -27,27 +27,37 @@ public partial class WeekCalendarViewModel : ObservableObject
     [ObservableProperty]
     private double _hourSlotHeight = 20;
 
-    // Коллекции для каждого дня недели
+    // Коллекции для каждого дня недели (с временем)
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _mondaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _tuesdaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _wednesdaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _thursdaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _fridaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _saturdaySessions = new();
-
     [ObservableProperty]
     private ObservableCollection<TaskCompletionTime> _sundaySessions = new();
+
+    // Коллекции задач без времени (00:00:01) над шкалой
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _mondayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _tuesdayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _wednesdayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _thursdayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _fridayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _saturdayTimelessSessions = new();
+    [ObservableProperty]
+    private ObservableCollection<TaskCompletionTime> _sundayTimelessSessions = new();
 
     public string MondayDate => CurrentWeekStart.AddDays(0).Day.ToString();
     public string TuesdayDate => CurrentWeekStart.AddDays(1).Day.ToString();
@@ -136,25 +146,50 @@ public partial class WeekCalendarViewModel : ObservableObject
         FridaySessions.Clear();
         SaturdaySessions.Clear();
         SundaySessions.Clear();
+        MondayTimelessSessions.Clear();
+        TuesdayTimelessSessions.Clear();
+        WednesdayTimelessSessions.Clear();
+        ThursdayTimelessSessions.Clear();
+        FridayTimelessSessions.Clear();
+        SaturdayTimelessSessions.Clear();
+        SundayTimelessSessions.Clear();
 
         for (int day = 0; day < 7; day++)
         {
-            var weekDaySessions = Sessions.Where(s => s.StartExecution.Value.Date == CurrentWeekStart.AddDays(day)).ToList();
-            if (day == 0)
-                MondaySessions.AddRange(weekDaySessions);
-            if (day == 1)
-                TuesdaySessions.AddRange(weekDaySessions);
-            if (day == 2)
-                WednesdaySessions.AddRange(weekDaySessions);
-            if (day == 3)
-                ThursdaySessions.AddRange(weekDaySessions);
-            if (day == 4)
-                FridaySessions.AddRange(weekDaySessions);
-            if (day == 5)
-                SaturdaySessions.AddRange(weekDaySessions);
-            if (day == 6)
-                SundaySessions.AddRange(weekDaySessions);
+            var daySessions = Sessions
+                .Where(s => s.StartExecution.Value.Date == CurrentWeekStart.AddDays(day))
+                .ToList();
 
+            var timed = daySessions
+                .Where(s => s.StartExecution.Value.TimeOfDay != new TimeSpan(0, 0, 1))
+                .ToList();
+            var timeless = daySessions
+                .Where(s => s.StartExecution.Value.TimeOfDay == new TimeSpan(0, 0, 1))
+                .ToList();
+
+            var targetTimed = day switch
+            {
+                0 => MondaySessions,
+                1 => TuesdaySessions,
+                2 => WednesdaySessions,
+                3 => ThursdaySessions,
+                4 => FridaySessions,
+                5 => SaturdaySessions,
+                _ => SundaySessions
+            };
+            targetTimed.AddRange(timed);
+
+            var targetTimeless = day switch
+            {
+                0 => MondayTimelessSessions,
+                1 => TuesdayTimelessSessions,
+                2 => WednesdayTimelessSessions,
+                3 => ThursdayTimelessSessions,
+                4 => FridayTimelessSessions,
+                5 => SaturdayTimelessSessions,
+                _ => SundayTimelessSessions
+            };
+            targetTimeless.AddRange(timeless);
         }
     }
     public ICommand PreviousWeekCommand => new RelayCommand(() =>
@@ -202,7 +237,9 @@ public partial class WeekCalendarViewModel : ObservableObject
         {
             session.StartExecution = startTime;
             session.EndExecution = endTime;
-            await _taskState.UpdateAsync(session.IdMissionNavigation);
+            var mission = session.IdMissionNavigation;
+            UpdateMissionDatesFromSessions(mission);
+            await _taskState.UpdateAsync(mission);
         }
         else if (draggedItem is Mission mission)
         {
@@ -248,7 +285,9 @@ public partial class WeekCalendarViewModel : ObservableObject
     {
         if (task?.IdMissionNavigation != null)
         {
-            await _taskState.UpdateAsync(task.IdMissionNavigation);
+            var mission = task.IdMissionNavigation;
+            UpdateMissionDatesFromSessions(mission);
+            await _taskState.UpdateAsync(mission);
             await LoadWeekData(); 
         }
     }

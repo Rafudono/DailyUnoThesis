@@ -157,8 +157,6 @@
                     Command="{Binding Login}"
                     Margin="0,8,0,0"/>
             <StackPanel>
-                <CheckBox  Content="Запомнить меня" IsEnabled="True" Tag="&#xE73E;" Style="{StaticResource AuthCheckBoxStyle}" 
-            IsChecked="{Binding UserCredentials.SaveCredentials, Mode=TwoWay}"/>
             
       
                 <Button Content="Забыли пароль?" 

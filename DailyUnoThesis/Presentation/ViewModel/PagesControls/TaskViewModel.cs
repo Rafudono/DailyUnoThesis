@@ -633,26 +633,29 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         if (Task.TaskCompletionTimes == null)
                             Task.TaskCompletionTimes = new List<TaskCompletionTime>();
 
-                        var existingSession = Task.TaskCompletionTimes.FirstOrDefault(s =>
-                            s.StartExecution == Task.StartDate && s.EndExecution == Task.EndDate);  //есть уже такая сессия?
-
-                        if (existingSession == null)
+                        if (Task.TaskCompletionTimes.Count > 0)
                         {
-                            if (Task.StartDate.Value.Date == Task.EndDate.Value.Date) 
+                            var firstSession = Task.TaskCompletionTimes.First();
+                            firstSession.StartExecution = Task.StartDate;
+                            firstSession.EndExecution = Task.EndDate;
+                        }
+                        else
+                        {
+                            Task.TaskCompletionTimes.Add(new TaskCompletionTime
                             {
-                                Task.EndDate = Task.EndDate.Value.AddHours(1);
-                                Task.TaskCompletionTimes.Add(new TaskCompletionTime
-                                {
-                                    StartExecution = Task.StartDate,
-                                    EndExecution = Task.EndDate
-                                });
-                            }
+                                StartExecution = Task.StartDate,
+                                EndExecution = Task.EndDate
+                            });
                         }
                     }
                     //if (Task.TaskCompletionTimes is not null && Task.TaskCompletionTimes.Count() == 0)
                     //{
                     //    Task.TaskCompletionTimes.Add(new TaskCompletionTime() { StartExecution = Task.StartDate, EndExecution = Task.EndDate });
                     //}
+                }
+                else if (Task.Id != 0)
+                {
+                    // дата не выбрана — не сбрасываем даты существующей миссии
                 }
                 else
                 {

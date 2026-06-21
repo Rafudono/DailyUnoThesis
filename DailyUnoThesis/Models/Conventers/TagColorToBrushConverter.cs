@@ -31,12 +31,12 @@ internal class TagColorToBrushConverter : IValueConverter
                 int offset = 0;
                 if (hex.Length == 8)
                 {
-                    a = Convert.ToByte(hex[..2], 16);
+                    a = System.Convert.ToByte(hex[..2], 16);
                     offset = 2;
                 }
-                byte r = Convert.ToByte(hex[offset..(offset + 2)], 16);
-                byte g = Convert.ToByte(hex[(offset + 2)..(offset + 4)], 16);
-                byte b = Convert.ToByte(hex[(offset + 4)..(offset + 6)], 16);
+                byte r = System.Convert.ToByte(hex[offset..(offset + 2)], 16);
+                byte g = System.Convert.ToByte(hex[(offset + 2)..(offset + 4)], 16);
+                byte b = System.Convert.ToByte(hex[(offset + 4)..(offset + 6)], 16);
                 return new SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
             }
             catch { }
