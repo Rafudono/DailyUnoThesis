@@ -35,7 +35,7 @@ namespace DailyUnoThesis.Models;
              instance = new APIHost();
                 return instance;
         }
-        HttpClient client = new HttpClient();
+        HttpClient client = new HttpClient(new AuthHandler() { InnerHandler = new HttpClientHandler() });
         JsonSerializerOptions options = new JsonSerializerOptions();
         public List<Category> Categories { get; set; }
 
@@ -155,6 +155,9 @@ namespace DailyUnoThesis.Models;
     public async Task<bool> RefreshToken()
     {
         var token = AuthorizedUser.GetInstance().RefreshToken;
+        if (token == null)
+            return false;
+
         var res = await client.PostAsync($"Tokens/Refresh?request={Uri.EscapeDataString(token)}", null);
         if (!res.IsSuccessStatusCode) return false;
         var data = await res.Content.ReadFromJsonAsync<AuthResponse>(options);
@@ -231,6 +234,23 @@ namespace DailyUnoThesis.Models;
             Missions = await res.Content.ReadFromJsonAsync<List<Mission>>(options);
         return Missions;
     }
+
+    public async Task<List<Mission>> GetAllMyMissions()
+    {
+        var resp = await client.GetAsync($"Missions/GetMyMissions?id={AuthorizedUser.GetInstance().AuthUser.Id}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить список заданий \t  {Error} "
+            };
+        }
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
+
 
     // получение списка заданий на сегодня (тоже не забыть указывать пользователя)
     public async Task<List<Mission>> GetTodayList()
@@ -939,31 +959,6 @@ namespace DailyUnoThesis.Models;
     }
     #endregion
 
-    #region Possibly Trash
-    // пустой
-    public async Task<List<Mission>> GetMyMissions()
-    {
-        int id = AuthorizedUser.GetInstance().AuthUser.Id;
-        var req = JsonSerializer.Serialize(id, options);
-        var resp = await client.GetAsync($"Missions/GetMyMissions?id={id}");
-        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
-        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            string Error = await resp.Content.ReadAsStringAsync();
-            ContentDialog contentDialog = new ContentDialog()
-            {
-                Content = $"не удалось получить список заданий \t  {Error} "
-            };
-        }
-        else
-            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
-        return Missions;
-    }
-
-
-
-  
-    #endregion
 
     #region Sessions
     public async Task<List<TaskCompletionTime>> GetSessions()

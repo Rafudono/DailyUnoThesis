@@ -21,13 +21,13 @@ public class AuthHandler : DelegatingHandler
         if (response.StatusCode == HttpStatusCode.Unauthorized && _retryCount == 0)
         {
             _retryCount++;
-            response.Dispose();
             await _refreshLock.WaitAsync(cancellationToken);
             try
             {
                 var refreshed = await APIHost.GetInstance().RefreshToken();
                 if (refreshed)
                 {
+                    response.Dispose();
                     var retry = await CloneRequest(request);
                     retry.Headers.Authorization = new AuthenticationHeaderValue(
                         "Bearer", AuthorizedUser.GetInstance().AccessToken);
