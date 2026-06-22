@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Authentication;
 using DailyUnoThesis.Presentation.View.Calendar;
+using DailyUnoThesis.Presentation.View.Dashboard;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Pages.Other; // Для Task
 using DailyUnoThesis.Presentation.View.Pages.Projects;
 using DailyUnoThesis.Presentation.View.Timer;
 using DailyUnoThesis.Presentation.ViewModel.AuthenticationControle;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.DashboardControl;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
@@ -133,10 +135,13 @@ public partial class App : Application
             new ViewMap<PanelProjects, PanelProjectViewModel>(),
             new ViewMap<ProjectFolder, ProjectFolderViewModel>(),
 
-            
+            // управляющий раздел
+            new ViewMap<DashboardPage, DashboardViewModel>(),
 
+            
             new ViewMap<KanbanBoard, KanbanBoardViewModel>(),
 
+            // раздел таймеров
             new ViewMap<PanelTimer, PanelTimerControle>(),
             new ViewMap<Pomodoro, PomodoroTimerControle>(),
             new ViewMap<RegularTimer, RegularTimerControle>(),
@@ -181,6 +186,11 @@ public partial class App : Application
                          }),
 
                           new("PanelProject", View: views.FindByViewModel<PanelProjectViewModel>(),
+                         Nested: new RouteMap[]
+                         {
+                         }),
+
+                            new("Dashboard", View: views.FindByViewModel<DashboardViewModel>(),
                          Nested: new RouteMap[]
                          {
                          }),

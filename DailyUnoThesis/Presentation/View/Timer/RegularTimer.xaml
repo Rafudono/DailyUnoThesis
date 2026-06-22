@@ -419,7 +419,7 @@ Style="{StaticResource IconButtonStyle}" Margin="0 0 -16 0" Padding="0" Height="
 
 
                                         <TextBlock x:Name="TimerDisplay" Text="{Binding CountupTimer.RemainingTime, Converter={StaticResource StringFormatTimeConverter}, ConverterParameter='hh\\:mm\\:ss'}"
-                                                       FontSize="72" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}" HorizontalAlignment="Center" />
+                                                       FontSize="72" FontFamily="Comic Sans MS" Foreground="#3D2B1F" HorizontalAlignment="Center" />
 
 
                                         <TextBlock Text="ELAPSED TIME" FontFamily="Consolas" FontSize="10" HorizontalAlignment="Center" Opacity="0.5" Margin="0,-5,0,0"/>

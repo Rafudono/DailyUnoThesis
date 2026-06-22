@@ -50,9 +50,10 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
         <con:BoolToIconConverter x:Key="BoolToIconConverter"/>
         <con:HeaderToVisibilityConverter x:Key="HeaderToVisibilityConverter"/>
+        <con:MinimumCountToVisibilityConverter x:Key="MinimumCountToVisibilityConverter"/>
 
-        
-        
+
+
 
         <con:RootToMarginConverter x:Key="RootToMarginConverter" />
 
@@ -325,6 +326,11 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
            Stroke="Black" 
            StrokeDashArray="4,2" 
            Stretch="Fill" Opacity="0.5" Margin="0,10"/>
+
+
+                                            <StackPanel Spacing="3" Visibility="{Binding Categories.Count, Converter={StaticResource MinimumCountToVisibilityConverter}, ConverterParameter=1}">
+                                              
+
                                                 <Rectangle Height="1" Fill="Transparent" 
            Stroke="Black" 
            StrokeDashArray="4,2" 
@@ -344,8 +350,9 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
                                                         </DataTemplate>
                                                     </ListView.ItemTemplate>
                                                 </ListView>
+                                            </StackPanel>
 
-                                                <Rectangle Height="1" Fill="Transparent" 
+                                            <Rectangle Height="1" Fill="Transparent" 
            Stroke="Black" 
            StrokeDashArray="4,2" 
            Stretch="Fill" Opacity="0.5" Margin="0 0 0 10"/>
@@ -722,7 +729,7 @@ To="100" Duration="0:0:0.4">
                                                                                         <ColumnDefinition/>
                                                                                     </Grid.ColumnDefinitions>
                                                                                     <CheckBox CommandParameter="{Binding}" Tag="&#xE73E;"
-                                          Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}" 
+                                          Command="{Binding DataContext.CompleteTaskCommand, ElementName=ProjectFolderPage}" 
                                           IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
                                                                                     <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
                                                                                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
@@ -755,7 +762,7 @@ To="100" Duration="0:0:0.4">
                                                                                 <Button Content="&#xE74D;" x:Name="DelButton" Grid.Column="1" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top" Padding="0" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderBrush="Transparent"
 Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}" HorizontalContentAlignment="Center"
                                     CommandParameter="{Binding}"
-                                    Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
+                                    Command="{Binding DataContext.DeleteTask, ElementName=ProjectFolderPage}" >
                                                                                     <!--Style="{StaticResource TextButtonStyle}"-->
                                                                                     <Button.Resources>
                                                                                         <!-- Цвет текста при наведении (PointerOver) -->

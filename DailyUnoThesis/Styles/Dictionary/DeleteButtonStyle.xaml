@@ -534,18 +534,18 @@ Foreground="{Binding Foreground, ElementName=ContentPresenter}"/>
                                 <VisualState x:Name="PointerOver">
                                     <VisualState.Setters>
                                         <!-- Цвет текста при наведении: останется красным -->
-                                        <Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>
+                                        <!--<Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>-->
                                         <!-- Можно добавить легкий фон, если хочется -->
-                                        <Setter Target="RootGrid.Background" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                                        <Setter Target="RootGrid.Background" Value="{TemplateBinding Tag}"/>
                                     </VisualState.Setters>
                                 </VisualState>
 
                                 <VisualState x:Name="Pressed">
                                     <VisualState.Setters>
                                         <!-- Цвет текста при нажатии: останется красным -->
-                                        <Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>
+                                        <!--<Setter Target="ContentPresenter.Foreground" Value="{TemplateBinding Tag}"/>-->
                                         <!-- Можно добавить более темный фон -->
-                                        <Setter Target="RootGrid.Background" Value="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}"/>
+                                        <Setter Target="RootGrid.Background" Value="{TemplateBinding Tag}"/>
                                     </VisualState.Setters>
                                 </VisualState>
 
@@ -795,6 +795,138 @@ VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </StackPanel>
                         </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+
+
+
+
+
+    <!--карточка пользователя-->
+    <Style x:Key="UserIdCardButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <!-- Отключаем стандартные звуки и наведения WinUI, так как мы делаем свои -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" Margin="0,10,10,0" Background="Transparent" Canvas.ZIndex="10">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+
+                                <!-- 1. ОБЫЧНОЕ СОСТОЯНИЕ (Базовые углы наклона) -->
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BottomSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="-2" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="MiddleSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="-1" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="RootTransform" 
+                                                     Storyboard.TargetProperty="Y" 
+                                                     To="0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <!-- 2. НАВЕДЕНИЕ (Листы бумаги плавно расходятся веером от скрепки) -->
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <!-- Самый нижний лист отклоняется сильнее влево/вниз (с -5 до -10 градусов) -->
+                                        <DoubleAnimation Storyboard.TargetName="BottomSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="-3.5" Duration="0:0:0.25"/>
+                                        <!-- Средний лист приоткрывается до -6 градусов -->
+                                        <DoubleAnimation Storyboard.TargetName="MiddleSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="-2.5" Duration="0:0:0.25"/>
+                                        <!-- Легкий отсвет бумаги -->
+                                        <ColorAnimation Storyboard.TargetName="MainBorder" 
+                                                   Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                                   To="#FFFDF9" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <!-- 3. НАЖАТИЕ (Карточка утапливается вниз, а листы сжимаются) -->
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <!-- Бумажки плотно сжимаются давлением пальца -->
+                                        <DoubleAnimation Storyboard.TargetName="BottomSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="0" Duration="0:0:0.05"/>
+                                        <DoubleAnimation Storyboard.TargetName="MiddleSheetTransform" 
+                                                     Storyboard.TargetProperty="Angle" 
+                                                     To="0" Duration="0:0:0.05"/>
+                                        <!-- Смещение всей конструкции на 1.5 пикселя вниз для тактильности клика -->
+                                        <DoubleAnimation Storyboard.TargetName="RootTransform" 
+                                                     Storyboard.TargetProperty="Y" 
+                                                     To="1.5" Duration="0:0:0.05"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Disabled"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <!-- Движок для физического сдвига кнопки вниз при клике -->
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="RootTransform" Y="0"/>
+                        </Grid.RenderTransform>
+
+                        <!-- НИЖНИЙ ЛИСТ -->
+                        <!-- RenderTransformOrigin="0.9,0.1" гарантирует, что центр вращения находится прямо под скрепкой! -->
+                        <Border x:Name="BottomSheet" Background="#E0E0E0" BorderBrush="#CCC" BorderThickness="1" 
+                            Margin="-10,5,0,-15" Width="240" Height="65" HorizontalAlignment="Right"
+                            RenderTransformOrigin="0.9,0.1">
+                            <Border.RenderTransform>
+                                <RotateTransform x:Name="BottomSheetTransform" Angle="-2"/>
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- СРЕДНИЙ ЛИСТ -->
+                        <Border x:Name="MiddleSheet" Background="#EBEBEB" BorderBrush="#CCC" BorderThickness="1" 
+                            Margin="0,3,5,0" Width="240" Height="65" HorizontalAlignment="Right"
+                            RenderTransformOrigin="0.9,0.1">
+                            <Border.RenderTransform>
+                                <RotateTransform x:Name="MiddleSheetTransform" Angle="-1"/>
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <!-- ОСНОВНАЯ КАРТОЧКА -->
+                        <Border x:Name="MainBorder" Background="#FAF6F0" BorderBrush="#CBB39C" BorderThickness="1" 
+                            CornerRadius="2" Padding="16,10" MinWidth="240" MinHeight="65" HorizontalAlignment="Right">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0" Width="36" Height="42" Background="#DCC8B3" CornerRadius="1" BorderBrush="#CBB39C" BorderThickness="1" VerticalAlignment="Center">
+                                    <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#FAF6F0"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding User.NickName, FallbackValue='Детектив zxc'}" FontSize="13" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
+                                    <TextBlock Text="ДОСТУП: ОПЕРАТИВНЫЙ" FontSize="8" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- РЕАЛИСТИЧНАЯ СКРЕПКА -->
+                        <!-- IsHitTestVisible="False" чтобы скрепка не мешала кликать по кнопке -->
+                        <Viewbox Width="30" Height="60" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-10,10,0" IsHitTestVisible="False">
+                            <Path Data="M 20,40 L 20,80 A 15,15 0 0 0 50,80 L 50,30 A 20,20 0 0 0 10,30 L 10,90 A 25,25 0 0 0 60,90 L 60,40"
+                              Stroke="#5D6D7E" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              Width="30" Height="60" Stretch="Uniform" Margin="20,-10,0,0">
+                                <Path.RenderTransform>
+                                    <RotateTransform Angle="25"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Viewbox>
+
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

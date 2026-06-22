@@ -43,6 +43,9 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
 
+        <con:MinimumCountToVisibilityConverter x:Key="MinimumCountToVisibilityConverter"/>
+
+
         <!--<DataTemplate x:Key="MissionTemplate" x:DataType="mod:Mission">
             <Grid Margin="{Binding LevelUp, Converter={StaticResource LevelMarginConverter}}">
                 <StackPanel Orientation="Horizontal">
@@ -353,25 +356,29 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
            Stroke="Black" 
            StrokeDashArray="4,2" 
            Stretch="Fill" Opacity="0.5" Margin="0,10"/>
-                                            <Rectangle Height="1" Fill="Transparent" 
+
+                                            <StackPanel Spacing="3" Visibility="{Binding Categories.Count, Converter={StaticResource MinimumCountToVisibilityConverter}, ConverterParameter=1}">
+
+                                                <Rectangle Height="1" Fill="Transparent" 
            Stroke="Black" 
            StrokeDashArray="4,2" 
            Stretch="Fill" Opacity="0.5" Margin="0,10"/>
 
 
-                                            <Border HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#00224d" Padding="0,0,0,2">
-                                                <TextBlock FontFamily="Segoe Print" Text="Категории" FontWeight="Bold" FontSize="20"/>
-                                            </Border>
-                                            <ListView Margin="0 20" ItemsSource="{Binding Categories}" MaxHeight="200"  Padding="5">
-                                                <ListView.ItemTemplate>
-                                                    <DataTemplate x:DataType="mod:Category">
-                                                        <StackPanel Orientation="Horizontal" >
-                                                            <CheckBox Margin="0 0 -30 0" IsChecked="{Binding IsCheack, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" Tag="&#xE106;" Width="30" HorizontalAlignment="Left"/>
-                                                            <TextBlock FontFamily="Comic Sans MS" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="16" Margin="-50 0 0 0" Text="{Binding Title}"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                            </ListView>
+                                                <Border HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#00224d" Padding="0,0,0,2">
+                                                    <TextBlock FontFamily="Segoe Print" Text="Категории" FontWeight="Bold" FontSize="20"/>
+                                                </Border>
+                                                <ListView Margin="0 20" ItemsSource="{Binding Categories}" MaxHeight="200"  Padding="5">
+                                                    <ListView.ItemTemplate>
+                                                        <DataTemplate x:DataType="mod:Category">
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <CheckBox Margin="0 0 -30 0" IsChecked="{Binding IsCheack, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" Tag="&#xE106;" Width="30" HorizontalAlignment="Left"/>
+                                                                <TextBlock FontFamily="Comic Sans MS" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="16" Margin="-50 0 0 0" Text="{Binding Title}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ListView.ItemTemplate>
+                                                </ListView>
+                                            </StackPanel>
 
                                             <Rectangle Height="1" Fill="Transparent" 
            Stroke="Black" 

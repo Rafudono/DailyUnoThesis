@@ -647,7 +647,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         }
 
 
-      
+        public async Task FillingDuringUpdate()
+        {
+            if (IsFilter || IsSearchFilter)
+            {
+               await SubmitFilters();
+            }
+            else
+            {
+               await  FillData();
+            }
+        }
+
+
 
         public async Task FillData()
         {

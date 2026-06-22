@@ -18,7 +18,7 @@ public partial class PageNavigation : Base
 {
 private INavigator _navigator;
 
-    private int namderMainPanel = 1;
+    private int namderMainPanel = 0;
     public int NamderMainPanel
     {
         get => namderMainPanel;

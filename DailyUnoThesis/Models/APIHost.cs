@@ -326,8 +326,24 @@ namespace DailyUnoThesis.Models;
 
     }
 
-   
 
+    public async Task<DashboardDto> GetDashboardData()
+    {
+        int id =  AuthorizedUser.GetInstance().AuthUser.Id;
+        var resp = await client.GetAsync($"Missions/GetDashboardData/{id}");
+        //?id={AuthorizedUser.GetInstance().AuthUser.Id}
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+           
+        }
+        else
+        {
+            var data = await resp.Content.ReadFromJsonAsync<DashboardDto>(options);
+            return data;
+        }
+        return new DashboardDto();
+    }
 
     #endregion
 
@@ -694,7 +710,7 @@ namespace DailyUnoThesis.Models;
         missionstimer.UserId = AuthorizedUser.GetInstance().AuthUser.Id;
         //mission.User = AuthorizedUser.GetInstance().AuthUser;
         var arg = JsonSerializer.Serialize(missionstimer, options);
-        var res = await client.PostAsync($"Missionstimers", new StringContent(arg, Encoding.UTF8, "application/json"));
+        var res = await client.PostAsync($"Missionstimers/CreateMissionstimer", new StringContent(arg, Encoding.UTF8, "application/json"));
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
         {
             string Error = await res.Content.ReadAsStringAsync();

@@ -18,6 +18,7 @@ public partial class Category: INotifyPropertyChanged
     public int IdBigBoss { get; set; }
     public int? IdUpCategory { get; set; }
     public int? ProgressstatesId { get; set; }
+    public DateTime? LastActivityDate { get; set; }
 
     public virtual Category? IdUpCategoryNavigation { get; set; }
     public virtual ICollection<Category> InverseIdUpCategoryNavigation { get; set; } = new List<Category>();

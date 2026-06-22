@@ -138,7 +138,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                                     </VisualState.StateTriggers>
                                     <VisualState.Setters>
                                         <Setter Target="PaneColumn.Width" Value="0.3*" />
-                                        <Setter Target="PaneColumn.MinWidth" Value="350" />
+                                        <Setter Target="PaneColumn.MinWidth" Value="250" />
                                         <Setter Target="SettingsPanel.Margin" Value="30 0" /> 
                                         <!--<Setter Target="ListSpace.Visible" Value="Collapsed" />-->
 
@@ -276,7 +276,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                                        FontSize="74" 
                                        FontFamily="Comic Sans MS" 
                                        FontWeight="Bold" 
-                                       Foreground="{StaticResource InkBlueLightBrush}"/>
+                                       Foreground="#3D2B1F"/>
                                                 <!--54-->
 
 
@@ -891,7 +891,7 @@ Style="{StaticResource TextsButtonStyle}"/>-->
                         <!--ПАНЕЛЬ СПИСКОВ-->
                         <Grid Grid.ColumnSpan="2" Background="Black" Opacity="0.6" Margin="0 -15" x:Name="DarkSpace" Visibility="Collapsed" Tapped="{x:Bind ViewModel.ClosePanel}"/>
 
-                        <Grid Grid.ColumnSpan="3" MinWidth="360" MaxWidth="480" Background="{StaticResource DividerLightBrush}" Margin="10 0" Visibility="Collapsed"  x:Name="ListSpace" 
+                        <Grid Grid.ColumnSpan="3" MinWidth="250" MaxWidth="480" Background="{StaticResource DividerLightBrush}" Margin="10 0" Visibility="Collapsed"  x:Name="ListSpace" 
                                   BorderBrush="#8f8585" BorderThickness="1.5" CornerRadius="15 0 0 15" HorizontalAlignment="Right" Tag="{Binding IsEnoughSpace, Mode=TwoWay}">
                                 
                                 <!-- 1. Кожаная обложка (Бордер с тремя сторонами) -->

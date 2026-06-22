@@ -653,6 +653,18 @@ public partial class ProjectFolderViewModel : ObservableObject
         await FillData();
 
     }
+
+    public async Task FillingDuringUpdate()
+    {
+        if (IsFilter || IsSearchFilter)
+        {
+            await SubmitFilters();
+        }
+        else
+        {
+            await FillData();
+        }
+    }
     public async Task FillData()
     {
         Mission mission = Task;
@@ -920,7 +932,10 @@ public partial class ProjectFolderViewModel : ObservableObject
     {
         //IsFilter = true;
         if (MissionSuggestion.IsEmpty())
+        {
             FillData();
+            return;
+        }
 
 
         if (MissionSuggestion.CateroriesId.Count == 0)
