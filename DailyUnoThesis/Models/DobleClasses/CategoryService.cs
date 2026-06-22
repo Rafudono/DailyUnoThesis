@@ -39,8 +39,8 @@ namespace DailyUnoThesis.Models.DobleClasses
 
 
 
-            var dataProj = await APIHost.GetInstance().GetProject();
-            Projects.AddRange(dataProj);
+            //var dataProj = await APIHost.GetInstance().GetProject();
+            //Projects.AddRange(dataProj);
 
 
         }

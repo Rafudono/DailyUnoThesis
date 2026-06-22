@@ -40,8 +40,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private TaskListPageCategory TaskListPageCategory;
         private TaskCategotyControle CategotyControle;
 
-        //[ObservableProperty]
-        //private ObservableCollection<Category> categories;
+    [ObservableProperty]
+    private int namderMainPanel = 0;
+
+    //[ObservableProperty]
+    //private ObservableCollection<Category> categories;
     public ObservableCollection<Category> Categories => CategoryService.Instance.NavCategories;
     //public List<Category> Categories
     //{
@@ -941,7 +944,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         SelectedBaseCategory = ListNavigations[0];
         TaskPages.framePage.Navigate(typeof(TaskListPageCategory));
         var vm = ViewModelStore.GetInstance().Category;
-        TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
+        TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask), true);
         ViewModelStore.GetInstance().DetailedTask.GetBoolProject(false);
         CategotyControle = vm;
 

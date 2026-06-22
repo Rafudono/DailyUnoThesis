@@ -131,7 +131,9 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     <Grid>
                         <TextBlock Text="АКТИВНЫЕ ЗАДАЧИ НА СЕГОДНЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
                         <Button VerticalAlignment="Top" Style="{StaticResource TextsButtonStyle}"  
-          Tag="#3D2B1F" Content="ОТКРЫТЬ ЖУРНАЛ ДЕЛ ➔" FontSize="13" FontFamily="Consolas" Padding="5" Background="Transparent" BorderThickness="0" Foreground="#9A7B56" FontWeight="Bold" HorizontalAlignment="Right"/>
+          Tag="#3D2B1F" Content="ОТКРЫТЬ ЖУРНАЛ ДЕЛ ➔" FontSize="13" FontFamily="Consolas" Padding="5" Background="Transparent"
+                                BorderThickness="0" Foreground="#9A7B56" FontWeight="Bold" HorizontalAlignment="Right"
+                                Command="{Binding OpenTodayList}"/>
                     </Grid>
 
                     <!-- Список задач, стилизованный под ваши списки (Изображение 1) -->
@@ -160,9 +162,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                                                 </StackPanel>
                                             </StackPanel>
                                             <!--  Кнопка действия (Секундомер)  -->
-                                            <Button Grid.Column="2" Width="30" Height="30" CornerRadius="15" Background="Transparent" BorderBrush="#CBB39C" BorderThickness="1" Padding="0">
-                                                <FontIcon Glyph="" FontSize="11" Foreground="#9A7B56"/>
-                                            </Button>
+                                            
                                         </Grid>
                                     </Border>
                                     <!--  КАНЦЕЛЯРСКАЯ КНОПКА-ГВОЗДИК (PIN)  -->
@@ -197,7 +197,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     <StackPanel Grid.Row="0" Spacing="16">
                         <TextBlock Text="ПРИОРИТЕТНЫЕ РАССЛЕДОВАНИЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
 
-                        <ListView ItemsSource="{Binding ActiveProjects, Mode=TwoWay}" SelectionMode="None" Padding="0" Background="Transparent">
+                        <ListView ItemsSource="{Binding ActiveProjects, Mode=TwoWay}" SelectedItem="{Binding SelectedProjest, Mode=TwoWay}" SelectionMode="Extended" Padding="0" Background="Transparent">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <!-- Карточка проекта (Тяжелый документ) -->
@@ -306,7 +306,7 @@ Margin="20,-20,0,0">
         <Grid x:Name="PersonalAccount" Visibility="{Binding IsVisiblePersonalAccount,Converter={StaticResource BoolToVisibilityConverter}}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition MinWidth="320" Width="0.6*"/>
+                <ColumnDefinition MinWidth="320" Width="0.9*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid Background="Gray" Grid.ColumnSpan="3" Opacity="0.6"  Tapped="{x:Bind ViewModel.ClosePersonalAccountPanel}"/>

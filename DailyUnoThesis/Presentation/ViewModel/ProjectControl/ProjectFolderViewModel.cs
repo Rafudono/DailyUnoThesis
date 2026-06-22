@@ -34,6 +34,32 @@ public partial class ProjectFolderViewModel : ObservableObject
     private bool isFilter = false;
     [ObservableProperty]
     private bool isSearchFilter = false;
+    //[ObservableProperty]
+    //private bool isVisibleNewProjectMember = false;
+
+
+    //public void CloseNewProjectMember()
+    //{
+    //    IsVisibleNewProjectMember = false;
+    //}
+
+
+    private RelayCommand addNewProjectMember;
+    public RelayCommand AddNewProjectMember
+    {
+        get
+        {
+            return addNewProjectMember ?? new RelayCommand(async () =>
+            {
+                ViewModelStore.GetInstance().PanelProject.IsVisibleNewProjectMember = true;
+
+            }
+
+            );
+
+        }
+
+    }
 
     private RelayCommand resetData;
     public RelayCommand ResetData
