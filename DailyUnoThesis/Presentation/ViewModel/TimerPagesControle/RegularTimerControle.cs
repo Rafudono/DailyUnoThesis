@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 //using Android.OS;
@@ -28,9 +29,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         [ObservableProperty]
         private CountupTimer countupTimer;
 
-        //[ObservableProperty]
+        [ObservableProperty]
         //private List<Mission> missions;
-        public ObservableCollection<Mission> Missions => ViewModelStore.GetInstance().AllTasks.Missions;
+        public ObservableCollection<Mission> missions;
 
         [ObservableProperty]
         private Mission selectedMission;
@@ -307,9 +308,20 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         public RegularTimerControle()
         {
             CountupTimer = new CountupTimer();
-            //FillData();
+            FillData();
         }
 
+        public async Task FillData()
+        {
+            List<Mission> missions = new List<Mission>();
+            missions = await APIHost.GetInstance().GetMissions();
+            Missions = new();
+            Missions.AddRange(missions);
+            //GetCategories();
+            //await UpdateLists(mission, missions);
+
+
+        }
 
         private RelayCommand saveRegularTimer;
 
@@ -375,12 +387,12 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
             await APIHost.GetInstance().CreateMissionTimer(missionstimer);
         }
 
-        public async Task FillData()
-        {
-            //List<Mission> missions = new List<Mission>();
-            //missions = await APIHost.GetInstance().GetMissions();
-            //await UpdateLists(missions);
-        }
+        //public async Task FillData()
+        //{
+        //    //List<Mission> missions = new List<Mission>();
+        //    //missions = await APIHost.GetInstance().GetMissions();
+        //    //await UpdateLists(missions);
+        //}
 
         //private async Task UpdateLists(List<Mission> missions)
         //{

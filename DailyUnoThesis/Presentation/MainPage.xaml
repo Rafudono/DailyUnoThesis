@@ -56,62 +56,123 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="MinHeight" Value="48" />
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Foreground" Value="#3D2B1F"/>
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <!-- Никаких просветов между вкладками -->
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="utu:TabBarItem">
-                        <!-- Grid фиксированной ширины (250), чтобы контент не прыгал при сжатии панели -->
-                       
-                            <Grid  x:Name="RootGrid" Background="{TemplateBinding Background}" Width="250">
+                        <!-- Контейнер теперь растягивается вслед за шириной панели SplitView! -->
+                        <Grid x:Name="RootGrid" Background="Transparent" HorizontalAlignment="Left" Width="75">
+                           
+
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="PointerOver">
+
+                                    <!-- НЕАКТИВНОЕ (Вкладка короткая, цвета картона) -->
+                                    <VisualState x:Name="Normal">
                                         <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="Blue" />
+                                            <Setter Target="FolderTab.Background" Value="#EAD8C3" />
+                                            <Setter Target="FolderTab.Margin" Value="0,0,15,0" />
+                                            <!-- Зазор 15px справа -->
+                                            <Setter Target="FolderTab.BorderBrush" Value="#CBB39C" />
                                         </VisualState.Setters>
                                     </VisualState>
+
+                                    <!-- НАВЕДЕНИЕ (Немного удлиняется и темнеет) -->
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="FolderTab.Background" Value="#DCC8B3" />
+                                            <Setter Target="FolderTab.Margin" Value="0,0,8,0" />
+                                            <!-- Удлиняемся на 7px вправо -->
+                                            <Setter Target="FolderTab.BorderBrush" Value="#CBB39C" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <!-- ВЫБРАНО (Темная папка, длинная, без зазоров) -->
                                     <VisualState x:Name="Selected">
                                         <VisualState.Setters>
-                                            <Setter Target="SelectionIndicator.Visibility" Value="Visible" />
-                                                <Setter Target="RootGrid.Background" Value="Blue" />
-                                                <Setter Target="RootGrid.Background.Opacity" Value="0.5" />
-                                            </VisualState.Setters>
+                                            <Setter Target="FolderTab.Background" Value="#BCA895" />
+                                            <!-- Темный беж при выборе -->
+                                            <Setter Target="FolderTab.Margin" Value="0,0,5,0" />
+                                            <!-- Выезжает на всю ширину -->
+                                            <Setter Target="FolderTab.BorderBrush" Value="#9F8B78" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="#25170C"/>
+                                            <Setter Target="IconPresenter.Foreground" Value="#25170C"/>
+                                        </VisualState.Setters>
                                     </VisualState>
+
+                                </VisualStateGroup>
+
+
+                                <VisualStateGroup x:Name="MenuOpenStatesGrid">
+                                    <VisualState x:Name="MenuOpenWidth">
+                                        <VisualState.StateTriggers>
+                                            <StateTrigger IsActive="{Binding IsPaneOpen, ElementName=RootSplitView}" />
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Width" Value="250" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
-                                <!-- Область для иконки -->
-                                <ColumnDefinition Width="*" />
-                                <!-- Область для текста -->
-                            </Grid.ColumnDefinitions>
-                            <!-- Полоска выделения (как в стандартном Windows меню) -->
-                            <Rectangle x:Name="SelectionIndicator" 
-                                   Fill="Red" 
-                                   Width="5" Height="45" 
-                                   VerticalAlignment="Center" 
-                                   HorizontalAlignment="Left"
-                                   Visibility="Collapsed"/>
-                            <!--Fill="{ThemeResource SystemAccentColor}"-->
-                            <!-- Иконка -->
-                            <ContentPresenter x:Name="IconPresenter"
-                                          Content="{TemplateBinding Icon}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                            <!-- Текст -->
-                            <ContentPresenter x:Name="ContentPresenter"
-                                          Grid.Column="1"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          VerticalAlignment="Center"
-                                          Margin="12,0,0,0" />
+
+                            <!-- ТЕЛО ПАПКИ -->
+                            <!-- BorderThickness="0,0,1,1" (линия только справа и снизу) решает проблему "двойных" рамок на стыках -->
+                            <Border x:Name="FolderTab" 
+                            Background="#EAD8C3" 
+                            BorderBrush="#CBB39C" 
+                            BorderThickness="0,0,1.3,1.3"
+                            CornerRadius="0,10,10,0" 
+                            Height="65" 
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <!-- Ширина 55px (70px ширины панели минус 15px зазора). Иконка всегда будет идеально по центру неактивного компактного режима -->
+                                        <ColumnDefinition Width="55" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Viewbox Width="24" Height="24" 
+         HorizontalAlignment="Center" 
+         VerticalAlignment="Center">
+                                        <!-- Иконка -->
+                                        <ContentPresenter x:Name="IconPresenter"
+                                              Content="{TemplateBinding Icon}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" 
+                                              Foreground="#4D3B2F"/>
+                                    </Viewbox>
+
+                                    <!-- Текст (Segoe Print) -->
+                                    <!-- Мы управляем его видимостью через состояние панели RootSplitView -->
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                              Grid.Column="1"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              VerticalAlignment="Center"
+                                              Margin="10,0,0,0" 
+                                              Foreground="#4D3B2F"
+                                              FontFamily="Segoe Print"
+                                              FontWeight="Bold"
+                                              FontSize="16"
+                                              Visibility="{Binding IsPaneOpen, ElementName=RootSplitView, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </Grid>
+                            </Border>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+
+
+
 
 
     </Page.Resources>
@@ -121,7 +182,7 @@
 
 
 
-        <Grid Background="#f4f7ff" x:Name="RootGrid" uen:Region.Attached="True" CornerRadius="5">
+        <Grid Background="#e9e9e9" x:Name="RootGrid" uen:Region.Attached="True" CornerRadius="10 5 5 5">
 
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="WindowStates">
@@ -135,7 +196,7 @@
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="CompactOverlay"/>
-                            <Setter Target="RootSplitView.CompactPaneLength" Value="60" />
+                            <Setter Target="RootSplitView.CompactPaneLength" Value="70" />
                         </VisualState.Setters>
                     </VisualState>
 
@@ -241,56 +302,38 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Border BorderBrush="Black" BorderThickness="0 0 0 1">
+            <Border  BorderBrush="{StaticResource DarkGrayBrown}" BorderThickness="0 0 0 1.5">
                 <Button x:Name="PaneToggleButton" 
-    Click="TogglePane_Click" CornerRadius="0"
-    Content="&#xE700;" FontFamily="Segoe Fluent Icons" 
-    FontSize="20" Background="#f4f7ff" Foreground="Black"
-    Width="60" Height="48" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Padding="0 0 2 0"/>
+    Click="TogglePane_Click" CornerRadius="0 0 10 0" BorderBrush="#CBB39C" BorderThickness="1.4"
+    Content="&#xE700;" FontFamily="Segoe Fluent Icons" Style="{StaticResource OutlinedTextsButtonStyle}" Tag="#DCC8B3"
+    FontSize="20" Background="#EAD8C3" Foreground="Black"
+    Width="65" Height="50" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Padding="0 0 2 0"/>
             </Border>
 
 
-            
-                <SplitView x:Name="RootSplitView"
-                   Grid.Row="1"
-                   OpenPaneLength="250"
-                   IsPaneOpen="False"
-                   Background="Transparent"
-                   PaneBackground="Transparent" CornerRadius="0,8,8,0" >
 
+
+            <SplitView x:Name="RootSplitView" Grid.Row="1" OpenPaneLength="250" IsPaneOpen="False" PaneBackground="Transparent" CornerRadius="0,8,8,0"
+                       CompactPaneLength="70"
+           Background="#E9E9E9" >
                 <SplitView.Pane >
+                    <Border BorderBrush="#e9e9e9" BorderThickness="0 0 0 0" CornerRadius="0,8,8,0">
+                        <Grid Background="#e9e9e9" CornerRadius="0,8,8,0">
 
-                    <Border BorderBrush="#f7d6bf" BorderThickness="0 0 1 0" CornerRadius="0,8,8,0">
-                   
-                    <Grid CornerRadius="0,8,8,0">
-                            <Grid.Background>
-
-                                <LinearGradientBrush StartPoint="0.1,1" EndPoint="0.9,0.7">
-                                    <GradientStop Color="#3D2B1F" Offset="0" />
-                                    <GradientStop Color="#3D2B1F" Offset="0.1" />
-                                    <GradientStop Color="#f7d6bf" Offset="0.8" />
-                                    <GradientStop Color="#f7e2d4" Offset="1" />
-                                </LinearGradientBrush>
-
-                            </Grid.Background>
-
-                        <Grid.ChildrenTransitions>
-                            <TransitionCollection>
-                                <EntranceThemeTransition FromHorizontalOffset="20" />
-                            </TransitionCollection>
-                        </Grid.ChildrenTransitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition MinHeight="400" Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                            <utu:TabBar Grid.Row="0" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}"
-                    Orientation="Vertical" Foreground="White" 
-                    Background="Transparent" SelectionChanged="SideTabBar_SelectionChanged"
-                    uen:Region.Attached="True" MinHeight="130">
-
-                                <utu:TabBarItem
+                            <Grid.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromHorizontalOffset="20" />
+                                </TransitionCollection>
+                            </Grid.ChildrenTransitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition MinHeight="330" Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <utu:TabBar Grid.Row="0" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}" 
+                    Orientation="Vertical" Foreground="Black" 
+                    Background="Transparent" SelectionChanged="SideTabBar_SelectionChanged" HorizontalAlignment="Left"
+                    uen:Region.Attached="True" MinHeight="100" Padding="0">
+                                <utu:TabBarItem uen:Region.Name="Dashboard" 
                             Style="{StaticResource SideTabItemStyle}"
                             utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
                                 utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
@@ -320,7 +363,7 @@
                                 </utu:TabBarItem.Icon>
                             </utu:TabBarItem>
 
-                            <utu:TabBarItem 
+                            <!--<utu:TabBarItem 
  Style="{StaticResource SideTabItemStyle}"
  utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=InnerContentGrid}"
                                 utu:TabBarItemExtensions.OnClickBehaviors="BackNavigation"
@@ -328,7 +371,7 @@
                                 <utu:TabBarItem.Icon>
                                     <SymbolIcon Symbol="LeaveChat" />
                                 </utu:TabBarItem.Icon>
-                            </utu:TabBarItem>
+                            </utu:TabBarItem>-->
 
 
                             <utu:TabBarItem uen:Region.Name="PanelCalendar"
@@ -367,10 +410,10 @@ Content="Таймеры">
                 </SplitView.Pane>
 
                 <SplitView.Content>
-                    <Border BorderBrush="#f7d6bf" BorderThickness="1 0 0 0" >
-                        
-              
-                    <Grid Padding="1 0 1 0" x:Name="InnerContentGrid"
+                    <Border BorderBrush="#e9e9e9" BorderThickness="1 0 0 0" Background="#E9E9E9">
+
+
+                        <Grid Padding="0 0 1 0" x:Name="InnerContentGrid" Background="#E9E9E9"
 uen:Region.Attached="True"
 uen:Region.Navigator="Visibility" />
                     </Border>

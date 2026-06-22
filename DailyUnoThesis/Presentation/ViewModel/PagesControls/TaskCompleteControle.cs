@@ -617,6 +617,20 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             MissionSuggestion = new();
             //ViewModelStore.GetInstance().AllTasks = this;
         }
+
+
+        public async Task FillingDuringUpdate()
+        {
+            if (IsFilter || IsSearchFilter)
+            {
+                await SubmitFilters();
+            }
+            else
+            {
+                await GetComplete();
+            }
+        }
+
         public async Task GetComplete()
         {
             Mission mission = Task;

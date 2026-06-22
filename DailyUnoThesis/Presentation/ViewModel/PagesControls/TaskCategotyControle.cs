@@ -628,6 +628,21 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             await FillData();
 
         }
+
+
+
+        public async Task FillingDuringUpdate()
+        {
+            if (IsFilter || IsSearchFilter)
+            {
+                await SubmitFilters();
+            }
+            else
+            {
+                await FillData();
+            }
+        }
+
         public async Task FillData()
         {
             Mission mission = Task;

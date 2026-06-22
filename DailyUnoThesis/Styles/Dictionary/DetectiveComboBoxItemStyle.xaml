@@ -84,7 +84,9 @@
                                 Grid.ColumnSpan="2"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" />
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"/>
+                        
                         <Border Grid.ColumnSpan="2" x:Name="GreyBorder" Background="LightGray" Opacity="0.3" Visibility="Collapsed"/>
 
                         <StackPanel Margin="5 0 0 0" Orientation="Horizontal" Scale="10">
@@ -93,6 +95,7 @@
                         <ContentPresenter x:Name="ContentPresenter"
                                           Margin="{TemplateBinding Padding}"
                                           VerticalAlignment="Center"
+                                          FontWeight="{TemplateBinding FontWeight}"
                                           Content="{TemplateBinding SelectionBoxItem}"
                                           ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
                         </StackPanel>
@@ -106,7 +109,7 @@
                               Margin="10,0" />
 
                         <!-- Выпадающее окно -->
-                        <Popup x:Name="Popup">
+                        <Popup x:Name="Popup" >
                             <Border x:Name="PopupBorder"
                                     Background="#f3f6ff"
                                     BorderBrush="{StaticResource DarkGrayBrown}"

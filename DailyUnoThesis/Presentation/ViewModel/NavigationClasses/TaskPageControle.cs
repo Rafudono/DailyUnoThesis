@@ -134,7 +134,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private bool isVisibleCat;
 
     [ObservableProperty]
-    private bool isMenuOpen = false;
+    private bool isMenuOpen = true;
 
     [ObservableProperty]
     private bool isVisibilityTabBar = true;

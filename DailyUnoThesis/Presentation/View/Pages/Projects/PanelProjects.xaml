@@ -52,7 +52,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                     <VisualState x:Name="WideState">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="1500" />
+                            <AdaptiveTrigger MinWindowWidth="1300" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
@@ -63,7 +63,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                     <VisualState x:Name="AverageState">
                         <VisualState.StateTriggers>
-                            <AdaptiveTrigger MinWindowWidth="1300" />
+                            <AdaptiveTrigger MinWindowWidth="800" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Target="RootSplitView.DisplayMode" Value="Inline" />
@@ -137,6 +137,11 @@ HorizontalAlignment="Right"
 Fill="{StaticResource DarkGrayBrown}" 
 Opacity="0.1" 
 Margin="0,0,1,0"/>
+                                <Rectangle Width="4" 
+HorizontalAlignment="Left" 
+Fill="{StaticResource DarkGrayBrown}" 
+Opacity="0.1" 
+Margin="0,0,1,0"/>
 
                                 <ScrollViewer  Padding="0 15" IsTabStop="True"  HorizontalScrollBarVisibility="Auto" 
               VerticalScrollBarVisibility="Auto"
@@ -158,7 +163,7 @@ Margin="0,0,1,0"/>
                                             <StackPanel Grid.Row="0" Padding="0,5,20,0" Spacing="8" x:Name="ArchiveHeader">
 
                                                 <!-- Тонкая перфорированная линия-разделитель -->
-                                                <Border BorderBrush="#2D3135" BorderThickness="0,0,0,1" Margin="0,0,0,0"/>
+                                                <Border Height="1.5" Background="{StaticResource DarkGrayBrown}" Margin="0,0,0,0"/>
 
                                                 <StackPanel Grid.Row="0" Padding="10,0,10,20" Spacing="0">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -169,8 +174,7 @@ Margin="0,0,1,0"/>
 
                                                       
                                                     </StackPanel>
-                                                    <ScrollViewer x:Name="ArchivalBar" MaxHeight="400" Height="Auto" Margin="0 5">
-
+                                                    <StackPanel x:Name="ArchivalBar">
                                                         <VisualStateManager.VisualStateGroups>
                                                             <VisualStateGroup x:Name="ListMissionsOpened">
                                                                 <VisualState x:Name="ListClosed">
@@ -181,24 +185,23 @@ Margin="0,0,1,0"/>
                                                                         <Setter Target="ArchivalBar.Height" Value="0"/>
                                                                     </VisualState.Setters>
                                                                 </VisualState>
-
-                                                                <!--<VisualState x:Name="ListOpen">
-                                                                        <VisualState.StateTriggers>
-                                                                            <StateTrigger IsActive="{Binding BoolToVisibilityConverter, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                                                        </VisualState.StateTriggers>
-                                                                        <VisualState.Setters>
-                                                                            <Setter Target="ArchivalBar.Height" Value="0"/>
-                                                                        </VisualState.Setters>
-                                                                    </VisualState>-->
                                                             </VisualStateGroup>
                                                         </VisualStateManager.VisualStateGroups>
 
-                                                        <StackPanel   VerticalAlignment="Top" Margin="0 5">
+                                                        <TextBlock Text="Статусы:" FontSize="10" Margin="25 -10 20 20"/>
+                                                    <ComboBox FontSize="13" Height="40" Margin="25 -13 20 20" HorizontalAlignment="Left" MinWidth="180"
+            DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xEADF;" BorderThickness="1" CornerRadius="9" Foreground="#3D2B1F" FontWeight="Bold"
+            SelectedItem="{Binding SelectedArchivalProgressStates, Mode=TwoWay}"
+            ItemsSource="{Binding ArchivalProgressStates, Mode=TwoWay}" SelectionChanged="{x:Bind ViewModel.SelectArchivalProgressStates}" />
+                                                    <Grid >
+                                                      
+                                                        <ScrollViewer  MaxHeight="400" Height="Auto" Margin="0 -10 0 5">
 
-                                                            <ComboBox FontSize="20" Height="40" Margin="20 0 20 20"
-                                                                      DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xEADF;"
-                                                                      SelectedItem="{Binding SelectedArchivalProgressStates, Mode=TwoWay}"
-                                                                      ItemsSource="{Binding ArchivalProgressStates, Mode=TwoWay}"/>
+                               
+
+                                                        <StackPanel   VerticalAlignment="Top" Margin="0 0 0 5">
+
+                                                          
 
 
                                                             <TreeView x:Name="ArchivalProjectList" ItemsSource="{Binding ArchivalProjects}" MinHeight="60" MaxHeight="400"
@@ -374,9 +377,9 @@ CommandParameter="{Binding}">
 
                                                                                 <StackPanel >
                                                                                     <StackPanel Orientation="Horizontal" >
-                                                                                        <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
+                                                                                                    <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="#3D2B1F" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
                                                                                     </StackPanel>
-                                                                                    <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}">
+                                                                                                <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="#3D2B1F">
                                                                                 <Run Text="СТАТУС:"/>
                                                                                 <Run Text="{Binding Progressstates.Title}"/>
                                                                                     </TextBlock>
@@ -418,7 +421,10 @@ CommandParameter="{Binding}">
                                                         
                                                     </StackPanel>
                                                     </ScrollViewer>
-                                                    <Border Height="1" Background="{StaticResource DarkGrayBrown}" Margin="-10,0,0,0" HorizontalAlignment="Stretch"/>
+                                                    </Grid>
+                                                    </StackPanel>
+                                                    <Border Height="1.5" Background="{StaticResource DarkGrayBrown}" Margin="-10,0,0,0" HorizontalAlignment="Stretch"/>
+                                                    <Border Height="1.5" Background="{StaticResource DarkGrayBrown}" Margin="-10,5,0,0" HorizontalAlignment="Stretch"/>
 
                                                 </StackPanel>
                                             </StackPanel>
@@ -430,13 +436,13 @@ CommandParameter="{Binding}">
 
                                             
                                                 <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-                                                    <TextBlock  Margin="0 10 0 0"  FontSize="13">
+                                                    <TextBlock  Margin="0 10 0 0"  FontSize="16">
                                             <Run Text="#" FontFamily="Comic Sans MS"  FontSize="18" />
-                                            <Run Text="ПРОЕКТЫ" FontFamily="Segoe Print" FontWeight="Bold"/>
+                                            <Run Text="ПРОЕКТЫ" FontFamily="Comic Sans MS" FontWeight="Bold"/>
                                                     </TextBlock>
                                                     <Button Command="{Binding CloseAndOpenAddCategoryPanel}" HorizontalAlignment="Right" helperstyle:ButtonHelper.IconGlyph="&#xE8F4;"
                                             Margin="5 0 0 -6" FontSize="18" FontWeight="Black" Padding="0"  Style="{StaticResource TextsButtonStyle}"  
-          Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
+          Tag="{StaticResource AccentBlueLightBrush}" Foreground="Black"/>
                                                 </StackPanel>
                                                 <TextBlock Text="АКТИВНЫХ ОБЪЕКТОВ: " FontSize="13" FontFamily="Comic Sans MS" Opacity="0.8" Margin="10 0 0 0">
                                                     <Run Text="{Binding Categories.Count}"/>
@@ -617,9 +623,9 @@ CommandParameter="{Binding}">
                                                                         
                                                                         <StackPanel >
                                                                             <StackPanel Orientation="Horizontal" >
-                                                                                <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="{StaticResource InkBlueLightBrush}" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
+                                                                                <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="#3D2B1F" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
                                                                             </StackPanel>
-                                                                            <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="{StaticResource InkBlueLightBrush}">
+                                                                            <TextBlock FontSize="11" FontFamily="Comic Sans MS" Foreground="#3D2B1F">
                                                                                 <Run Text="СТАТУС:"/>
                                                                                 <Run Text="{Binding Progressstates.Title}"/>
                                                                             </TextBlock>

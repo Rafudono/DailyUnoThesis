@@ -10,6 +10,7 @@ using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
 using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.DashboardControl;
 
 namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 {
@@ -186,6 +187,17 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
             get => (TableCalendarViewModel)GetValue(CalendarViewModelProperty);
             set => SetValue(CalendarViewModelProperty, value);
         }
+
+
+        // Панель главная
+        public static readonly DependencyProperty PanelDashboardProperty =
+            DependencyProperty.Register("PanelDashboard", typeof(object), typeof(ViewModelStore), new PropertyMetadata(null));
+
+        public DashboardViewModel PanelDashboard
+        {
+            get => (DashboardViewModel)GetValue(PanelProjectProperty);
+            set => SetValue(PanelProjectProperty, value);
+        }
         #endregion
 
 
@@ -231,16 +243,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 
         public async Task FillDataViewModels()
         {
-            await AllTasks.FillData();
-            await Category.FillData();
+            await AllTasks.FillingDuringUpdate();
+            await Category.FillingDuringUpdate();
             if(TodayTasks != null)
-                await TodayTasks.GetToday();
+                await TodayTasks.FillingDuringUpdate();
             if (CompleteTasks != null)
-                    await CompleteTasks.GetComplete();
+                    await CompleteTasks.FillingDuringUpdate();
             if (OverdueTasks != null)
-                        await OverdueTasks.GetOverdue();
+                        await OverdueTasks.FillingDuringUpdate();
             if (ProjectFolder != null)
-                await ProjectFolder.FillData();
+                await ProjectFolder.FillingDuringUpdate();
 
         }
         #endregion

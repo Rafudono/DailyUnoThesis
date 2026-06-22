@@ -90,7 +90,7 @@ public partial class PanelProjectViewModel : ObservableObject
     private bool isVisibleCat;
 
     [ObservableProperty]
-    private bool isMenuOpen = false;
+    private bool isMenuOpen = true;
 
     [ObservableProperty]
     private bool isVisibilityTabBar = true;
@@ -505,10 +505,17 @@ public partial class PanelProjectViewModel : ObservableObject
         FullProgressStates = await APIHost.GetInstance().GetStatusCategories();
         ProgressStates.AddRange(FullProgressStates);
         ArchivalProgressStates.AddRange(FullProgressStates.Where(s=>s.Id != (int)ProgressStateEnum.InProgress));
-        ArchivalProgressStates.Insert(0, new Progressstate { Id = 0, Title = "Все" });
+        ArchivalProgressStates.Insert(0, new Progressstate { Id = 0, Title = "ВСЕ" });
+        SelectedArchivalProgressStates = ArchivalProgressStates[0];
 
     }
 
+    public async void SelectArchivalProgressStates(object sender, SelectionChangedEventArgs e)
+    {
+
+      await CategoryService.Instance.FilterArchivalProgressStates(SelectedArchivalProgressStates.Id);
+
+    }
 
 
 

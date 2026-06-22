@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Text;
 using DailyUnoThesis.Models.MainClasses;
 
@@ -48,11 +49,25 @@ namespace DailyUnoThesis.Models.DobleClasses
         {
             Projects.Clear();
             ArchivalProjects.Clear();
+            AssignmentOfProjects.Clear();
               var dataProj = await APIHost.GetInstance().GetProject();
             AssignmentOfProjects.AddRange(dataProj);
             Projects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId == (int)ProgressStateEnum.InProgress));
             ArchivalProjects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId != (int)ProgressStateEnum.InProgress));
 
+        }
+
+        public async Task FilterArchivalProgressStates(int id)
+        {
+            ArchivalProjects.Clear();
+            if (id <= 0)
+            {
+                ArchivalProjects.AddRange(AssignmentOfProjects.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId != (int)ProgressStateEnum.InProgress));
+            }
+            else
+            {
+                ArchivalProjects.AddRange(AssignmentOfProjects.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId == id));
+            }
         }
 
         private async Task<List<Category>> GetCategoriesFromApi()

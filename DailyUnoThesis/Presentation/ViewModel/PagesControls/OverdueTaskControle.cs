@@ -610,6 +610,18 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             MissionSuggestion = new();
 
         }
+
+        public async Task FillingDuringUpdate()
+        {
+            if (IsFilter || IsSearchFilter)
+            {
+                await SubmitFilters();
+            }
+            else
+            {
+                await GetOverdue();
+            }
+        }
         public async Task GetOverdue()
         {
             Mission mission = Task;

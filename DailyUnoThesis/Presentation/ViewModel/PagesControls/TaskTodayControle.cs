@@ -619,6 +619,18 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //Task = new() { LevelUp = 1 };
             MissionSuggestion = new();
         }
+
+        public async Task FillingDuringUpdate()
+        {
+            if (IsFilter || IsSearchFilter)
+            {
+                await SubmitFilters();
+            }
+            else
+            {
+                await GetToday();
+            }
+        }
         public async Task GetToday()
         {
             Mission mission = Task;

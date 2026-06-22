@@ -7,7 +7,7 @@
     <Style x:Key="DetectiveTabBarItemStyle" TargetType="utu:TabBarItem">
         <Setter Property="FontFamily" Value="Segoe Print"/>
         <Setter Property="FontSize" Value="15"/>
-        <Setter Property="Foreground" Value="{StaticResource InkBlueLightBrush}"/>
+        <Setter Property="Foreground" Value="#3D2B1F"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
