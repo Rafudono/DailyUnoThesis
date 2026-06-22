@@ -18,7 +18,7 @@ public partial class HourSlot   :  ObservableObject
     public bool IsNonWorkingHour => !IsWorkingHour;
     public bool IsWorkingHourStart => Hour == AuthorizedUser.GetInstance().AuthUser.DayStartTime.Value.Hour;    
     public bool IsWorkingHourEnd => Hour == AuthorizedUser.GetInstance().AuthUser.DayEndTime.Value.Hour;
-    public double Height => IsWorkingHour || IsExpanded ? 60 : 0;
+    public double Height => IsWorkingHour || IsExpanded ? 60 : 2;
     partial void OnIsExpandedChanged(bool value)
     {
         OnPropertyChanged(nameof(Height));

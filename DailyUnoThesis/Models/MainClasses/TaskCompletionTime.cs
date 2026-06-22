@@ -51,6 +51,10 @@ public partial class TaskCompletionTime : INotifyPropertyChanged
         {
             if (StartExecution.HasValue && EndExecution.HasValue)
             {
+                if (StartExecution.Value.TimeOfDay == new TimeSpan(0, 0, 1))
+                    return string.Empty;
+                if (StartExecution.Value == EndExecution.Value)
+                    return StartExecution.Value.ToString("HH:mm");
                 return $"{StartExecution.Value:HH:mm}-{EndExecution.Value:HH:mm}";
             }
             else if (StartExecution.HasValue)

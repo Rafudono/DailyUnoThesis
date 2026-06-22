@@ -218,7 +218,7 @@
                    MinWidth="260">
                             <TreeView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
-                                    <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation}" IsExpanded="True">
+                                     <TreeViewItem ItemsSource="{Binding ExpandableChildren}" IsExpanded="True">
                                         <StackPanel CanDrag="True"
                                      DragStarting="InboxMission_DragStarting"
                                      Margin="2,4">

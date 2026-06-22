@@ -153,4 +153,28 @@ public partial class Mission: INotifyPropertyChanged
             }
         }
     }
+
+    public ICollection<Mission>? ExpandableChildren
+    {
+        get
+        {
+            if (InverseIdUpMissionNavigation == null || InverseIdUpMissionNavigation.Count == 0)
+                return null;
+            if (IsProject || HasProjectAncestor())
+                return InverseIdUpMissionNavigation;
+            return null;
+        }
+    }
+
+    private bool HasProjectAncestor()
+    {
+        var current = IdUpMissionNavigation;
+        while (current != null)
+        {
+            if (current.IsProject)
+                return true;
+            current = current.IdUpMissionNavigation;
+        }
+        return false;
+    }
 }

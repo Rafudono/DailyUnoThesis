@@ -49,6 +49,7 @@ public partial class LoginViewModel : ObservableObject
         {
             ApplicationData.Current.LocalSettings.Values["RefreshToken"] =
                 AuthorizedUser.GetInstance().RefreshToken;
+            var tkn = ApplicationData.Current.LocalSettings.Values["RefreshToken"];
             await _navigator.NavigateRouteAsync(this, "Main");
         }
         else

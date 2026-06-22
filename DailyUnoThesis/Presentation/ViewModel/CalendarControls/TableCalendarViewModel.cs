@@ -89,7 +89,6 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
 
         public void OpenTaskEditor(Mission mission)
         {
-            ViewModelStore.GetInstance().DetailedTask = null;
             _newTaskFrame?.Navigate(typeof(SelectedAndNewTask));
             ViewModelStore.GetInstance().DetailedTask?.GetTask(mission);
 

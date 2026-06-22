@@ -62,7 +62,35 @@ public sealed partial class TableCalendar : Page
         {
             args.Data.Properties.Add("DraggedItem", mission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
+
+            var projectAncestor = FindProjectAncestor(mission);
+            if (projectAncestor?.StartDate != null)
+            {
+                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
+                {
+                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
+                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
+                }
+                else
+                {
+                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
+                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
+                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
+                }
+            }
         }
+    }
+
+    private static Mission? FindProjectAncestor(Mission mission)
+    {
+        var current = mission;
+        while (current != null)
+        {
+            if (current.IsProject)
+                return current;
+            current = current.IdUpMissionNavigation;
+        }
+        return null;
     }
     //private void FrameViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     //{

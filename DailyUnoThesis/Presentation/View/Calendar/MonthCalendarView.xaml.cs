@@ -36,23 +36,14 @@ public sealed partial class MonthCalendarView : Page
     {
         var stackPanel = sender as StackPanel;
 
-        // Пытаемся получить как сессию
         var session = stackPanel?.DataContext as TaskCompletionTime;
         if (session != null)
         {
-            // Запрещаем перетаскивание сессий из прошедших дней
-            if (session.StartExecution.HasValue && session.StartExecution.Value.Date < DateTime.Today.Date)
-            {
-                e.Cancel = true;
-                return;
-            }
-
             e.Data.Properties.Add("DraggedItem", session);
             e.Data.RequestedOperation = DataPackageOperation.Move;
             return;
         }
 
-        // Пытаемся получить как миссию (из Inbox)
         var mission = stackPanel?.DataContext as Mission;
         if (mission != null)
         {
@@ -66,36 +57,35 @@ public sealed partial class MonthCalendarView : Page
         if (viewModel == null) return;
 
         e.AcceptedOperation = DataPackageOperation.Move;
+        e.DragUIOverride.IsCaptionVisible = false;
+        e.DragUIOverride.IsGlyphVisible = false;
 
-        var listView = sender as ListView;
+        var dayGrid = sender as Grid;
+        if (dayGrid == null) return;
+        var listView = FindListViewChild(dayGrid);
         if (listView == null) return;
 
         var position = e.GetPosition(listView);
 
-        var grid = FindParent<Grid>(listView);
-        if (grid?.DataContext is not CalendarDay targetDay) return;
+        if (dayGrid.DataContext is not CalendarDay targetDay) return;
 
         // Сначала сбрасываем фон у всех дней
         ResetAllDaysBackground();
 
-        // Проверяем, можно ли вообще вставлять в этот день
-        bool isDayAvailable = targetDay.Date.Date >= DateTime.Today.Date;
+        if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
-        if (!isDayAvailable)
+        // Проверяем дедлайн от родительской миссии
+        if (draggedItem is Mission draggedMission && !IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties))
         {
-            // День недоступен - красная подсветка всего дня
-            var dayGrid = FindParent<Grid>(listView);
             if (dayGrid != null)
             {
-                _highlightedDayGrid = dayGrid; // Сохраняем ссылку
-                dayGrid.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 255, 100, 100));
+                _highlightedDayGrid = dayGrid;
+                dayGrid.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(200, 25, 25, 112));
             }
             viewModel.OnDragOver(-1);
             e.AcceptedOperation = DataPackageOperation.None;
             return;
         }
-
-        if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
         // var draggedSession = draggedItem as TaskCompletionTime;
         // if (draggedSession == null) return;
 
@@ -205,19 +195,15 @@ public sealed partial class MonthCalendarView : Page
                     var converter = new BoolToColorConverter();
                     var bgColor = day.IsOtherMonth ? "LightGray" : "LightBlue";
 
-                    // 1. Восстанавливаем фон
                     container.SetValue(Grid.BackgroundProperty,
                         converter.Convert(day.IsOtherMonth, typeof(Brush), bgColor, null));
 
-                    // 2. Восстанавливаем Margin (как в XAML: Margin="2")
                     container.SetValue(FrameworkElement.MarginProperty, new Thickness(2));
 
-                    // 3. Восстанавливаем CornerRadius (как в XAML: CornerRadius="4")
                     if (container is Grid grid)
                     {
                         grid.CornerRadius = new CornerRadius(4);
                     }
-                    // 4. Убираем возможный красный фон, если был установлен для недоступного дня
                     if (_highlightedDayGrid == container)
                     {
                         _highlightedDayGrid = null;
@@ -241,10 +227,24 @@ public sealed partial class MonthCalendarView : Page
         return null;
     }
 
+    private static ListView FindListViewChild(DependencyObject parent)
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is ListView lv) return lv;
+            var result = FindListViewChild(child);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
 
     private void PlannedListView_DragLeave(object sender, DragEventArgs e)
     {
-        var listView = sender as ListView;
+        var dayGrid = sender as Grid;
+        if (dayGrid == null) return;
+        var listView = FindListViewChild(dayGrid);
         if (listView == null) return;
 
         ResetAllMargins(listView);
@@ -299,21 +299,20 @@ public sealed partial class MonthCalendarView : Page
         var viewModel = this.DataContext as MonthCalendarViewModel;
         if (viewModel == null) return;
 
-        var listView = sender as ListView;
+        var dayGrid = sender as Grid;
+        if (dayGrid == null) return;
+        var listView = FindListViewChild(dayGrid);
         if (listView == null) return;
 
         int insertIndex = viewModel.DropTargetIndex;
         if (insertIndex < 0) return;
 
-        var grid = FindParent<Grid>(listView);
-        if (grid?.DataContext is not CalendarDay targetDay) return;
+        if (dayGrid.DataContext is not CalendarDay targetDay) return;
 
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
-        // Обработка в зависимости от типа
         if (draggedItem is TaskCompletionTime session)
         {
-            // Перемещение существующей сессии внутри календаря
             if (viewModel.CanInsertSessionAt(targetDay, insertIndex, session))
             {
                 await viewModel.MoveSessionToDay(targetDay, insertIndex, session);
@@ -322,8 +321,8 @@ public sealed partial class MonthCalendarView : Page
         }
         else if (draggedItem is Mission mission)
         {
-            // Создание новой сессии из миссии Inbox
-            if (viewModel.CanInsertMissionAt(targetDay, insertIndex, mission))
+            if (IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties)
+                && viewModel.CanInsertMissionAt(targetDay, insertIndex, mission))
             {
                 await viewModel.CreateSessionFromMission(targetDay, insertIndex, mission);
                 e.AcceptedOperation = DataPackageOperation.Move;
@@ -348,6 +347,19 @@ public sealed partial class MonthCalendarView : Page
 
         return default;
     }
+
+    private void TaskItem_PointerEntered(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is Grid grid)
+            grid.Opacity = 0.6;
+    }
+
+    private void TaskItem_PointerExited(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is Grid grid)
+            grid.Opacity = 1.0;
+    }
+
     private void InboxMission_DragStarting(UIElement sender, DragStartingEventArgs args)
     {
         var stackPanel = sender as StackPanel;
@@ -359,7 +371,35 @@ public sealed partial class MonthCalendarView : Page
             bool isInboxMission = !mission.StartDate.HasValue || !mission.EndDate.HasValue;
             args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
+
+            var projectAncestor = FindProjectAncestor(mission);
+            if (projectAncestor?.StartDate != null)
+            {
+                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
+                {
+                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
+                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
+                }
+                else
+                {
+                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
+                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
+                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
+                }
+            }
         }
+    }
+
+    private static Mission? FindProjectAncestor(Mission mission)
+    {
+        var current = mission;
+        while (current != null)
+        {
+            if (current.IsProject)
+                return current;
+            current = current.IdUpMissionNavigation;
+        }
+        return null;
     }
 
     /*private void OpenNewTaskFrame_Click(object sender, RoutedEventArgs e)
@@ -382,4 +422,24 @@ public sealed partial class MonthCalendarView : Page
         viewModel.RebuildMissionBuckets();
         viewModel.RefreshAllDays();
     }*/
+
+    private static bool IsDateAllowedByDeadline(DateTime targetDate, Windows.ApplicationModel.DataTransfer.DataPackagePropertySetView properties)
+    {
+        DateTime? minDate = null, maxDate = null;
+        bool isDeadlineOnly = false;
+
+        if (properties.TryGetValue("DragMaxDate", out var maxObj) && maxObj is DateTime max)
+            maxDate = max;
+        if (maxDate == null) return true;
+
+        if (properties.TryGetValue("DragMinDate", out var minObj) && minObj is DateTime min)
+            minDate = min;
+        if (properties.TryGetValue("DragIsDeadlineOnly", out var dlObj) && dlObj is bool dl)
+            isDeadlineOnly = dl;
+
+        if (isDeadlineOnly)
+            return targetDate <= maxDate.Value;
+
+        return minDate != null && targetDate >= minDate.Value && targetDate <= maxDate.Value;
+    }
 }
