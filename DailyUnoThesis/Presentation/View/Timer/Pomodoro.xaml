@@ -38,7 +38,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:HeightConventer x:Key="HeightConventer"/>
         <con:BoolToStringRoundTomatosConverter x:Key="BoolToStringRoundTomatosConverter"/>
 
-        
+        <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
 
         <!--HeightConventer-->
@@ -930,7 +930,9 @@ BorderBrush="#2A1D15">
 
 
                                         <Grid VerticalAlignment="Top">
-                                            
+
+                                            <!--<TextBlock Text="Выберите проект" FontSize="26" VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center" TextWrapping="Wrap" FontFamily="Segoe Print" Foreground="{StaticResource InkBlueLightBrush}"/>-->
 
                                             <ListView x:Name="SampleTimerList" ItemsSource="{Binding MissionsTimers}" SelectedItem="{Binding SelectedTimer, Mode=TwoWay}"  SelectionMode="Single" 
                                                       ItemClick="{x:Bind ViewModel.OnItemInvoked}" IsItemClickEnabled="True"  Visibility="{Binding IsMissions, Converter={StaticResource InverseBoolToVisibilityConverter}}">
@@ -1003,198 +1005,273 @@ Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallBu
                                             </ListView>
 
 
-                                            <TreeView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
-SelectionMode="Single"  SelectedItem="{Binding SelectedMission, Mode=TwoWay}" ItemInvoked="{x:Bind ViewModel.OnItemInvokedTree}" Visibility="{Binding IsMissions, Converter={StaticResource BoolToVisibilityConverter}}">
 
-                                                <TreeView.Resources>
-                                                    <!--1. МЕНЯЕМ СИМВОЛЫ СТРЕЛОК (Шляпки) 
-                       Код символа ">"-->
-                                                    <x:String x:Key="TreeViewItemCollapsedGlyph">&#xE106;</x:String>
-                                                    <x:String x:Key="TreeViewItemExpandedGlyph">&#xE76C;</x:String>
-
-                                                    <x:String x:Key="TreeViewItemCollapsedChevronGlyph">&#xE106;</x:String>
-                                                    <x:String x:Key="TreeViewItemExpandedChevronGlyph">&#xE76C;</x:String>
-
-                                                    <!--2. НАСТРАИВАЕМ РАЗМЕР И ЦВЕТ СТРЕЛОК-->
-                                                    <x:Double x:Key="TreeViewItemChevronFontSize">20</x:Double>
-                                                    <StaticResource x:Key="TreeViewItemForegroundExpander" ResourceKey="InkBlueBrush" />
-
-                                                    <!--3. ИСПРАВЛЯЕМ ВЫДЕЛЕНИЕ (чтобы не было тормозов и фиолетового)-->
-                                                    <!--Цвет фона при наведении-->
-                                                    <!--<SolidColorBrush x:Key="TreeViewItemBackgroundPointerOver" Color="#F0F0F0" Opacity="0.5"/>-->
-                                                    <!--Цвет фона при выделении-->
-                                                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelected" Color="{ThemeResource SystemControlBackgroundListLowBrush}" />
-                                                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver" Color="{ThemeResource SystemControlBackgroundListMediumBrush}" />
-
-                                                    <SolidColorBrush x:Key="TreeViewItemForegroundExpander" Color="Black" />
-                                                    <!--Или ваш InkBlueBrush-->
-
-                                                    <!--Убираем системные отступы, которые могут мешать нитям-->
-                                                    <Thickness x:Key="TreeViewItemCompactPadding">0,0,0,0</Thickness>
-                                                </TreeView.Resources>
-
-                                                <TreeView.ItemContainerStyle>
-                                                    <Style TargetType="TreeViewItem">
-                                                        <!--Убираем стандартные отступы, которые могут мешать схлопыванию-->
-                                                        <Setter Property="MinHeight" Value="0"/>
-                                                        <Setter Property="IsExpanded" Value="True" />
-                                                        <Setter Property="Transitions">
-                                                            <Setter.Value>
-                                                                <TransitionCollection>
-                                                                    <!--Эта штука заставляет соседей плавно ехать на свободное место-->
-                                                                    <AddDeleteThemeTransition />
-                                                                </TransitionCollection>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                                        <Setter Property="Padding" Value="0" />
-                                                        <!--Убираем лишние падинги-->
-
-                                                    </Style>
-                                                </TreeView.ItemContainerStyle>
-
-                                                <TreeView.ItemTemplate>
-                                                    <DataTemplate x:DataType="mod:Mission">
-                                                        <TreeViewItem ItemsSource="{Binding InverseIdUpMissionNavigation, Mode=TwoWay}" x:Name="TreeViewItem" MinHeight="0">
+                                                <ListView x:Name="TreeViewMis"  ItemsSource="{Binding Missions, Mode=TwoWay}" MinWidth="400" 
+SelectionMode="Single"  SelectedItem="{Binding SelectedMission, Mode=TwoWay}" ItemClick="{x:Bind ViewModel.OnItemInvokedTree}" IsItemClickEnabled="True" Visibility="{Binding IsMissions, Converter={StaticResource BoolToVisibilityConverter}}">
 
 
-                                                            <Grid  Margin="0" x:Name="GridRootBorder" Height="70" Background="Transparent">
+                                                    <ListView.ItemTemplate>
+                                                        <DataTemplate x:DataType="mod:Mission">
+                                                            <ListViewItem x:Name="TreeViewItem" MinHeight="0">
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroup x:Name="LifeCycleStatesGrid">
+                                                                        <VisualState x:Name="DeleteGrid">
+                                                                            <VisualState.StateTriggers>
+                                                                                <StateTrigger IsActive="{Binding IsDelete}" />
+                                                                            </VisualState.StateTriggers>
+                                                                            <Storyboard>
+                                                                                <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                                                <DoubleAnimation Storyboard.TargetName="TreeViewItem"  Storyboard.TargetProperty="Height"  To="0" Duration="0:0:0.6" EnableDependentAnimation="True">
+                                                                                    <DoubleAnimation.EasingFunction>
+                                                                                        <CubicEase EasingMode="EaseInOut"/>
+                                                                                    </DoubleAnimation.EasingFunction>
+                                                                                </DoubleAnimation>
+                                                                                <DoubleAnimation Storyboard.TargetName="GridRootBorder"  Storyboard.TargetProperty="Height"  To="0" Duration="0:0:0.6" EnableDependentAnimation="True">
+                                                                                    <DoubleAnimation.EasingFunction>
+                                                                                        <CubicEase EasingMode="EaseInOut"/>
+                                                                                    </DoubleAnimation.EasingFunction>
+                                                                                </DoubleAnimation>
+                                                                            </Storyboard>
+                                                                            <VisualState.Setters>
+                                                                                <!--<Setter Target="GridRootBorder.Height" Value="0"/>
+                                              <Setter Target="TreeViewItem.Height" Value="0"/>-->
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                    </VisualStateGroup>
+                                                                </VisualStateManager.VisualStateGroups>
 
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="0"/>
-                                                                    <ColumnDefinition />
-                                                                </Grid.ColumnDefinitions>
-                                                                <Grid.RenderTransform>
-                                                                    <CompositeTransform />
-                                                                </Grid.RenderTransform>
+                                                                <Grid  Margin="0" x:Name="GridRootBorder" Height="85" Background="Transparent">
 
-                                                                <Border x:Name="RootBorder" Padding="0 3 0 -5" MinWidth="300" CornerRadius="4" Background="Transparent" Grid.Column="1" Margin="0"
-                                  BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="70" MinHeight="0">
-                                                                    <Border.RenderTransform>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="0"/>
+                                                                        <ColumnDefinition />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RenderTransform>
                                                                         <CompositeTransform />
-                                                                    </Border.RenderTransform>
-                                                                    <Grid HorizontalAlignment="Stretch" Background="Transparent" >
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <!-- Колонки для линий вложенности -->
-                                                                            <!--<ColumnDefinition Width="0.05*" />-->
-                                                                            <ColumnDefinition Width="Auto" />
-                                                                            <ColumnDefinition Width="*" />
-                                                                        </Grid.ColumnDefinitions>
+                                                                    </Grid.RenderTransform>
 
-                                                                        <!-- Левая часть: Линии (Нити) -->
-                                                                        <!-- Ширина этого блока будет зависеть от уровня вложенности -->
-                                                                       
-                                                                        <Grid  Background="Transparent" Grid.Column="1"  MinWidth="200" IsHitTestVisible="True">
+                                                                    <Border x:Name="RootBorder" Padding="0 3 0 -5" MinWidth="400" CornerRadius="4" Background="Transparent" Grid.Column="1" Margin="0"
+                                  BorderBrush="{ThemeResource SystemControlBackgroundListMediumBrush}" BorderThickness="0 0 0 1"   RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Height="85" MinHeight="0">
+                                                                        <Border.RenderTransform>
+                                                                            <CompositeTransform />
+                                                                        </Border.RenderTransform>
+                                                                        <VisualStateManager.VisualStateGroups>
+                                                                            <VisualStateGroup x:Name="LifeCycleStates">
+                                                                                <VisualState x:Name="Alive" />
+                                                                                <VisualState x:Name="Removing">
+                                                                                    <VisualState.StateTriggers>
+                                                                                        <StateTrigger IsActive="{Binding IsRemoving}" />
+                                                                                    </VisualState.StateTriggers>
+                                                                                    <Storyboard>
+                                                                                        <!-- 1. Плавно исчезаем -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                               Storyboard.TargetProperty="Opacity" 
+                                               To="0" Duration="0:0:0.4"/>
+                                                                                        <!-- 2. Сдвигаем влево (эффект вылета) -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+                                               To="-100" Duration="0:0:0.4">
+                                                                                            <DoubleAnimation.EasingFunction>
+                                                                                                <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
+                                                                                            </DoubleAnimation.EasingFunction>
+                                                                                        </DoubleAnimation>
+                                                                                        <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="GridRootBorder" 
+                                                   Storyboard.TargetProperty="Height" 
+                                                   To="0" Duration="0:0:0.4">
+                                                                                            <DoubleAnimation.EasingFunction>
+                                                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                                                            </DoubleAnimation.EasingFunction>
+                                                                                        </DoubleAnimation>
+                                                                                    </Storyboard>
+                                                                                </VisualState>
+                                                                                <VisualState x:Name="Delete">
+                                                                                    <VisualState.StateTriggers>
+                                                                                        <StateTrigger IsActive="{Binding IsDelete}" />
+                                                                                    </VisualState.StateTriggers>
+                                                                                    <Storyboard>
+                                                                                        <!-- 1. Плавно исчезаем -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+      Storyboard.TargetProperty="Opacity" 
+      To="0" Duration="0:0:0.4"/>
+                                                                                        <!-- 2. Сдвигаем влево (эффект вылета) -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+      Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" 
+      To="100" Duration="0:0:0.4">
+                                                                                            <DoubleAnimation.EasingFunction>
+                                                                                                <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
+                                                                                            </DoubleAnimation.EasingFunction>
+                                                                                        </DoubleAnimation>
+                                                                                        <!-- 3. Схлопываем по высоте (чтобы нижние задачи поехали вверх) -->
+                                                                                        <DoubleAnimation Storyboard.TargetName="RootBorder" 
+          Storyboard.TargetProperty="Height" 
+          To="0" Duration="0:0:0.4">
+                                                                                            <DoubleAnimation.EasingFunction>
+                                                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                                                            </DoubleAnimation.EasingFunction>
+                                                                                        </DoubleAnimation>
+                                                                                    </Storyboard>
+                                                                                </VisualState>
+                                                                            </VisualStateGroup>
+                                                                        </VisualStateManager.VisualStateGroups>
+                                                                        <Grid HorizontalAlignment="Stretch" Background="Transparent" >
                                                                             <Grid.ColumnDefinitions>
-                                                                                <ColumnDefinition />
-                                                                                <ColumnDefinition Width="0.1*"/>
+                                                                                <!-- Колонки для линий вложенности -->
+                                                                                <!--<ColumnDefinition Width="0.05*" />-->
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                                <ColumnDefinition Width="*" />
                                                                             </Grid.ColumnDefinitions>
-                                                                            <interactivity:Interaction.Behaviors>
-                                                                                <!-- Когда курсор входит в Grid -->
-                                                                                <core:EventTriggerBehavior EventName="PointerEntered">
-                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>-->
-                                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
-                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrush}"/>-->
-                                                                                </core:EventTriggerBehavior>
-                                                                                <!-- Когда курсор выходит из Grid -->
-                                                                                <core:EventTriggerBehavior EventName="PointerExited">
-                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="0"/>-->
-                                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{ThemeResource SystemControlBackgroundListMediumBrush}"/>
-                                                                                    <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrushOver}"/>-->
-                                                                                </core:EventTriggerBehavior>
-                                                                            </interactivity:Interaction.Behaviors>
-                                                                            <VisualStateManager.VisualStateGroups>
-                                                                                <VisualStateGroup x:Name="TaskCompletionStates">
-                                                                                    <VisualState x:Name="Completed">
-                                                                                        <!-- Состояние: выполнено -->
-                                                                                        <VisualState.StateTriggers>
-                                                                                            <!-- Триггер: если IsComplete == true -->
-                                                                                            <StateTrigger IsActive="{Binding IsComplete}" />
-                                                                                        </VisualState.StateTriggers>
-                                                                                        <!-- Применяем стили к дочерним элементам -->
-                                                                                        <Storyboard>
-                                                                                            <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
-                                                                                            <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
+
+                                                                            <!-- Левая часть: Линии (Нити) -->
+                                                                            <!-- Ширина этого блока будет зависеть от уровня вложенности -->
+                                                                            <Grid Grid.Column="0">
+                                                                                <!-- Вертикальная линия "сверху донизу" -->
+                                                                                <Rectangle Width="1.5" 
+              Fill="{StaticResource ClueRedLightBrush}" 
+              Opacity="1" 
+              HorizontalAlignment="Left" 
+              Margin="12,0,0,0" />
+
+                                                                                <!-- Горизонтальная ниточка к чекбоксу -->
+                                                                                <Rectangle Height="1" 
+              Width="12" 
+              Fill="{StaticResource ClueRedLightBrush}" 
+              Opacity="1" 
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Center" 
+              Margin="12,0,0,0" />
+                                                                            </Grid>
+                                                                            <Grid  Background="Transparent" Grid.Column="1"  MinWidth="200" IsHitTestVisible="True">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition />
+                                                                                    <ColumnDefinition Width="0.1*"/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <interactivity:Interaction.Behaviors>
+                                                                                    <!-- Когда курсор входит в Grid -->
+                                                                                    <core:EventTriggerBehavior EventName="PointerEntered">
+                                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="1"/>
+                                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{StaticResource BackgroundDarkBrush}"/>
+                                                                                        <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrush}"/>-->
+                                                                                    </core:EventTriggerBehavior>
+                                                                                    <!-- Когда курсор выходит из Grid -->
+                                                                                    <core:EventTriggerBehavior EventName="PointerExited">
+                                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=DelButton}" PropertyName="Opacity" Value="0"/>
+                                                                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=RootBorder}" PropertyName="BorderBrush" Value="{ThemeResource SystemControlBackgroundListMediumBrush}"/>
+                                                                                        <!--<core:ChangePropertyAction TargetObject="{Binding ElementName=TitleTextBlock}" PropertyName="Foreground" Value="{StaticResource InkBlueLightBrushOver}"/>-->
+                                                                                    </core:EventTriggerBehavior>
+                                                                                </interactivity:Interaction.Behaviors>
+                                                                                <VisualStateManager.VisualStateGroups>
+                                                                                    <VisualStateGroup x:Name="TaskCompletionStates">
+                                                                                        <VisualState x:Name="Completed">
+                                                                                            <!-- Состояние: выполнено -->
+                                                                                            <VisualState.StateTriggers>
+                                                                                                <!-- Триггер: если IsComplete == true -->
+                                                                                                <StateTrigger IsActive="{Binding IsComplete}" />
+                                                                                            </VisualState.StateTriggers>
+                                                                                            <!-- Применяем стили к дочерним элементам -->
+                                                                                            <Storyboard>
+                                                                                                <!-- АНИМАЦИЯ ЗАЧЕРКИВАНИЯ: линия растет от 0 до 1 -->
+                                                                                                <DoubleAnimation Storyboard.TargetName="StrikeLineScale" 
                                                     Storyboard.TargetProperty="ScaleX" 
                                                     To="1" 
                                                     Duration="0:0:0.4">
-                                                                                                <DoubleAnimation.EasingFunction>
-                                                                                                    <CubicEase EasingMode="EaseOut"/>
-                                                                                                </DoubleAnimation.EasingFunction>
-                                                                                            </DoubleAnimation>
-                                                                                            <!-- Плавная смена цвета текста -->
-                                                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
+                                                                                                    <DoubleAnimation.EasingFunction>
+                                                                                                        <CubicEase EasingMode="EaseOut"/>
+                                                                                                    </DoubleAnimation.EasingFunction>
+                                                                                                </DoubleAnimation>
+                                                                                                <!-- Плавная смена цвета текста -->
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TitleTextBlock" 
                              Storyboard.TargetProperty="Foreground">
-                                                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
-                                                                                            </ObjectAnimationUsingKeyFrames>
-                                                                                        </Storyboard>
-                                                                                        <VisualState.Setters>
-                                                                                            <!-- Применяем к TextBlock с заголовком -->
-                                                                                            <!-- Применяем к TextBlock с датой -->
-                                                                                            <Setter Target="DateTextBlock.Foreground" Value="Gray"/>
-                                                                                            <!-- Применяем к TextBlock с категорией -->
-                                                                                            <Setter Target="CategoryTextBlock.Foreground" Value="Gray"/>
-                                                                                            <!-- Можно также сделать разделитель менее заметным -->
-                                                                                            <Setter Target="SeparatorRectangle.Opacity" Value="0.1"/>
-                                                                                        </VisualState.Setters>
-                                                                                    </VisualState>
-                                                                                </VisualStateGroup>
-                                                                            </VisualStateManager.VisualStateGroups>
-                                                                            <Grid Width="Auto"  Padding="0" MinHeight="65" IsHitTestVisible="True">
-                                                                                <Grid.ColumnDefinitions>
-                                                                                    <ColumnDefinition Width="0.1*" MaxWidth="50" MinWidth="32"/>
-                                                                                    <ColumnDefinition/>
-                                                                                </Grid.ColumnDefinitions>
-                                                                                <CheckBox  Tag="&#xE73E;"  IsHitTestVisible="False" Height="20" Width="20"
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Gray"/>
+                                                                                                </ObjectAnimationUsingKeyFrames>
+                                                                                            </Storyboard>
+                                                                                            <VisualState.Setters>
+                                                                                                <!-- Применяем к TextBlock с заголовком -->
+                                                                                                <!-- Применяем к TextBlock с датой -->
+                                                                                                <Setter Target="DateTextBlock.Foreground" Value="Gray"/>
+                                                                                                <!-- Применяем к TextBlock с категорией -->
+                                                                                                <Setter Target="CategoryTextBlock.Foreground" Value="Gray"/>
+                                                                                                <!-- Можно также сделать разделитель менее заметным -->
+                                                                                                <Setter Target="SeparatorRectangle.Opacity" Value="0.1"/>
+                                                                                            </VisualState.Setters>
+                                                                                        </VisualState>
+                                                                                    </VisualStateGroup>
+                                                                                </VisualStateManager.VisualStateGroups>
+                                                                                <Grid Width="Auto"  Padding="0" MinHeight="65" IsHitTestVisible="True">
+                                                                                    <Grid.ColumnDefinitions>
+                                                                                        <ColumnDefinition Width="0.1*" MaxWidth="50" MinWidth="40"/>
+                                                                                        <ColumnDefinition/>
+                                                                                    </Grid.ColumnDefinitions>
+                                                                                    <CheckBox CommandParameter="{Binding}" Tag="&#xE73E;"
+                                                Command="{Binding DataContext.CompleteTaskCommand, ElementName=MyPageRoot}" 
                                                 IsChecked="{Binding IsComplete, Mode=TwoWay}" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left"/>
-                                                                                <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
-                                                                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                                                                                        <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"   FontSize="17" TextWrapping="NoWrap" Foreground="{ThemeResource InkBlueLightBrushOver}" FontWeight="Medium"
+                                                                                    <StackPanel Grid.Column="1"  Margin="3,10,0,10" HorizontalAlignment="Left">
+                                                                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                                                                            <TextBlock x:Name="TitleTextBlock" Text="{Binding Title}"   FontSize="25" TextWrapping="NoWrap" Foreground="{ThemeResource InkBlueLightBrushOver}" FontWeight="Medium"
                                                          TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Stretch" MaxLines="1" FontFamily="Segoe Print"/>
-                                                                                        <!-- Линия зачеркивания - стилизуем цветом "Clue Red" -->
-                                                                                        <Rectangle x:Name="StrikeLine" Height="2" Margin="0 8 0 0"  Fill="{ThemeResource DividerDarkBrush}" HorizontalAlignment="Stretch"  VerticalAlignment="Center"
+                                                                                            <!-- Линия зачеркивания - стилизуем цветом "Clue Red" -->
+                                                                                            <Rectangle x:Name="StrikeLine" Height="2" Margin="0 8 0 0"  Fill="{ThemeResource DividerDarkBrush}" HorizontalAlignment="Stretch"  VerticalAlignment="Center"
                                                          RenderTransformOrigin="0,0.5" IsHitTestVisible="False">
-                                                                                            <Rectangle.RenderTransform>
-                                                                                                <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
-                                                                                            </Rectangle.RenderTransform>
-                                                                                        </Rectangle>
-                                                                                    </Grid>
+                                                                                                <Rectangle.RenderTransform>
+                                                                                                    <ScaleTransform x:Name="StrikeLineScale" ScaleX="0"/>
+                                                                                                </Rectangle.RenderTransform>
+                                                                                            </Rectangle>
+                                                                                        </Grid>
 
 
-                                                                                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
-                                                                                        <TextBlock FontFamily="Comic Sans MS" x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"
-                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12" >
+                                                                                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                                                                                            <TextBlock FontFamily="Comic Sans MS" x:Name="DateTextBlock" Visibility="{Binding EndDate, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13" >
                                                   <Run Text="&#xE163;" FontFamily="Segoe MDL2 Assets"/>
                                                   <Run Text="{Binding EndDate, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:dd.MM.yyyy}'}"/>
-                                                                                        </TextBlock>
-                                                                                        <TextBlock FontFamily="Comic Sans MS" x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"
-                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="12">
+                                                                                            </TextBlock>
+                                                                                            <TextBlock FontFamily="Comic Sans MS" x:Name="CategoryTextBlock" Visibility="{Binding CategoryId, Converter={StaticResource ConverterTextBoxVisibility}}"
+                                                         Foreground="{ThemeResource InkBlueLightBrush}" FontSize="13">
                                                   <Run Text="#"/>
                                                   <Run Text="{Binding Category.Title}"/>
-                                                                                        </TextBlock>
+                                                                                            </TextBlock>
+                                                                                        </StackPanel>
                                                                                     </StackPanel>
-                                                                                </StackPanel>
+                                                                                </Grid>
+                                                                                <Button Content="&#xE74D;" x:Name="DelButton" Grid.Column="1" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top" Padding="0" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderBrush="Transparent"
+      Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}" HorizontalContentAlignment="Center"
+                                          CommandParameter="{Binding}"
+                                          Command="{Binding DataContext.DeleteTask, ElementName=MyPageRoot}" >
+                                                                                    <!--Style="{StaticResource TextButtonStyle}"-->
+                                                                                    <Button.Resources>
+                                                                                        <!-- Цвет текста при наведении (PointerOver) -->
+                                                                                        <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="ClueRedBrush" />
+
+                                                                                        <!-- Цвет текста при нажатии (Pressed) -->
+                                                                                        <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="ClueRedBrush" />
+
+                                                                                        <!-- Цвет текста, если кнопка отключена (Disabled) -->
+                                                                                        <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="Gray" Opacity="0.5" />
+                                                                                    </Button.Resources>
+                                                                                    <!--<SymbolIcon Symbol="Delete"/>-->
+                                                                                </Button>
+
                                                                             </Grid>
+                                                                            <Grid Background="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="10"  Opacity="0.5"></Grid>
 
 
                                                                         </Grid>
-                                                                        <Grid Background="{StaticResource BackgroundLightBrush}" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" VerticalAlignment="Bottom" Height="10"  Opacity="0.5"></Grid>
 
-
-                                                                    </Grid>
-
-                                                                </Border>
-                                                                <Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                                                    </Border>
+                                                                    <!--<Grid Background="Transparent" IsHitTestVisible="False" Margin="-30 0 0 0" Height="30" Width="30" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpMissionNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                      -->
                                                                     <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
-                                                                    <Grid Background="{StaticResource TransparentGridBrush}"/>
-                                                                    <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" RenderTransformOrigin="0.5,0.5">
-                                                                    </FontIcon>
+                                                                    <!--
+                                      <Grid Background="{StaticResource TransparentGridBrush}"/> 
+                                      <FontIcon Glyph="{Binding IsExpanded, ElementName=TreeViewItem, Converter={StaticResource BoolToAngleConverter}}" RenderTransformOrigin="0.5,0.5">
+                                      </FontIcon>
+                                  </Grid>-->
                                                                 </Grid>
-                                                            </Grid>
-                                                        </TreeViewItem>
-                                                    </DataTemplate>
-                                                </TreeView.ItemTemplate>
-                                            </TreeView>
+                                                            </ListViewItem>
+                                                        </DataTemplate>
+                                                    </ListView.ItemTemplate>
+                                                </ListView>
+                                         
 
                                         </Grid>
                                     </Border>

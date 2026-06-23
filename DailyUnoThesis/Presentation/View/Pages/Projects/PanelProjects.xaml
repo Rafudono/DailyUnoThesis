@@ -742,7 +742,7 @@ CommandParameter="{Binding}">
                        Grid.Column="1" Grid.Row="1"
 uen:Region.Attached="True"  Visibility="{Binding IsVisibilityTabBar, Converter={StaticResource BoolToVisibilityConverter}}"
 uen:Region.Navigator="Visibility">
-                            <TextBlock Text="Выберите проект" FontSize="36" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Print" Foreground="{StaticResource InkBlueLightBrush}"/>
+                            <TextBlock Text="Выберите проект" FontSize="36" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontFamily="Segoe Print" Foreground="{StaticResource InkBlueLightBrush}"/>
                         </Grid>
 
 

@@ -40,7 +40,7 @@ public partial class DashboardViewModel: ObservableObject
 
     // Текст заметки
     [ObservableProperty]
-    private string _dailyNote = "Если можешь не спать — не спи. Сон для слабых.\n— Изран.";
+    private string _dailyNote = "Вы близки к истине. Ещё один рывок.";
 
 
     [ObservableProperty]

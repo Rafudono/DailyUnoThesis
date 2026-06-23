@@ -428,6 +428,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         }
 
 
+        public void OnItemInvoked(object sender, ItemClickEventArgs e)
+        {
+            // args.InvokedItem — это объект задачи или категории, на который кликнули
+            var clickedItem = e.ClickedItem as Mission;
+
+            if (clickedItem != null)
+            {
+                IsSelectedMission = true;
+                OpenPanel();
+
+            }
+        }
+
         public async void OnItemInvokedTree(TreeView sender, TreeViewItemInvokedEventArgs args)
         {
             // args.InvokedItem — это объект задачи или категории, на который кликнули

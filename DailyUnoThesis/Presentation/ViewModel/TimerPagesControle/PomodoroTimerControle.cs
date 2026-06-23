@@ -1487,10 +1487,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
             }
         }
 
-        public async void OnItemInvokedTree(TreeView sender, TreeViewItemInvokedEventArgs args)
+        public async void OnItemInvokedTree(object sender, ItemClickEventArgs e)
         {
             // args.InvokedItem — это объект задачи или категории, на который кликнули
-            var clickedItem = args.InvokedItem as Mission;
+            var clickedItem = e.ClickedItem as Mission;
 
             if (clickedItem != null)
             {

@@ -143,7 +143,7 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
 
 
                                         <Button  Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"  Margin="0 -5 -16 0" FontWeight="Black"
-              x:Name="ClearBut" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}"
+              x:Name="ClearBut" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}" Width="30"
           Style="{StaticResource IconButtonStyle}" CommandParameter="{Binding ElementName=CalendarView}">
                                             <SymbolIcon Symbol="Clear" />
                                         </Button>
@@ -177,7 +177,7 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
                                                 </StackPanel>
 
 
-                                                <ScrollView Padding="10 20" MaxHeight="500" >
+                                                <ScrollView Padding="10 20" MaxHeight="700" >
                                                     <StackPanel Background="Transparent">
 
                                                         <!--<Button Content="Сегодня">
