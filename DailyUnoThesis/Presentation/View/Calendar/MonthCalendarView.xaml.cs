@@ -388,20 +388,33 @@ public sealed partial class MonthCalendarView : Page
             args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
 
-            var projectAncestor = FindProjectAncestor(mission);
-            if (projectAncestor?.StartDate != null)
+            DateTime? overallMin = null, overallMax = null;
+            var current = mission;
+            while (current != null)
             {
-                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
+                if (current.StartDate != null)
                 {
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
+                    if (current.StartDate.Value.Date == current.EndDate?.Date)
+                    {
+                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                            overallMax = current.EndDate.Value.Date;
+                    }
+                    else
+                    {
+                        if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
+                            overallMin = current.StartDate.Value.Date;
+                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                            overallMax = current.EndDate.Value.Date;
+                    }
                 }
-                else
-                {
-                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
-                }
+                current = current.IdUpMissionNavigation;
+            }
+
+            if (overallMax != null)
+            {
+                args.Data.Properties.Add("DragMaxDate", overallMax.Value);
+                if (overallMin != null)
+                    args.Data.Properties.Add("DragMinDate", overallMin.Value);
             }
         }
     }
@@ -427,18 +440,6 @@ public sealed partial class MonthCalendarView : Page
         DragHint.Text = string.Empty;
     }
 
-    private static Mission? FindProjectAncestor(Mission mission)
-    {
-        var current = mission;
-        while (current != null)
-        {
-            if (current.IsProject)
-                return current;
-            current = current.IdUpMissionNavigation;
-        }
-        return null;
-    }
-
     /*private void OpenNewTaskFrame_Click(object sender, RoutedEventArgs e)
     {
         //if (!_isNewTaskFrameInitialized)
@@ -462,21 +463,14 @@ public sealed partial class MonthCalendarView : Page
 
     private static bool IsDateAllowedByDeadline(DateTime targetDate, Windows.ApplicationModel.DataTransfer.DataPackagePropertySetView properties)
     {
-        DateTime? minDate = null, maxDate = null;
-        bool isDeadlineOnly = false;
+        if (!properties.TryGetValue("DragMaxDate", out var maxObj) || maxObj is not DateTime max)
+            return true;
 
-        if (properties.TryGetValue("DragMaxDate", out var maxObj) && maxObj is DateTime max)
-            maxDate = max;
-        if (maxDate == null) return true;
+        if (targetDate > max) return false;
 
         if (properties.TryGetValue("DragMinDate", out var minObj) && minObj is DateTime min)
-            minDate = min;
-        if (properties.TryGetValue("DragIsDeadlineOnly", out var dlObj) && dlObj is bool dl)
-            isDeadlineOnly = dl;
+            return targetDate >= min;
 
-        if (isDeadlineOnly)
-            return targetDate <= maxDate.Value;
-
-        return minDate != null && targetDate >= minDate.Value && targetDate <= maxDate.Value;
+        return true;
     }
 }

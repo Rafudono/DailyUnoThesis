@@ -927,7 +927,7 @@ ItemsSource="{Binding ProgressStates, Mode=TwoWay}"/>
                                 <AutoSuggestBox x:Name="MissionSearchBox" PlaceholderText="Поиск участников..."  QueryIcon="Find" Text="{Binding SearchText, Mode=TwoWay}" MaxWidth="400" FontFamily="Segoe Print" Background="Transparent"
                                         Foreground="{StaticResource InkBlueLightBrush}" FontSize="18" Padding="0"  Margin="0 5 10 0"
 ItemsSource="{Binding Suggestions, Mode=OneWay}" 
-TextMemberPath="Title" TextChanged="{x:Bind ViewModel.OnTextChanged}"
+TextMemberPath="Text" TextChanged="{x:Bind ViewModel.OnTextChanged}"
 SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}" QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"
 VerticalAlignment="Top" MaxHeight="40" MinWidth="300">
                                     <AutoSuggestBox.ItemContainerStyle>
@@ -1019,7 +1019,8 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300">
                                     </Grid>
                                 </Grid>
 
-                                <Button Grid.Row="2" Foreground="#25170C" Height="38" Style="{StaticResource DetectiveSaveButtonStyle}"
+                                <TextBlock Grid.Row="2" Text="{Binding InviteMessageHint}" Visibility="{Binding InviteMessageHintVisibility}" FontFamily="Segoe Print" FontSize="12" Foreground="{Binding InviteMessageBrush}" Margin="0 4 0 0"/>
+                                <Button Grid.Row="3" Foreground="#25170C" Height="38" Style="{StaticResource DetectiveSaveButtonStyle}"
                                         HorizontalAlignment="Right" Content="Пригласить" Command="{Binding AddProjectParticipants}" Margin="0 10 0 0" />
 
                             </StackPanel>

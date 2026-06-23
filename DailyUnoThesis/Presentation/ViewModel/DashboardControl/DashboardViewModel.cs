@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using DailyThesisAPI.SignalR;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Dashboard;
@@ -137,6 +138,38 @@ public partial class DashboardViewModel: ObservableObject
     public void CloseMenu()
     {
         IsVisiblePersonalAccount = false;
+    }
+
+    private RelayCommand<Invitation> acceptInvitationCommand;
+    public RelayCommand<Invitation> AcceptInvitationCommand
+    {
+        get
+        {
+            return acceptInvitationCommand ?? new RelayCommand<Invitation>(async (invitation) =>
+            {
+                if (invitation == null) return;
+                invitation.IsDelete = true;
+                await Task.Delay(400);
+                await ConnectionToHub.Instance.AcceptInvitation(invitation.Id);
+                Invitations.Remove(invitation);
+            });
+        }
+    }
+
+    private RelayCommand<Invitation> declineInvitationCommand;
+    public RelayCommand<Invitation> DeclineInvitationCommand
+    {
+        get
+        {
+            return declineInvitationCommand ?? new RelayCommand<Invitation>(async (invitation) =>
+            {
+                if (invitation == null) return;
+                invitation.IsDelete = true;
+                await Task.Delay(400);
+                await ConnectionToHub.Instance.DeclineInvitation(invitation.Id);
+                Invitations.Remove(invitation);
+            });
+        }
     }
 
     private RelayCommand closeAndOpenlePersonalAccount;

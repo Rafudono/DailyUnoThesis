@@ -64,20 +64,33 @@ public sealed partial class TableCalendar : Page
         args.Data.Properties.Add("DraggedItem", mission);
         args.Data.RequestedOperation = DataPackageOperation.Move;
 
-        var parent = mission.IdUpMissionNavigation;
-        if (parent?.StartDate != null)
+        DateTime? overallMin = null, overallMax = null;
+        var current = mission;
+        while (current != null)
         {
-            if (parent.StartDate.Value.Date == parent.EndDate?.Date)
+            if (current.StartDate != null)
             {
-                args.Data.Properties.Add("DragMaxDate", parent.EndDate.Value.Date);
-                args.Data.Properties.Add("DragIsDeadlineOnly", true);
+                if (current.StartDate.Value.Date == current.EndDate?.Date)
+                {
+                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                        overallMax = current.EndDate.Value.Date;
+                }
+                else
+                {
+                    if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
+                        overallMin = current.StartDate.Value.Date;
+                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                        overallMax = current.EndDate.Value.Date;
+                }
             }
-            else
-            {
-                args.Data.Properties.Add("DragMinDate", parent.StartDate.Value.Date);
-                args.Data.Properties.Add("DragMaxDate", parent.EndDate.Value.Date);
-                args.Data.Properties.Add("DragIsDeadlineOnly", false);
-            }
+            current = current.IdUpMissionNavigation;
+        }
+
+        if (overallMax != null)
+        {
+            args.Data.Properties.Add("DragMaxDate", overallMax.Value);
+            if (overallMin != null)
+                args.Data.Properties.Add("DragMinDate", overallMin.Value);
         }
     }
     //private void FrameViewSelectionChanged(object sender, SelectionChangedEventArgs e)

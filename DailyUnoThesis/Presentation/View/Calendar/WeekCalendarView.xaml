@@ -118,6 +118,38 @@
             <Setter Property="BorderThickness" Value="0,0,1,1"/>
             <Setter Property="Height" Value="60"/>
         </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="Selected"/>
+                                    <VisualState x:Name="SelectedPointerOver"/>
+                                    <VisualState x:Name="SelectedPressed"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter 
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Margin="0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Page.DataContext>
@@ -252,7 +284,7 @@
 
                 <!-- Задачи без времени (00:00:01) над шкалой каждого дня -->
                 <Border Grid.Row="2" Grid.Column="1" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding MondayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding MondayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -261,7 +293,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="2" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding TuesdayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding TuesdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -270,7 +302,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="3" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding WednesdayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding WednesdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -279,7 +311,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="4" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding ThursdayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding ThursdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -288,7 +320,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="5" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding FridayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding FridayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -297,7 +329,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="6" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding SaturdayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding SaturdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"
@@ -306,7 +338,7 @@
                               DragOver="TimelessList_DragOver"/>
                 </Border>
                 <Border Grid.Row="2" Grid.Column="7" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
-                    <ListView ItemsSource="{Binding SundayTimelessSessions}"
+                    <ItemsControl ItemsSource="{Binding SundayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
                               BorderThickness="0"

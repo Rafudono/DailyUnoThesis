@@ -51,7 +51,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
     </Page.Resources>
 
-    <Grid>
+    <Grid x:Name="RootLayout">
         <ScrollViewer Padding="30,24,30,30" VerticalScrollBarVisibility="Auto">
             <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="1.8*, 1.2*" RowSpacing="24" ColumnSpacing="24">
 
@@ -358,10 +358,46 @@ Margin="20,-20,0,0">
                                 <ItemsControl ItemsSource="{Binding Invitations}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="mod:Invitation">
-                                            <Grid Padding="8 4" ColumnDefinitions="*, Auto, Auto">
+                                            <Grid Padding="8 4" ColumnDefinitions="*, Auto, Auto" x:Name="InvitationItemRoot">
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup x:Name="InvitationLifecycle">
+                                                        <VisualState x:Name="Normal"/>
+                                                        <VisualState x:Name="Delete">
+                                                            <VisualState.StateTriggers>
+                                                                <StateTrigger IsActive="{Binding IsDelete}"/>
+                                                            </VisualState.StateTriggers>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="InvitationItemRoot"
+                                                                    Storyboard.TargetProperty="Opacity"
+                                                                    To="0" Duration="0:0:0.4"/>
+                                                                <DoubleAnimation Storyboard.TargetName="InvitationItemRoot"
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)"
+                                                                    To="100" Duration="0:0:0.4">
+                                                                    <DoubleAnimation.EasingFunction>
+                                                                        <ExponentialEase Exponent="5" EasingMode="EaseIn"/>
+                                                                    </DoubleAnimation.EasingFunction>
+                                                                </DoubleAnimation>
+                                                                <DoubleAnimation Storyboard.TargetName="InvitationItemRoot"
+                                                                    Storyboard.TargetProperty="Height"
+                                                                    To="0" Duration="0:0:0.4" EnableDependentAnimation="True">
+                                                                    <DoubleAnimation.EasingFunction>
+                                                                        <CubicEase EasingMode="EaseInOut"/>
+                                                                    </DoubleAnimation.EasingFunction>
+                                                                </DoubleAnimation>
+                                                            </Storyboard>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                                <Grid.RenderTransform>
+                                                    <CompositeTransform/>
+                                                </Grid.RenderTransform>
                                                 <TextBlock Grid.Column="0" Text="{Binding IdProjectNavigation.Title}" FontFamily="Segoe Print" FontSize="13" Foreground="#25170C" VerticalAlignment="Center"/>
-                                                <Button Grid.Column="1" Content="✓" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#2B5B84" Foreground="#2B5B84" Margin="0 0 4 0"/>
-                                                <Button Grid.Column="2" Content="✕" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#A33131" Foreground="#A33131"/>
+                                                <Button Grid.Column="1" Content="✓" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#2B5B84" Foreground="#2B5B84" Margin="0 0 4 0"
+                                                    Command="{Binding DataContext.AcceptInvitationCommand, ElementName=RootLayout}"
+                                                    CommandParameter="{Binding}"/>
+                                                <Button Grid.Column="2" Content="✕" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#A33131" Foreground="#A33131"
+                                                    Command="{Binding DataContext.DeclineInvitationCommand, ElementName=RootLayout}"
+                                                    CommandParameter="{Binding}"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

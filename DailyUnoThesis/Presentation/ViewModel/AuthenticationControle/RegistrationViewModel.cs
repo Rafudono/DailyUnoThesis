@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using DailyThesisAPI.SignalR;
 using Windows.Storage;
 
 namespace DailyUnoThesis.Presentation.ViewModel.AuthenticationControle;
@@ -92,6 +93,7 @@ public partial class RegistrationViewModel:ObservableObject
             {
                 ApplicationData.Current.LocalSettings.Values["RefreshToken"] =
                     AuthorizedUser.GetInstance().RefreshToken;
+                _ = ConnectionToHub.Instance.CreateConnection();
                 await _navigator.NavigateRouteAsync(this, "Main");
             }
             else

@@ -33,8 +33,10 @@ public partial class App : Application
         this.InitializeComponent();
     }
 
-    protected Window? MainWindow { get; private set; }
-    protected IHost? Host { get; private set; }
+    public Window? MainWindow { get; private set; }
+    public IHost? Host { get; private set; }
+
+    public static IServiceProvider? Services => Current is App app ? app.Host?.Services : null;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
