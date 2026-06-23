@@ -9,6 +9,7 @@ using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Dashboard;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Pages.Projects;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.DashboardControl;
@@ -30,6 +31,9 @@ public partial class DashboardViewModel: ObservableObject
 
     [ObservableProperty]
     private int _completedTasksCount;
+
+    [ObservableProperty]
+    private DashboardProjectDto selectedProjest = new();
 
     [ObservableProperty]
     private string _focusTimeText = "0ч 0м";
@@ -187,6 +191,62 @@ public partial class DashboardViewModel: ObservableObject
             );
         }
     }
+
+
+    private  RelayCommand openTodayList;
+    public  RelayCommand OpenTodayList
+    {
+        get
+        {
+            return openTodayList ?? new RelayCommand(async () =>
+            {
+
+                ViewModelStore.GetInstance().Main.NamderMainPanel = 1;
+                if (ViewModelStore.GetInstance().PanelTask == null)
+                    await Task.Delay(1000);
+                ViewModelStore.GetInstance().PanelTask.NamderMainPanel = 1;
+
+            }
+            );
+        }
+    }
+
+    partial void OnSelectedProjestChanged(DashboardProjectDto value)
+    {
+        if (value != null && value.Id != 0)
+        {
+            OpenProjectList.Execute(null);
+        }
+    }
+
+
+    private RelayCommand openProjectList;
+    public RelayCommand OpenProjectList
+    {
+        get
+        {
+            return openProjectList ?? new RelayCommand(async () =>
+            {
+
+                ViewModelStore.GetInstance().Main.NamderMainPanel = 2;
+                if (ViewModelStore.GetInstance().PanelProject == null)
+                    await Task.Delay(1000);
+
+                
+                var project = CategoryService.Instance.AssignmentOfProjects.FirstOrDefault(s=>s.Id == SelectedProjest.Id);
+                if(project != null)
+                ViewModelStore.GetInstance().PanelProject.GoToProjectFolder(project);
+
+
+               
+            }
+            );
+        }
+    }
+
+   
+
+
 
     private RelayCommand toggleChangePassword;
     public RelayCommand ToggleChangePassword

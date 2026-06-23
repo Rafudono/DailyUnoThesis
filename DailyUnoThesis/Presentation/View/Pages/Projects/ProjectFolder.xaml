@@ -183,7 +183,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
         <Grid Name="EmptyGrid" Grid.Column="0" Background="{StaticResource DividerLightBrush}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="170"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top" Spacing="10" Margin="10">
@@ -373,40 +373,51 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
 
                 <!--</StackPanel>-->
 
-                <StackPanel Margin="15,-10,15,10">
-                    <!-- Маленькая "метка" над заголовком для контекста -->
-                    <TextBlock Text="ТЕКУЩИЙ ПРОЕКТ" 
+                
+            </StackPanel>
+            <ScrollViewer Grid.Row="1"  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
+                <StackPanel Spacing="10" Margin="10">
+
+                    <VariableSizedWrapGrid Orientation="Horizontal"  VerticalAlignment="Top">
+
+
+                        <StackPanel Margin="15,-10,15,10" Height="55" MinWidth="200">
+                            <!-- Маленькая "метка" над заголовком для контекста -->
+                            <TextBlock Text="ТЕКУЩИЙ ПРОЕКТ" 
                FontSize="12" 
                FontFamily="Comic Sans MS" 
                Foreground="{StaticResource DarkGrayBrown}" 
                Opacity="0.7"/>
 
-                    <Border BorderThickness="0 0 0 2"  Padding="0 0 0 -7"
+                            <Border BorderThickness="0 0 0 2"  Padding="0 0 0 -7"
             BorderBrush="{ThemeResource InkBlueLightBrush}" 
             HorizontalAlignment="Left"  
             Margin="0,-10,0,0">
-                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,0">
-                        <FontIcon Glyph="&#xE8B7;" FontSize="24" Foreground="{ThemeResource InkBlueLightBrush}"/>
-                        <!-- Сам заголовок -->
-                        <TextBlock Text="{Binding СurrentCategory.Title}" TextWrapping="Wrap"
+                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,0">
+                                    <FontIcon Glyph="&#xE8B7;" FontSize="24" Foreground="{ThemeResource InkBlueLightBrush}"/>
+                                    <!-- Сам заголовок -->
+                                    <TextBlock Text="{Binding СurrentCategory.Title}" TextWrapping="Wrap"
                FontFamily="Comic Sans MS" 
                Foreground="{ThemeResource InkBlueLightBrush}" 
                FontSize="26" 
                FontWeight="Bold" 
                Margin="0,0,0,5"/>
-                </StackPanel>
-                </Border>
+                                </StackPanel>
+                            </Border>
 
-                <!-- Акцентная линия, которая "заземляет" заголовок -->
+                            <!-- Акцентная линия, которая "заземляет" заголовок -->
 
-                </StackPanel>
+                        </StackPanel>
+
+                        <Button  Content="Добавить участника" Command="{Binding AddNewProjectMember}" Height="35" VerticalAlignment="Top"
+                                 Background="{StaticResource DividerLightBrush}" CornerRadius="0" Padding="3" helperstyle:ButtonHelper.IconGlyph="&#xE710;"
+Style="{StaticResource StampWithIconButtonStyle}" FontSize="13" Tag="{StaticResource AccentBlueLightBrush}"
+Foreground="{StaticResource InkBlueLightBrush}"/>
+                    </VariableSizedWrapGrid>
 
 
-                <Rectangle Height="10" Fill="Transparent" Stroke="Black" StrokeDashArray="20,20" Stretch="Fill" Opacity="0.5" Margin="0,3" StrokeThickness="2"/>
-            </StackPanel>
-            <ScrollViewer Grid.Row="1"  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">
-                <StackPanel Spacing="10" Margin="10">
 
+                    <Rectangle Height="10" Fill="Transparent" Stroke="Black" StrokeDashArray="20,20" Stretch="Fill" Opacity="0.5" Margin="0,3" StrokeThickness="2"/>
 
 
 
@@ -964,5 +975,9 @@ Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallBu
         </Grid>-->
         <!--<CheckBox VerticalAlignment="Top" Style="{StaticResource NoirCheckBoxStyle}" HorizontalAlignment="Left" Width="20" Height="20"/>
         <CheckBox VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50 0 0 0"/>-->
+
+      
+
+            
     </Grid>
 </Page>

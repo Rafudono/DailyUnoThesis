@@ -195,8 +195,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 
         public DashboardViewModel PanelDashboard
         {
-            get => (DashboardViewModel)GetValue(PanelProjectProperty);
-            set => SetValue(PanelProjectProperty, value);
+            get => (DashboardViewModel)GetValue(PanelDashboardProperty);
+            set => SetValue(PanelDashboardProperty, value);
         }
         #endregion
 

@@ -14,6 +14,7 @@
              xmlns:helperstyle="using:DailyUnoThesis.Styles.Dictionary"
     xmlns:control="using:DailyUnoThesis.Presentation.ViewModel.NavigationClasses"
       xmlns:help="using:DailyUnoThesis.Presentation.ViewModel.HelperClasses"
+           xmlns:double="using:DailyUnoThesis.Models.DobleClasses"
        xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -751,9 +752,9 @@ uen:Region.Navigator="Visibility">
 
                         <Button  Content="Добавить запись" Command="{Binding CreatNewTask}" HorizontalAlignment="Right"  VerticalAlignment="Top"
                              Margin="10" Background="{StaticResource DividerLightBrush}" CornerRadius="0" Padding="3" helperstyle:ButtonHelper.IconGlyph="&#xE710;"
-                             Visibility="{Binding IsSplitViewPaneOpen, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                             
                              Style="{StaticResource StampWithIconButtonStyle}" FontSize="15" Tag="{StaticResource AccentBlueLightBrush}"
-                             Foreground="{StaticResource InkBlueLightBrush}"  Grid.Column="1" Grid.Row="1"/>
+                             Foreground="{StaticResource InkBlueLightBrush}"  Grid.Column="1" Grid.Row="1" Visibility="{Binding IsVisibilityFrame, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                         <Grid Grid.Column="2" Grid.Row="1" x:Name="DetailsPane" Background="{StaticResource DividerLightBrush}">
 
@@ -892,5 +893,165 @@ ItemsSource="{Binding ProgressStates, Mode=TwoWay}"/>
             <!--Click="HamburgerBtn_Click"-->
 
         </Grid>
+
+        <Grid x:Name="NewProjectMember" Visibility="{Binding IsVisibleNewProjectMember,Converter={StaticResource BoolToVisibilityConverter}}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition MinWidth="320" Width="0.8*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Background="Gray" Grid.ColumnSpan="3" Opacity="0.6"  Tapped="{x:Bind ViewModel.CloseNewProjectMember}"/>
+            <Grid  Grid.Column="1" Margin="0 50" MaxHeight="800">
+                <!-- Нижние подложки (имитация стопки) -->
+                <!-- НИЖНИЙ ЛИСТ (Самый глубокий в стопке) -->
+                <Border Background="#E0E0E0"  BorderBrush="#CCC" BorderThickness="1" Margin="-10,10,0,-15">
+                    <Border.RenderTransform>
+                        <RotateTransform Angle="-3"/>
+                    </Border.RenderTransform>
+                </Border>
+
+                <!-- СРЕДНИЙ ЛИСТ -->
+                <Border Background="#EBEBEB"  BorderBrush="#CCC" BorderThickness="1" Margin="-5,3,0,0">
+                    <Border.RenderTransform>
+                        <RotateTransform Angle="-2"/>
+                    </Border.RenderTransform>
+                </Border>
+                <!--<Border Background="#DCC8B3" Margin="4,4,0,0" CornerRadius="2" Width="240" Height="65"/>
+                    <Border Background="#EAD8C3" Margin="2,2,0,0" CornerRadius="2" Width="240" Height="65"/>-->
+
+                <!-- Основная карточка -->
+                <Grid Background="#FAF6F0" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="2" Padding="0">
+                    <ScrollView>
+                        <Grid Padding="20 30">
+                            <StackPanel Spacing="10">
+                                <AutoSuggestBox x:Name="MissionSearchBox" PlaceholderText="Поиск участников..."  QueryIcon="Find" Text="{Binding SearchText, Mode=TwoWay}" MaxWidth="400" FontFamily="Segoe Print" Background="Transparent"
+                                        Foreground="{StaticResource InkBlueLightBrush}" FontSize="18" Padding="0"  Margin="0 5 10 0"
+ItemsSource="{Binding Suggestions, Mode=OneWay}" 
+TextMemberPath="Title" TextChanged="{x:Bind ViewModel.OnTextChanged}"
+SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}" QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"
+VerticalAlignment="Top" MaxHeight="40" MinWidth="300">
+                                    <AutoSuggestBox.ItemContainerStyle>
+                                        <Style TargetType="InfoBarPanel">
+                                            <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
+                                            <!--<Setter Property="MinWidth" Value="450"/>-->
+                                        </Style>
+                                    </AutoSuggestBox.ItemContainerStyle>
+                                    <AutoSuggestBox.ItemTemplate>
+                                        <DataTemplate x:DataType="double:UserSuggestionDto" >
+                                            <StackPanel Spacing="0" Margin="10,0">
+                                                <Border HorizontalAlignment="Left" BorderThickness="0,0,0,1" BorderBrush="#00224d" Padding="0,0,0,0">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding NickName}" FontWeight="SemiBold" FontSize="16" FontFamily="Segoe Print"
+                                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                                        <TextBlock Text="{Binding Email}" FontWeight="SemiBold" FontSize="13" FontFamily="Segoe Print"
+                                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                                    </StackPanel>
+                                                </Border>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </AutoSuggestBox.ItemTemplate>
+                                </AutoSuggestBox>
+
+
+                                <ListView Margin="0 20" ItemsSource="{Binding ProjectParticipants, Mode=TwoWay}" SelectedItem="{Binding SelectedProjectParticipants, Mode=TwoWay}" MaxHeight="300"  Padding="5">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="double:UserDto">
+                                            <StackPanel Spacing="0" Margin="10,0">
+                                                <Border HorizontalAlignment="Left" BorderThickness="0,0,0,1" BorderBrush="#00224d" Padding="0,0,0,0">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding NickName}" FontWeight="SemiBold" FontSize="16" FontFamily="Segoe Print"
+                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="{StaticResource InkBlueLightBrush}"/>
+                                                        <TextBlock Text="{Binding Email}" FontWeight="SemiBold" FontSize="13" FontFamily="Segoe Print"
+                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="{StaticResource InkBlueLightBrush}"/>
+
+                                                    </StackPanel>
+                                                </Border>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <Grid Margin="0,3,3,10">
+                                    <Border Background="#A3B1C6" Opacity="0.4" CornerRadius="2" Margin="2,2,-2,-2">
+                                        <Border.RenderTransform>
+                                            <SkewTransform AngleX="0.3" AngleY="0.3"/>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                    <!--  Мягкая тень под листком (в стиле Uno/WinUI)  -->
+                                    <!--  Сама записка  -->
+                                    <Border Background="#FFFDF9" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="1" Padding="16,16,16,12">
+                                        <Grid ColumnDefinitions="Auto, *, Auto">
+                                            <!--  Тонкая цветная линия-индикатор слева  -->
+                                            <Border Grid.Column="0" Width="3" Height="36" Background="{StaticResource ClueRedDarkLightBrush}" CornerRadius="1" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                            <!--  Текст задачи (Segoe Print)  -->
+                                            <StackPanel Grid.Column="1" Spacing="2">
+                                                <TextBlock Text="{Binding SelectedProjectParticipants.NickName}" FontSize="15" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
+                                                <TextBlock  FontSize="9" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold" MinHeight="0">
+                                                    <Run Text="{Binding SelectedProjectParticipants.FirstName}"/>
+                                                    <Run Text="{Binding SelectedProjectParticipants.LastName}"/>
+                                                    <Run Text="{Binding SelectedProjectParticipants.Patronymic}"/>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding SelectedProjectParticipants.Email}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
+                                            </StackPanel>
+                                            <!--  Кнопка действия (Секундомер)  -->
+
+                                        </Grid>
+                                    </Border>
+                                    <!--  КАНЦЕЛЯРСКАЯ КНОПКА-ГВОЗДИК (PIN)  -->
+                                    <!--  Расположена сверху по центру, немного выходит за верхнюю грань листка  -->
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-3,0,0" Width="20" Height="20">
+                                        <!-- Мягкая круглая тень под кнопкой -->
+                                        <Ellipse Width="17" Height="17" Fill="#A3B1C6" Opacity="0.5"  Margin="3,3,0,0"/>
+
+                                        <!-- Сама шляпка кнопки (приглушенно-красная или латунная под ваш стиль) -->
+                                        <Ellipse Width="15" Height="15" Fill="#A33131"/>
+
+                                        <!-- Крошечный блик сверху-слева для объема -->
+                                        <Ellipse Width="4" Height="6" Fill="#FFFFFF" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0">
+                                            <Ellipse.RenderTransform>
+                                                <!--  Едва заметный наклон листка для естественности  -->
+                                                <RotateTransform Angle="-3"/>
+                                            </Ellipse.RenderTransform>
+                                        </Ellipse>
+                                    </Grid>
+                                </Grid>
+
+                                <Button Grid.Row="2" Foreground="#25170C" Height="38" Style="{StaticResource DetectiveSaveButtonStyle}"
+                                        HorizontalAlignment="Right" Content="Пригласить" Command="{Binding AddProjectParticipants}" Margin="0 10 0 0" />
+
+                            </StackPanel>
+
+                        </Grid>
+                    </ScrollView>
+                </Grid>
+
+                <!-- Реалистичная металлическая скрепка вверху (как на вашей Time Record Card) -->
+                <!-- Мы используем системный символ скрепки, слегка повернутый -->
+                <Viewbox Width="50" Height="100" 
+   HorizontalAlignment="Right" 
+   VerticalAlignment="Top" 
+   Margin="0,-15,10,0">
+                    <!--Отрицательный Margin выносит её наверх-->
+                    <Path Data="M 20,40 L 20,80 A 15,15 0 0 0 50,80 L 50,30 A 20,20 0 0 0 10,30 L 10,90 A 25,25 0 0 0 60,90 L 60,40"
+Stroke="#5D6D7E" 
+StrokeThickness="4" 
+StrokeStartLineCap="Round" 
+StrokeEndLineCap="Round"
+StrokeLineJoin="Round"
+Width="30" Height="60"
+Stretch="Uniform"
+HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="20,-10,0,0">
+                        <Path.RenderTransform>
+                            <RotateTransform Angle="25"/>
+                        </Path.RenderTransform>
+                    </Path>
+                </Viewbox>
+            </Grid>
+        </Grid>
+
     </Grid>
 </Page>

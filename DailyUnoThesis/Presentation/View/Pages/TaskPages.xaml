@@ -171,7 +171,7 @@ Margin="0,0,1,0"/>
                                         
                                     </StackPanel>
 
-                                    <utu:TabBar x:Name="StaticTabBar" SelectedIndex="0" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}" Width="220" Margin="10 0 0 0"
+                                    <utu:TabBar x:Name="StaticTabBar" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}" Width="220" Margin="10 0 0 0"
                                         uen:Region.Attached="True" Orientation="Vertical" Background="Transparent" MinHeight="150" ItemContainerStyle="{StaticResource DetectiveTabBarItemStyle}">
 
                                         <utu:TabBarItem Content="Все задания"  uen:Region.Name="TaskList" utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"  Tag="Bookmarks" />

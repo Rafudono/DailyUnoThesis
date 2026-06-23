@@ -170,6 +170,47 @@ namespace DailyUnoThesis.Models;
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", data.AccessToken);
         return true;
     }
+
+
+    public async Task<ObservableCollection<UserSuggestionDto>> GetSuggestionsUser(UserSuggestionDto userSuggestionDto)
+    {
+        userSuggestionDto.ItsMeId = AuthorizedUser.GetInstance().AuthUser.Id;
+        var arg = JsonSerializer.Serialize(userSuggestionDto, options);
+        var resp = await client.PostAsync($"Users/SearchSuggestions", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await resp.Content.ReadFromJsonAsync<ObservableCollection<UserSuggestionDto>>(options);
+            return result ?? new ObservableCollection<UserSuggestionDto>();
+        }
+
+        return new ObservableCollection<UserSuggestionDto>();
+    }
+
+    public async Task<ObservableCollection<UserDto>> GetProjectParticipants(UserSuggestionDto userSuggestionDto)
+    {
+        userSuggestionDto.ItsMeId = AuthorizedUser.GetInstance().AuthUser.Id;
+        var arg = JsonSerializer.Serialize(userSuggestionDto, options);
+        var res = await client.PostAsync($"Users/GetProjectParticipants", new StringContent(arg, Encoding.UTF8, "application/json"));
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await res.Content.ReadFromJsonAsync<ObservableCollection<UserDto>>(options);
+            return result ?? new ObservableCollection<UserDto>();
+        }
+
+        return new ObservableCollection<UserDto>();
+    }
     #endregion
 
     #region Missions

@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using Windows.UI.Core;
-
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
@@ -17,6 +15,7 @@ using CommunityToolkit.Mvvm.Messaging.Internals;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Pages.Projects;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
@@ -25,7 +24,7 @@ using Newtonsoft.Json.Linq;
 using Uno.Extensions.Navigation;
 using Uno.Extensions.Navigation;
 using Uno.Toolkit.UI;
-using DailyUnoThesis.Presentation.View.Pages.Projects;
+using Windows.UI.Core;
 
 
 namespace DailyUnoThesis.Presentation.ViewModel.ProjectControl;
@@ -98,7 +97,166 @@ public partial class PanelProjectViewModel : ObservableObject
     private bool isVisibilityFrame = false;
     [ObservableProperty]
     private bool visibilityArchivalBar = false;
+
+    [ObservableProperty]
+    private bool isVisibleNewProjectMember = false;
+
+    [ObservableProperty]
+    private string searchText;
+
+    [ObservableProperty]
+    private UserSuggestionDto userSuggestion = new();
+
+    [ObservableProperty]
+    private ObservableCollection<UserSuggestionDto> suggestions = new();
+    [ObservableProperty]
+    private ObservableCollection<UserDto> projectParticipants = new ();
+    [ObservableProperty]
+    private UserDto selectedProjectParticipants = new();
+
+    // Поле для отмены старых запросов
+    private CancellationTokenSource? _searchCts;
+    private bool SelectSearchUser = false;
+
+    public async void OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            string query = sender.Text;
+
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            {
+                Suggestions.Clear();
+                return;
+            }
+
+
+            //_searchCts?.Cancel(); 
+            _searchCts = new CancellationTokenSource();
+            var token = _searchCts.Token;
+
+            try
+            {
+                await System.Threading.Tasks.Task.Delay(300, token);
+
+                UserSuggestionDto userSuggestionDto = new UserSuggestionDto() { Text = query};
+                var results = await APIHost.GetInstance().GetSuggestionsUser(userSuggestionDto);
+
+                //if (!token.IsCancellationRequested)
+                //{
+                //Suggestions.Clear();
+                //foreach (var item in results)
+                //{
+                //    Suggestions.Add(item);
+                //}
+                Suggestions = results;
+                //}
+            }
+            catch (OperationCanceledException)
+            {
+                // Это нормально, просто пользователь печатает быстрее, чем работает интернет
+            }
+        }
+    }
+
+    public async Task OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        var selected = args.SelectedItem as UserSuggestionDto;
+        if (selected != null)
+        {
+            SelectSearchUser = true;
+            UserSuggestion.IdUser = selected.IdUser;
+            UserSuggestion.NickName = selected.NickName;
+            UserSuggestion.Email = selected.Email;
+            UserSuggestion.Text = selected.NickName;
+            SearchText = selected.NickName;
+            //IsSearchFilter = true;
+            await SubmitFilters();
+        }
+        //Missions = await APIHost.GetInstance().GetSearchMission(selected.Title, selected.IdMission);
+    }
+
+    public async Task OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        var query = sender.Text;
+        if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+        {
+            Suggestions.Clear();
+            return;
+        }
+
+        if (SelectSearchUser)
+        {
+            SelectSearchUser = false;
+            return;
+        }
+        string finalQuery = args.QueryText;
+        UserSuggestion.IdUser = 0;
+        UserSuggestion.Text = finalQuery;
+        //IsSearchFilter = true;
+        await SubmitFilters();
+        //Missions =  await APIHost.GetInstance().GetSearchMission(finalQuery,0);
+    }
+
+    private async Task SubmitFilters()
+    {
+        //IsFilter = true;
+        
+        var users = await APIHost.GetInstance().GetProjectParticipants(UserSuggestion);
+        if (users.Count > 1)
+        {
+            ProjectParticipants.Clear();
+            ProjectParticipants.AddRange(users);
+        }
+        else if (users.Count == 1)
+        {
+            SelectedProjectParticipants = users[0];    
+        }
+        //ProjectsWithMissions = new(ProjectsWithMissions);
+        //MissionSuggestion.UserId = 0;
+    }
+
+    public void CloseNewProjectMember()
+    {
+        IsVisibleNewProjectMember = false;
+    }
+
+
+    private RelayCommand addNewProjectMember;
+    public RelayCommand AddNewProjectMember
+    {
+        get
+        {
+            return addNewProjectMember ?? new RelayCommand(async () =>
+            {
+                IsVisibleNewProjectMember = IsVisibleNewProjectMember ? false : true;
+
+            }
+
+            );
+
+        }
+
+    }
+
+    private RelayCommand addProjectParticipants;
+    public RelayCommand AddProjectParticipants
+    {
+        get
+        {
+            return addProjectParticipants ?? new RelayCommand(async () =>
+            {
+
+            }
+
+            );
+
+        }
+
+    }
+
     
+
 
     public async void SelectedAndVisible(TabBar sender, TabBarSelectionChangedEventArgs args)
     {
@@ -458,16 +616,21 @@ public partial class PanelProjectViewModel : ObservableObject
     {
         if (value != null && value.Id != 0)
         {
-            if (ViewModelStore.GetInstance().Category != null)
+            GoToProjectFolder(value);
+        }
+    }
+
+    public void GoToProjectFolder(Category value)
+    {
+        if (ViewModelStore.GetInstance().ProjectFolder != null)
+        {
+            GoToSelectCategory(value);
+            IsVisibilityTabBar = false;
+            CollapsedStaticTabBar();
+            IsVisibilityFrame = true;
+            if (CurrentViewState == "NarrowState")
             {
-                GoToSelectCategory(value);
-                IsVisibilityTabBar = false;
-                CollapsedStaticTabBar();
-                IsVisibilityFrame = true;
-                if (CurrentViewState == "NarrowState")
-                {
-                    IsMenuOpen = false;
-                }
+                IsMenuOpen = false;
             }
         }
     }
@@ -526,7 +689,8 @@ public partial class PanelProjectViewModel : ObservableObject
         //SelectedBaseCategory = ListNavigations[0];
         TaskPages.framePage.Navigate(typeof(ProjectFolder));
         var vm = ViewModelStore.GetInstance().ProjectFolder;
-        TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask));
+        var del = TaskPages.framePageTask.Navigate(typeof(SelectedAndNewTask), false);
+        
         ViewModelStore.GetInstance().DetailedProject.GetBoolProject(true);
         ProjectControle = vm;
 
