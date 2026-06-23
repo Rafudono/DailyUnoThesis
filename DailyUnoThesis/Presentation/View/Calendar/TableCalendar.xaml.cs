@@ -58,39 +58,40 @@ public sealed partial class TableCalendar : Page
         var stackPanel = sender as StackPanel;
         var mission = stackPanel?.DataContext as Mission;
 
-        if (mission != null)
-        {
-            args.Data.Properties.Add("DraggedItem", mission);
-            args.Data.RequestedOperation = DataPackageOperation.Move;
+        if (mission == null || mission.IsPlanned)
+            return;
 
-            var projectAncestor = FindProjectAncestor(mission);
-            if (projectAncestor?.StartDate != null)
-            {
-                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
-                {
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
-                }
-                else
-                {
-                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
-                }
-            }
-        }
-    }
+        args.Data.Properties.Add("DraggedItem", mission);
+        args.Data.RequestedOperation = DataPackageOperation.Move;
 
-    private static Mission? FindProjectAncestor(Mission mission)
-    {
+        DateTime? overallMin = null, overallMax = null;
         var current = mission;
         while (current != null)
         {
-            if (current.IsProject)
-                return current;
+            if (current.StartDate != null)
+            {
+                if (current.StartDate.Value.Date == current.EndDate?.Date)
+                {
+                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                        overallMax = current.EndDate.Value.Date;
+                }
+                else
+                {
+                    if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
+                        overallMin = current.StartDate.Value.Date;
+                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                        overallMax = current.EndDate.Value.Date;
+                }
+            }
             current = current.IdUpMissionNavigation;
         }
-        return null;
+
+        if (overallMax != null)
+        {
+            args.Data.Properties.Add("DragMaxDate", overallMax.Value);
+            if (overallMin != null)
+                args.Data.Properties.Add("DragMinDate", overallMin.Value);
+        }
     }
     //private void FrameViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     //{

@@ -18,10 +18,13 @@ using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Pages.Projects;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using DailyThesisAPI.SignalR;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json.Linq;
 using Uno.Extensions.Navigation;
+
 using Uno.Extensions.Navigation;
 using Uno.Toolkit.UI;
 using Windows.UI.Core;
@@ -113,6 +116,20 @@ public partial class PanelProjectViewModel : ObservableObject
     private ObservableCollection<UserDto> projectParticipants = new ();
     [ObservableProperty]
     private UserDto selectedProjectParticipants = new();
+
+    [ObservableProperty]
+    private string _inviteMessageHint = string.Empty;
+
+    [ObservableProperty]
+    private SolidColorBrush _inviteMessageBrush = new SolidColorBrush();
+
+    public Visibility InviteMessageHintVisibility =>
+        string.IsNullOrEmpty(InviteMessageHint) ? Visibility.Collapsed : Visibility.Visible;
+
+    partial void OnInviteMessageHintChanged(string value)
+    {
+        OnPropertyChanged(nameof(InviteMessageHintVisibility));
+    }
 
     // Поле для отмены старых запросов
     private CancellationTokenSource? _searchCts;
@@ -246,13 +263,26 @@ public partial class PanelProjectViewModel : ObservableObject
         {
             return addProjectParticipants ?? new RelayCommand(async () =>
             {
-
-            }
-
-            );
-
+                if (SelectedProjectParticipants != null)
+                {
+                    InviteMessageHint = string.Empty;
+                    var error = await ConnectionToHub.Instance.SendInvitation(
+                        SelectedProjectParticipants.Id,
+                        ViewModelStore.GetInstance().DetailedProject.MainSelectedCategory.Id
+                    );
+                    if (error != null)
+                    {
+                        InviteMessageHint = error;
+                        InviteMessageBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 192, 57, 43));
+                    }
+                    else
+                    {
+                        InviteMessageHint = "Приглашение успешно отправлено";
+                        InviteMessageBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 100, 0));
+                    }
+                }
+            });
         }
-
     }
 
     

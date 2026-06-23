@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DailyThesisAPI.SignalR;
 using Uno.Extensions.Navigation;
 using Windows.Storage;
 
@@ -31,6 +32,7 @@ public partial class LoginViewModel : ObservableObject
         var success = await APIHost.GetInstance().RefreshToken();
         if (success)
         {
+            _ = ConnectionToHub.Instance.CreateConnection();
             await _navigator.NavigateRouteAsync(this, "Main");
         }
     }
@@ -44,12 +46,13 @@ public partial class LoginViewModel : ObservableObject
             ErrorVisibility = Visibility.Visible;
             return;
         }
-        var (isSucced, resp)=await APIHost.GetInstance().AuthUser(Username, Password);
+        var (isSucced, resp)=await APIHost.GetInstance().AuthUser(Password, Username);
         if (isSucced)
         {
             ApplicationData.Current.LocalSettings.Values["RefreshToken"] =
                 AuthorizedUser.GetInstance().RefreshToken;
             var tkn = ApplicationData.Current.LocalSettings.Values["RefreshToken"];
+            _ = ConnectionToHub.Instance.CreateConnection();
             await _navigator.NavigateRouteAsync(this, "Main");
         }
         else

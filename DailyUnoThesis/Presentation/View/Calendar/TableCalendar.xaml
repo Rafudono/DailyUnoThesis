@@ -27,6 +27,7 @@
         <con:BoolToColorConverter x:Key="BoolToColorConverter"/>
         <con:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <con:DayOfWeekToShortStringConverter x:Key="DayOfWeekToShortStringConverter"/>
+        <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
 
         <Style x:Key="CalendarTabButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="Segoe Print"/>
@@ -219,14 +220,14 @@
                             <TreeView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:Mission">
                                      <TreeViewItem ItemsSource="{Binding ExpandableChildren}" IsExpanded="True">
-                                        <StackPanel CanDrag="True"
+                                        <StackPanel CanDrag="{Binding IsPlanned, Converter={StaticResource InverseBoolConverter}}"
                                      DragStarting="InboxMission_DragStarting"
                                      Margin="2,4">
                                             <TextBlock Text="{Binding Title}"
                                         FontFamily="Segoe Print"
                                         FontWeight="SemiBold"
                                         TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding FormattedTime}"
+                                            <TextBlock Text="{Binding FormattedDate}"
                                         FontSize="11"
                                         Foreground="{StaticResource ClueRedLightBrush}"/>
                                         </StackPanel>

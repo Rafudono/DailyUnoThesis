@@ -29,6 +29,11 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         [ObservableProperty]
         private Visibility _inboxVisibility = Visibility.Visible;
 
+        [ObservableProperty]
+        private string _hintMessage = string.Empty;
+        [ObservableProperty]
+        private Visibility _hintVisibility = Visibility.Collapsed;
+
         private readonly TaskStateService _taskState = TaskStateService.GetInstance();
         private Frame _newTaskFrame;
         private Border _newTaskFrameHost;
@@ -90,7 +95,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         public void OpenTaskEditor(Mission mission)
         {
             _newTaskFrame?.Navigate(typeof(SelectedAndNewTask));
-            ViewModelStore.GetInstance().DetailedTask?.GetTask(mission);
+
+            var fullMission = _taskState.Tasks.FirstOrDefault(m => m.Id == mission.Id) ?? mission;
+            ViewModelStore.GetInstance().DetailedTask?.GetTask(fullMission);
 
             if (_newTaskFrameHost != null)
                 _newTaskFrameHost.Visibility = Visibility.Visible;
@@ -106,7 +113,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
                 if (SubtreeContainsInboxMission(root, new HashSet<int>()))
                     result.Add(root);
             }
-            
+
             InboxTreeMissions = result;
         }
 
@@ -154,6 +161,16 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
             return !IsPlannedMission(mission);
         }
 
-       
+        public void SetHint(string message)
+        {
+            HintMessage = message;
+            HintVisibility = Visibility.Visible;
+        }
+
+        public void ClearHint()
+        {
+            HintMessage = string.Empty;
+            HintVisibility = Visibility.Collapsed;
+        }
     }
 }

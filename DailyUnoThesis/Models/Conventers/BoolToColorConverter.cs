@@ -24,7 +24,7 @@ internal class BoolToColorConverter : IValueConverter
                     // ДОБАВЬТЕ ЭТОТ КЕЙС
                     "LightBlue" => isOtherMonth
                         ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 211, 211, 211))
-                        : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 245, 255)), // очень бледный голубой
+                        : new SolidColorBrush(Windows.UI.Color.FromArgb(255, 224, 229, 236)), // DividerLightBrush (#E0E5EC)
                     _ => new SolidColorBrush(Windows.UI.Color.FromArgb(0, 0, 0, 0))
                 };
             }

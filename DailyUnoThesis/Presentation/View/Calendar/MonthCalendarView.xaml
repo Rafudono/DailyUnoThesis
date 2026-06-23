@@ -137,9 +137,16 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid  Margin="0,10">
+        <!-- Подсказка при перетаскивании (всегда видна, текст пуст по умолчанию) -->
+        <TextBlock x:Name="DragHint" FontFamily="Segoe Print" FontSize="14"
+                   Foreground="{StaticResource InkBlueLightBrush}"
+                   HorizontalAlignment="Center" Margin="0,4,0,0"/>
+
+        <Grid Grid.Row="1" Margin="0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -157,7 +164,7 @@
         </Grid>
 
         <!-- Дни недели (7 колонок) -->
-        <Grid Grid.Row="1" Margin="4,0,4,5" Background="Transparent">
+        <Grid Grid.Row="2" Margin="4,0,4,5" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -178,7 +185,7 @@
         </Grid>
 
         <!-- Календарь -->
-        <ItemsControl x:Name="CalendarDaysGrid" Grid.Row="2" ItemsSource="{Binding Days, Mode=OneWay}">
+        <ItemsControl x:Name="CalendarDaysGrid" Grid.Row="3" ItemsSource="{Binding Days, Mode=OneWay}">
             <interactivity:Interaction.Behaviors>
                 <pro:CalendarWidthBehavior/>
             </interactivity:Interaction.Behaviors>
@@ -218,7 +225,8 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="mod:TaskCompletionTime">
                                     <Grid PointerEntered="TaskItem_PointerEntered"
-                                              PointerExited="TaskItem_PointerExited">
+                                              PointerExited="TaskItem_PointerExited"
+                                              DoubleTapped="OpenEditTaskFrame">
                                         <StackPanel Orientation="Horizontal"
                                                         CanDrag="True"
                                                         DragStarting="StackPanel_DragStarting"

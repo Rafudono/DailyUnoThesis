@@ -5,8 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using DailyUnoThesis.Models.Conventers;
 using DailyUnoThesis.Models.MainClasses;
-using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -71,6 +71,18 @@ public sealed partial class MonthCalendarView : Page
 
         // Сначала сбрасываем фон у всех дней
         ResetAllDaysBackground();
+        SetLocalHint();
+
+        // Нельзя вставлять в другой месяц
+        if (targetDay.IsOtherMonth)
+        {
+            _highlightedDayGrid = dayGrid;
+            dayGrid.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(200, 25, 25, 112));
+            viewModel.OnDragOver(-1);
+            e.AcceptedOperation = DataPackageOperation.None;
+            SetLocalHint("вы вышли за пределы месяца");
+            return;
+        }
 
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
@@ -84,6 +96,7 @@ public sealed partial class MonthCalendarView : Page
             }
             viewModel.OnDragOver(-1);
             e.AcceptedOperation = DataPackageOperation.None;
+            SetLocalHint("вы вышли за пределы дедлайна");
             return;
         }
         // var draggedSession = draggedItem as TaskCompletionTime;
@@ -258,6 +271,7 @@ public sealed partial class MonthCalendarView : Page
         ResetAllDaysBackground();
         var viewModel = this.DataContext as MonthCalendarViewModel;
         viewModel?.OnDragOver(-1);
+        ClearLocalHint();
     }
     //private void ResetAllMargins(ListView listView)
     //{
@@ -308,6 +322,7 @@ public sealed partial class MonthCalendarView : Page
         if (insertIndex < 0) return;
 
         if (dayGrid.DataContext is not CalendarDay targetDay) return;
+        if (targetDay.IsOtherMonth) return;
 
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
@@ -332,6 +347,7 @@ public sealed partial class MonthCalendarView : Page
         ResetAllMargins(listView);
         ResetAllDaysBackground();
         viewModel.OnDragOver(-1);
+        ClearLocalHint();
     }
     private T FindParent<T>(DependencyObject child) where T : DependencyObject
     {
@@ -372,34 +388,56 @@ public sealed partial class MonthCalendarView : Page
             args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
 
-            var projectAncestor = FindProjectAncestor(mission);
-            if (projectAncestor?.StartDate != null)
+            DateTime? overallMin = null, overallMax = null;
+            var current = mission;
+            while (current != null)
             {
-                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
+                if (current.StartDate != null)
                 {
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
+                    if (current.StartDate.Value.Date == current.EndDate?.Date)
+                    {
+                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                            overallMax = current.EndDate.Value.Date;
+                    }
+                    else
+                    {
+                        if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
+                            overallMin = current.StartDate.Value.Date;
+                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
+                            overallMax = current.EndDate.Value.Date;
+                    }
                 }
-                else
-                {
-                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
-                }
+                current = current.IdUpMissionNavigation;
+            }
+
+            if (overallMax != null)
+            {
+                args.Data.Properties.Add("DragMaxDate", overallMax.Value);
+                if (overallMin != null)
+                    args.Data.Properties.Add("DragMinDate", overallMin.Value);
             }
         }
     }
 
-    private static Mission? FindProjectAncestor(Mission mission)
+    private void OpenEditTaskFrame(object sender, DoubleTappedRoutedEventArgs e)
     {
-        var current = mission;
-        while (current != null)
+        var grid = sender as Grid;
+        if (grid == null) return;
+        var session = grid.DataContext as TaskCompletionTime;
+        if (session?.IdMissionNavigation != null)
         {
-            if (current.IsProject)
-                return current;
-            current = current.IdUpMissionNavigation;
+            ViewModelStore.GetInstance().CalendarViewModel?.OpenTaskEditor(session.IdMissionNavigation);
         }
-        return null;
+    }
+
+    private void SetLocalHint(string? message = null)
+    {
+        DragHint.Text = message ?? "перенесите задачу на календарь";
+    }
+
+    private void ClearLocalHint()
+    {
+        DragHint.Text = string.Empty;
     }
 
     /*private void OpenNewTaskFrame_Click(object sender, RoutedEventArgs e)
@@ -425,21 +463,14 @@ public sealed partial class MonthCalendarView : Page
 
     private static bool IsDateAllowedByDeadline(DateTime targetDate, Windows.ApplicationModel.DataTransfer.DataPackagePropertySetView properties)
     {
-        DateTime? minDate = null, maxDate = null;
-        bool isDeadlineOnly = false;
+        if (!properties.TryGetValue("DragMaxDate", out var maxObj) || maxObj is not DateTime max)
+            return true;
 
-        if (properties.TryGetValue("DragMaxDate", out var maxObj) && maxObj is DateTime max)
-            maxDate = max;
-        if (maxDate == null) return true;
+        if (targetDate > max) return false;
 
         if (properties.TryGetValue("DragMinDate", out var minObj) && minObj is DateTime min)
-            minDate = min;
-        if (properties.TryGetValue("DragIsDeadlineOnly", out var dlObj) && dlObj is bool dl)
-            isDeadlineOnly = dl;
+            return targetDate >= min;
 
-        if (isDeadlineOnly)
-            return targetDate <= maxDate.Value;
-
-        return minDate != null && targetDate >= minDate.Value && targetDate <= maxDate.Value;
+        return true;
     }
 }

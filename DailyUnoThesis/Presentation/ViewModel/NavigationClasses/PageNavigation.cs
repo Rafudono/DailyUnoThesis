@@ -11,12 +11,13 @@ using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.View.Timer;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
-
+using DailyThesisAPI.SignalR;
+using Uno.Extensions.Navigation;
+ 
 namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 
 public partial class PageNavigation : Base
 {
-private INavigator _navigator;
 
     private int namderMainPanel = 0;
     public int NamderMainPanel
@@ -375,6 +376,25 @@ private INavigator _navigator;
     }
 
     public Pomodoro PomodoroPage { get; private set; }
+
+    private RelayCommand logOutCommand;
+    public RelayCommand LogOutCommand
+    {
+        get
+        {
+            return logOutCommand ?? new RelayCommand(async () =>
+            {
+                await APIHost.GetInstance().Logout();
+                await ConnectionToHub.Instance.Disconnect();
+                var services = App.Services;
+                if (services != null)
+                {
+                    var navigator = services.GetRequiredService<INavigator>();
+                    await navigator.NavigateRouteAsync(services, "Login");
+                }
+            });
+        }
+    }
 
     private RelayCommand openTaskListPage;
     public RelayCommand OpenTaskListPage

@@ -46,7 +46,7 @@ public class TaskStateService
     public ObservableCollection<Mission> Tasks { get; set; } = new();
     public async Task LoadAsync()
     {
-        var missions = await APIHost.GetInstance().GetMissions();
+        var missions = await APIHost.GetInstance().GetAllMyMissions();
         Tasks.Clear();
         if (missions != null)
         {
