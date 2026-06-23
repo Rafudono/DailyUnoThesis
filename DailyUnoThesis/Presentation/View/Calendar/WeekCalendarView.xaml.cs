@@ -36,6 +36,37 @@ public sealed partial class WeekCalendarView : Page
        // SyncScrollViewers();
     }
 
+    private void WeekView_DragLeave(object sender, DragEventArgs e)
+    {
+        ClearLocalHint();
+
+        if (_draggedTask == null || _draggedTask.Id != 0) return;
+
+        if (_dragTargetTimeline != null)
+        {
+            GetSessionCollection(_dragTargetTimeline)?.Remove(_draggedTask);
+            _dragTargetTimeline = null;
+        }
+
+        if (_dragTargetTimelessDate != default)
+        {
+            GetTimelessCollection(_dragTargetTimelessDate)?.Remove(_draggedTask);
+            _dragTargetTimelessDate = default;
+        }
+
+        _draggedTask = null;
+        _wasZeroDuration = false;
+    }
+
+    private void SetLocalHint(string? message = null)
+    {
+        DragHint.Text = message ?? "перенесите задачу на календарь";
+    }
+
+    private void ClearLocalHint()
+    {
+        DragHint.Text = string.Empty;
+    }
 
     private void Task_DragStarting(UIElement sender, DragStartingEventArgs e)
     {
@@ -83,6 +114,8 @@ public sealed partial class WeekCalendarView : Page
 
     private void Timeline_DragOver(object sender, DragEventArgs e)
     {
+        SetLocalHint();
+
         if (_draggedTask == null)
         {
             if (e.DataView.Properties.TryGetValue("DraggedItem", out var item) && item is Mission mission)
@@ -98,6 +131,7 @@ public sealed partial class WeekCalendarView : Page
                     e.DragUIOverride.IsCaptionVisible = false;
                     e.DragUIOverride.IsGlyphVisible = false;
                     e.Handled = true;
+                    SetLocalHint("вы вышли за пределы дедлайна");
                     return;
                 }
 
@@ -136,6 +170,16 @@ public sealed partial class WeekCalendarView : Page
 
         var targetDate = GetDateFromTimeline(timeline);
         var newStartTime = targetDate.Date.AddHours(hour).AddMinutes(minute);
+
+        if (_draggedTask.Id == 0 && !IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties))
+        {
+            e.AcceptedOperation = DataPackageOperation.None;
+            e.DragUIOverride.IsCaptionVisible = false;
+            e.DragUIOverride.IsGlyphVisible = false;
+            e.Handled = true;
+            SetLocalHint("вы вышли за пределы дедлайна");
+            return;
+        }
 
         if (_wasZeroDuration)
         {
@@ -203,6 +247,8 @@ public sealed partial class WeekCalendarView : Page
 
     private async void Timeline_Drop(object sender, DragEventArgs e)
     {
+        ClearLocalHint();
+
         if (_draggedTask == null)
         {
             if (e.DataView.Properties.TryGetValue("DraggedItem", out var item))
@@ -237,6 +283,19 @@ public sealed partial class WeekCalendarView : Page
         // Mission drag — remove temp preview task
         if (_draggedTask.Id == 0 && _draggedTask.IdMissionNavigation is Mission ghostMission)
         {
+            var dropTimeline = sender as TimelinePanel;
+            if (dropTimeline != null)
+            {
+                var dropDate = GetDateFromTimeline(dropTimeline);
+                if (!IsDateAllowedByDeadline(dropDate.Date, e.DataView.Properties))
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                    e.Handled = true;
+                    SetLocalHint("вы вышли за пределы дедлайна");
+                    return;
+                }
+            }
+
             var startTime = _draggedTask.StartExecution.Value;
             var newSession = new TaskCompletionTime
             {
@@ -263,6 +322,7 @@ public sealed partial class WeekCalendarView : Page
         _draggedTask = null;
 
         e.Handled = true;
+        ClearLocalHint();
     }
 
     private (DateTime startTime, DateTime endTime) CalculateDragPreview(DateTime targetDay, double hour, double minute, object draggedItem)
@@ -475,6 +535,8 @@ public sealed partial class WeekCalendarView : Page
 
     private async void TimelessList_Drop(object sender, DragEventArgs e)
     {
+        ClearLocalHint();
+
         var listView = sender as ListView;
         if (listView == null) return;
 
@@ -484,6 +546,14 @@ public sealed partial class WeekCalendarView : Page
         {
             if (_draggedTask.Id == 0 && _draggedTask.IdMissionNavigation is Mission ghostMission)
             {
+                if (!IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties))
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                    e.Handled = true;
+                    SetLocalHint("вы вышли за пределы дедлайна");
+                    return;
+                }
+
                 var newSession = new TaskCompletionTime
                 {
                     IdMission = ghostMission.Id,
@@ -503,6 +573,7 @@ public sealed partial class WeekCalendarView : Page
             }
             _draggedTask = null;
             e.Handled = true;
+            ClearLocalHint();
             return;
         }
 
@@ -517,6 +588,14 @@ public sealed partial class WeekCalendarView : Page
             }
             else if (item is Mission mission)
             {
+                if (!IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties))
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                    e.Handled = true;
+                    SetLocalHint("вы вышли за пределы дедлайна");
+                    return;
+                }
+
                 var newSession = new TaskCompletionTime
                 {
                     IdMission = mission.Id,
@@ -549,6 +628,7 @@ public sealed partial class WeekCalendarView : Page
                     e.DragUIOverride.IsCaptionVisible = false;
                     e.DragUIOverride.IsGlyphVisible = false;
                     e.Handled = true;
+                    SetLocalHint("вы вышли за пределы дедлайна");
                     return;
                 }
 

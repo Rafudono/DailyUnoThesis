@@ -41,6 +41,28 @@ public partial class DashboardViewModel: ObservableObject
 
     [ObservableProperty]
     private bool isVisiblePersonalAccount = false;
+
+    [ObservableProperty]
+    private ObservableCollection<Invitation> invitations = new();
+
+    [ObservableProperty]
+    private byte[]? userImage;
+
+    [ObservableProperty]
+    private bool isChangePasswordVisible = false;
+
+    [ObservableProperty]
+    private bool isReadOnlyData = false;
+
+    [ObservableProperty]
+    private string oldPassword = string.Empty;
+
+    [ObservableProperty]
+    private string newPassword = string.Empty;
+
+    [ObservableProperty]
+    private string confirmPassword = string.Empty;
+
 // Списки для списков задач и проектов
 [ObservableProperty]
     public ObservableCollection<DashboardMissionDto> activeMissions = new();
@@ -89,6 +111,18 @@ public partial class DashboardViewModel: ObservableObject
         {
             System.Diagnostics.Debug.WriteLine($"Ошибка загрузки данных рабочего стола: {ex.Message}");
         }
+
+        LoadInvitations();
+    }
+
+    private void LoadInvitations()
+    {
+        Invitations.Clear();
+        if (User?.InvitationIdToUserNavigations != null)
+        {
+            foreach (var inv in User.InvitationIdToUserNavigations)
+                Invitations.Add(inv);
+        }
     }
 
     public void ClosePersonalAccountPanel()
@@ -110,6 +144,8 @@ public partial class DashboardViewModel: ObservableObject
             {
                 IsVisiblePersonalAccount = IsVisiblePersonalAccount ? false : true;
 
+                if (IsVisiblePersonalAccount)
+                    LoadInvitations();
             }
 
             );
@@ -125,10 +161,48 @@ public partial class DashboardViewModel: ObservableObject
         {
             return editUser ?? new RelayCommand(async () =>
             {
+                try
+                {
+                    var updated = await APIHost.GetInstance().EditUser(User, OldPassword,
+                        !string.IsNullOrEmpty(NewPassword) ? NewPassword : null);
 
-                IsVisiblePersonalAccount =false;
+                    AuthorizedUser.GetInstance().AuthUser = updated;
+                    User = updated;
+
+                    IsVisiblePersonalAccount = false;
+                    IsChangePasswordVisible = false;
+                    OldPassword = string.Empty;
+                    NewPassword = string.Empty;
+                    ConfirmPassword = string.Empty;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // неверный пароль — пока ничего не делаем, позже можно показать ошибку в UI
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Ошибка сохранения профиля: {ex.Message}");
+                }
             }
             );
+        }
+    }
+
+    private RelayCommand toggleChangePassword;
+    public RelayCommand ToggleChangePassword
+    {
+        get
+        {
+            return toggleChangePassword ?? new RelayCommand(() =>
+            {
+                IsChangePasswordVisible = !IsChangePasswordVisible;
+                if (!IsChangePasswordVisible)
+                {
+                    OldPassword = string.Empty;
+                    NewPassword = string.Empty;
+                    ConfirmPassword = string.Empty;
+                }
+            });
         }
     }
 

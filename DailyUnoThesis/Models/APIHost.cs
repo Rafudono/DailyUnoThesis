@@ -232,7 +232,6 @@ namespace DailyUnoThesis.Models;
     internal async Task<List<Mission>> GetOverdue()
     {
         int id = AuthorizedUser.GetInstance().AuthUser.Id;
-       //int id = 1;
         var resp = await client.GetAsync($"Missions/GetOverdue?id={id}");
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
@@ -522,10 +521,10 @@ namespace DailyUnoThesis.Models;
     internal async Task<ObservableCollection<Category>> GetProject()
     {
         //int id = AuthorizedUser.GetInstance().AuthUser.Id;
-        int id = 1;
+        //int id = 1;
         ObservableCollection<Category> categories = new ObservableCollection<Category>();
         //var req = JsonSerializer.Serialize(id, options);
-        var resp = await client.GetAsync($"Categories/GetMyProject?id={id}");
+        var resp = await client.GetAsync($"Categories/GetMyProject?id={AuthorizedUser.GetInstance().AuthUser.Id}");
         //?id={AuthorizedUser.GetInstance().AuthUser.Id}
         if (resp.StatusCode != System.Net.HttpStatusCode.OK)
         {
@@ -614,6 +613,33 @@ namespace DailyUnoThesis.Models;
     #endregion
 
     #region Put
+
+    public async Task<User> EditUser(User user, string oldPassword, string? newPassword = null)
+    {
+        var dto = new
+        {
+            id = user.Id,
+            nickName = user.NickName,
+            firstName = user.FirstName,
+            lastName = user.LastName,
+            patronymic = user.Patronymic,
+            email = user.Email,
+            login = user.Login,
+            oldPassword,
+            newPassword
+        };
+        var arg = JsonSerializer.Serialize(dto, options);
+        var resp = await client.PutAsync("Users", new StringContent(arg, Encoding.UTF8, "application/json"));
+        if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            throw new UnauthorizedAccessException("Неверный старый пароль");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            throw new Exception($"Не удалось обновить профиль: {Error}");
+        }
+        var updated = await resp.Content.ReadFromJsonAsync<User>(options);
+        return updated;
+    }
 
     public async Task EditCategory(Category category)
     {

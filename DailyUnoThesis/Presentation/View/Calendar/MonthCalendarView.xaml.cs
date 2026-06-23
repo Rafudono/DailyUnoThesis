@@ -5,8 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using DailyUnoThesis.Models.Conventers;
 using DailyUnoThesis.Models.MainClasses;
-using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -71,6 +71,18 @@ public sealed partial class MonthCalendarView : Page
 
         // Сначала сбрасываем фон у всех дней
         ResetAllDaysBackground();
+        SetLocalHint();
+
+        // Нельзя вставлять в другой месяц
+        if (targetDay.IsOtherMonth)
+        {
+            _highlightedDayGrid = dayGrid;
+            dayGrid.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(200, 25, 25, 112));
+            viewModel.OnDragOver(-1);
+            e.AcceptedOperation = DataPackageOperation.None;
+            SetLocalHint("вы вышли за пределы месяца");
+            return;
+        }
 
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
@@ -84,6 +96,7 @@ public sealed partial class MonthCalendarView : Page
             }
             viewModel.OnDragOver(-1);
             e.AcceptedOperation = DataPackageOperation.None;
+            SetLocalHint("вы вышли за пределы дедлайна");
             return;
         }
         // var draggedSession = draggedItem as TaskCompletionTime;
@@ -258,6 +271,7 @@ public sealed partial class MonthCalendarView : Page
         ResetAllDaysBackground();
         var viewModel = this.DataContext as MonthCalendarViewModel;
         viewModel?.OnDragOver(-1);
+        ClearLocalHint();
     }
     //private void ResetAllMargins(ListView listView)
     //{
@@ -308,6 +322,7 @@ public sealed partial class MonthCalendarView : Page
         if (insertIndex < 0) return;
 
         if (dayGrid.DataContext is not CalendarDay targetDay) return;
+        if (targetDay.IsOtherMonth) return;
 
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
@@ -332,6 +347,7 @@ public sealed partial class MonthCalendarView : Page
         ResetAllMargins(listView);
         ResetAllDaysBackground();
         viewModel.OnDragOver(-1);
+        ClearLocalHint();
     }
     private T FindParent<T>(DependencyObject child) where T : DependencyObject
     {
@@ -388,6 +404,27 @@ public sealed partial class MonthCalendarView : Page
                 }
             }
         }
+    }
+
+    private void OpenEditTaskFrame(object sender, DoubleTappedRoutedEventArgs e)
+    {
+        var grid = sender as Grid;
+        if (grid == null) return;
+        var session = grid.DataContext as TaskCompletionTime;
+        if (session?.IdMissionNavigation != null)
+        {
+            ViewModelStore.GetInstance().CalendarViewModel?.OpenTaskEditor(session.IdMissionNavigation);
+        }
+    }
+
+    private void SetLocalHint(string? message = null)
+    {
+        DragHint.Text = message ?? "перенесите задачу на календарь";
+    }
+
+    private void ClearLocalHint()
+    {
+        DragHint.Text = string.Empty;
     }
 
     private static Mission? FindProjectAncestor(Mission mission)

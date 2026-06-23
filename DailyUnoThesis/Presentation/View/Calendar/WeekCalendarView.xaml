@@ -99,9 +99,9 @@
 
         <DataTemplate x:Key="TimelessTaskTemplate" x:DataType="mod:TaskCompletionTime">
             <Border Background="{Binding IdMissionNavigation.Tag, Converter={StaticResource TagColorToBrushConverter}}"
-                    CornerRadius="3"
-                    Margin="0.2"
-                    Padding="4,2"
+                    CornerRadius="2"
+                    Margin="0.5, 0.2, 0.5, 0.2"
+                    Padding="2"
                     CanDrag="True"
                     DragStarting="TimelessTask_DragStarting"
                     DoubleTapped="OpenEditTaskFrame">
@@ -123,7 +123,7 @@
     <Page.DataContext>
         <control:WeekCalendarViewModel/>
     </Page.DataContext>
-    <Grid Margin="0,10">
+    <Grid Margin="0,10" AllowDrop="True" DragLeave="WeekView_DragLeave">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -170,11 +170,18 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
+                <!-- Подсказка при перетаскивании (всегда видна, текст пуст по умолчанию) -->
+                <TextBlock x:Name="DragHint" Grid.ColumnSpan="8"
+                           FontFamily="Segoe Print" FontSize="14"
+                           Foreground="{StaticResource InkBlueLightBrush}"
+                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+
                 <!-- Заголовки дней -->
-                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="ПН" FontFamily="Segoe Print" FontSize="14"/>
                         <TextBlock Text="{Binding MondayDate}" FontSize="16" FontWeight="Bold"
@@ -182,7 +189,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="ВТ" FontFamily="Segoe Print" FontSize="14"/>
                         <TextBlock Text="{Binding TuesdayDate}" FontSize="16" FontWeight="Bold"
@@ -190,7 +197,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="3" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="СР" FontFamily="Segoe Print" FontSize="14"/>
                         <TextBlock Text="{Binding WednesdayDate}" FontSize="16" FontWeight="Bold"
@@ -198,7 +205,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="4" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="ЧТ" FontFamily="Segoe Print" FontSize="14"/>
                         <TextBlock Text="{Binding ThursdayDate}" FontSize="16" FontWeight="Bold"
@@ -206,7 +213,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="5" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="5" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="ПТ" FontFamily="Segoe Print" FontSize="14"/>
                         <TextBlock Text="{Binding FridayDate}" FontSize="16" FontWeight="Bold"
@@ -214,7 +221,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="6" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="6" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="СБ" FontFamily="Segoe Print" FontSize="14" Foreground="{StaticResource DangerBrush}"/>
                         <TextBlock Text="{Binding SaturdayDate}" FontSize="16" FontWeight="Bold"
@@ -222,7 +229,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="7" Style="{StaticResource DayHeaderStyle}">
+                <Border Grid.Row="1" Grid.Column="7" Style="{StaticResource DayHeaderStyle}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="ВС" FontFamily="Segoe Print" FontSize="14" Foreground="{StaticResource DangerBrush}"/>
                         <TextBlock Text="{Binding SundayDate}" FontSize="16" FontWeight="Bold"
@@ -232,7 +239,7 @@
 
                 
                 <!--свернуть-->
-                <Button Command="{Binding ToggleNonWorkingHoursCommand}" Grid.Row="1"
+                <Button Command="{Binding ToggleNonWorkingHoursCommand}" Grid.Row="2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Background="Transparent"
@@ -244,7 +251,7 @@
                 </Button>
 
                 <!-- Задачи без времени (00:00:01) над шкалой каждого дня -->
-                <Border Grid.Row="1" Grid.Column="1" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="1" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding MondayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -253,7 +260,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="2" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="2" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding TuesdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -262,7 +269,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="3" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="3" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding WednesdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -271,7 +278,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="4" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="4" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding ThursdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -280,7 +287,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="5" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="5" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding FridayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -289,7 +296,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="6" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="6" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding SaturdayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -298,7 +305,7 @@
                               Drop="TimelessList_Drop"
                               DragOver="TimelessList_DragOver"/>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="7" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
+                <Border Grid.Row="2" Grid.Column="7" Background="Transparent" BorderBrush="#338B5CF6" BorderThickness="0,0,1,1" MinHeight="28">
                     <ListView ItemsSource="{Binding SundayTimelessSessions}"
                               ItemTemplate="{StaticResource TimelessTaskTemplate}"
                               Background="Transparent"
@@ -309,7 +316,7 @@
                 </Border>
 
                 <!--часы-->
-                <ItemsControl Grid.Row="2" Grid.Column="0" 
+                <ItemsControl Grid.Row="3" Grid.Column="0" 
               ItemsSource="{Binding Hours}" 
               VerticalAlignment="Top">
                     <ItemsControl.ItemsPanel>
@@ -335,7 +342,7 @@
                 </ItemsControl>
                 
                 <!-- пн -->
-                <ScrollViewer x:Name="MondayScrollViewer" Grid.Row="2" Grid.Column="1"
+                <ScrollViewer x:Name="MondayScrollViewer" Grid.Row="3" Grid.Column="1"
               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top"  IsHitTestVisible="False">
@@ -367,7 +374,7 @@
                     </Grid>
                 </ScrollViewer>
                 <!--вт-->
-                <ScrollViewer x:Name="TuesdayScrollViewer" Grid.Row="2" Grid.Column="2"
+                <ScrollViewer x:Name="TuesdayScrollViewer" Grid.Row="3" Grid.Column="2"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -392,7 +399,7 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     </Grid>
                 </ScrollViewer>
                 <!--ср-->
-                <ScrollViewer x:Name="WednesdayScrollViewer" Grid.Row="2" Grid.Column="3"
+                <ScrollViewer x:Name="WednesdayScrollViewer" Grid.Row="3" Grid.Column="3"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -417,7 +424,7 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     </Grid>
                 </ScrollViewer>
                 <!--чт-->
-                <ScrollViewer x:Name="ThursdayScrollViewer" Grid.Row="2" Grid.Column="4"
+                <ScrollViewer x:Name="ThursdayScrollViewer" Grid.Row="3" Grid.Column="4"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -442,7 +449,7 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     </Grid>
                 </ScrollViewer>
                 <!--пт-->
-                <ScrollViewer x:Name="FridayScrollViewer" Grid.Row="2" Grid.Column="5"
+                <ScrollViewer x:Name="FridayScrollViewer" Grid.Row="3" Grid.Column="5"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -467,7 +474,7 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     </Grid>
                 </ScrollViewer>
                 <!--сб-->
-                <ScrollViewer x:Name="SaturdayScrollViewer" Grid.Row="2" Grid.Column="6"
+                <ScrollViewer x:Name="SaturdayScrollViewer" Grid.Row="3" Grid.Column="6"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">
@@ -492,7 +499,7 @@ VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     </Grid>
                 </ScrollViewer>
                 <!--вскр-->
-                <ScrollViewer x:Name="SundayScrollViewer" Grid.Row="2" Grid.Column="7"
+                <ScrollViewer x:Name="SundayScrollViewer" Grid.Row="3" Grid.Column="7"
 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <Grid>
                         <ItemsControl ItemsSource="{Binding Hours}" VerticalAlignment="Top" IsHitTestVisible="False">

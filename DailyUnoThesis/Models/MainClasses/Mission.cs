@@ -125,6 +125,16 @@ public partial class Mission: INotifyPropertyChanged
         }
     }
 
+    public string FormattedDate
+    {
+        get
+        {
+            if (StartDate.HasValue)
+                return StartDate.Value.ToString("dd.MM.yyyy");
+            return string.Empty;
+        }
+    }
+
     private bool _isExpanded = false;
     public bool IsExpanded
     {
@@ -165,6 +175,9 @@ public partial class Mission: INotifyPropertyChanged
             return null;
         }
     }
+
+    public bool IsPlanned => StartDate.HasValue && EndDate.HasValue
+        && StartDate.Value != DateTime.MinValue && EndDate.Value != DateTime.MinValue;
 
     private bool HasProjectAncestor()
     {

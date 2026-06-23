@@ -38,7 +38,16 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
 
-
+        <Style x:Key="AuthPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="FontFamily" Value="Segoe Print"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="#00224d"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#A3B1C6"/>
+            <Setter Property="Padding" Value="0,4,0,2"/>
+            <Setter Property="PlaceholderForeground" Value="#A3B1C6"/>
+        </Style>
 
     </Page.Resources>
 
@@ -312,67 +321,93 @@ Margin="20,-20,0,0">
             <Grid Background="Gray" Grid.ColumnSpan="3" Opacity="0.6"  Tapped="{x:Bind ViewModel.ClosePersonalAccountPanel}"/>
             <Grid  Grid.Column="1" Margin="0 50" MaxHeight="800">
                 <!-- Нижние подложки (имитация стопки) -->
-                <!-- НИЖНИЙ ЛИСТ (Самый глубокий в стопке) -->
-                <Border Background="#E0E0E0"  BorderBrush="#CCC" BorderThickness="1" Margin="-10,10,0,-15">
+                <Border Background="#E0E0E0" BorderBrush="#CCC" BorderThickness="1" Margin="-10,10,0,-15">
                     <Border.RenderTransform>
                         <RotateTransform Angle="-3"/>
                     </Border.RenderTransform>
                 </Border>
 
-                <!-- СРЕДНИЙ ЛИСТ -->
-                <Border Background="#EBEBEB"  BorderBrush="#CCC" BorderThickness="1" Margin="-5,3,0,0">
+                <Border Background="#EBEBEB" BorderBrush="#CCC" BorderThickness="1" Margin="-5,3,0,0">
                     <Border.RenderTransform>
                         <RotateTransform Angle="-2"/>
                     </Border.RenderTransform>
                 </Border>
-                <!--<Border Background="#DCC8B3" Margin="4,4,0,0" CornerRadius="2" Width="240" Height="65"/>
-                    <Border Background="#EAD8C3" Margin="2,2,0,0" CornerRadius="2" Width="240" Height="65"/>-->
 
                 <!-- Основная карточка -->
                 <Grid Background="#FAF6F0" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="2" Padding="0">
                     <ScrollView>
-                    <Grid Padding="20 30">
-                        <StackPanel Spacing="10">
-                            <StackPanel Orientation="Horizontal">
-                                <Border Grid.Column="0" Width="46" Height="52" Background="#DCC8B3" CornerRadius="1" BorderBrush="#CBB39C" BorderThickness="1" VerticalAlignment="Center">
-                            <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#FAF6F0"/>
-                        </Border>
-                        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
-                                    <TextBox Margin="0 0 0 0" Text="{Binding User.NickName, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Никнейм" MinHeight="30" FontSize="20" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
-                                    <TextBlock Text="ДОСТУП: ОПЕРАТИВНЫЙ" FontSize="8" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold"/>
-                        </StackPanel>
+                    <Grid Padding="20 30" RowDefinitions="Auto, Auto, Auto">
+                            <!-- ========== ШАПКА: Аватар + Ник ========== -->
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Margin="0 0 0 15">
+                                <!-- Пустое место под фото (круг) -->
+                                <Border Grid.Column="0" Width="72" Height="72" Background="#DCC8B3" CornerRadius="36"
+                                        BorderBrush="#CBB39C" BorderThickness="1" VerticalAlignment="Center">
+                                    <FontIcon Glyph="&#xE77B;" FontSize="28" Foreground="#FAF6F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding User.NickName}" FontFamily="Segoe Print" FontSize="22" FontWeight="Bold" Foreground="#25170C"/>
+                                    <TextBlock Text="{Binding User.Login}" FontFamily="Consolas" FontSize="11" Foreground="#9A7B56"/>
+                                    <TextBlock Text="ДОСТУП: ОПЕРАТИВНЫЙ" FontSize="8" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold" Margin="0 2 0 0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- ========== ПРИГЛАШЕНИЯ ========== -->
+                            <StackPanel Grid.Row="1" Visibility="{Binding Invitations.Count, Converter={StaticResource CountToVisibilityConverter}}" Margin="0 0 0 10">
+                                <Border BorderBrush="#CBB39C" BorderThickness="0 0 0 1" Margin="0 0 0 8"/>
+                                <TextBlock Text="ПРИГЛАШЕНИЯ В ПРОЕКТЫ" FontFamily="Consolas" FontSize="9" FontWeight="Bold" Foreground="#9A7B56" Margin="0 0 0 6"/>
+                                <ItemsControl ItemsSource="{Binding Invitations}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="mod:Invitation">
+                                            <Grid Padding="8 4" ColumnDefinitions="*, Auto, Auto">
+                                                <TextBlock Grid.Column="0" Text="{Binding IdProjectNavigation.Title}" FontFamily="Segoe Print" FontSize="13" Foreground="#25170C" VerticalAlignment="Center"/>
+                                                <Button Grid.Column="1" Content="✓" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#2B5B84" Foreground="#2B5B84" Margin="0 0 4 0"/>
+                                                <Button Grid.Column="2" Content="✕" FontSize="14" Style="{StaticResource TextsButtonStyle}" Tag="#A33131" Foreground="#A33131"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
 
-                            <TextBox Margin="0 0 0 0" Text="{Binding User.FirstName, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Имя" MinHeight="10" FontSize="14" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
+                            <!-- ========== ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ========== -->
+                            <StackPanel Grid.Row="2" Spacing="10">
+                                <Border BorderBrush="#CBB39C" BorderThickness="0 0 0 1" Margin="0 0 0 4"/>
 
-                            <TextBox Margin="0 0 0 0" Text="{Binding User.LastName, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Фамилия" MinHeight="10" FontSize="14" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
-                            <TextBox Margin="0 0 0 0" Text="{Binding User.Login, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Логин" MinHeight="10" FontSize="14" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
-                            <TextBox Margin="0 0 0 0" Text="{Binding User.Password, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Пароль" MinHeight="10" FontSize="14" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
-                                <TextBox Margin="0 0 0 0" Text="{Binding User.Email, Mode=TwoWay}" Foreground="#25170C" MinWidth="150" Grid.Column="1" Header="Почта" MinHeight="10" FontSize="14" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
-                                <Button Grid.Row="2" Foreground="#25170C" Height="38" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Right" Content="Сохранить" Command="{Binding EditUser}" Margin="0 10 0 0" />
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                    <TextBox Grid.Column="0" Text="{Binding User.FirstName, Mode=TwoWay}" Header="Имя" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+                                    <TextBox Grid.Column="1" Text="{Binding User.LastName, Mode=TwoWay}" Header="Фамилия" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+                                    <TextBox Grid.Column="2" Text="{Binding User.Patronymic, Mode=TwoWay}" Header="Отчество" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+                                </Grid>
 
+                                <TextBox Text="{Binding User.Email, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnlyData}" Header="Почта" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+                                <TextBox Text="{Binding User.Login, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnlyData}" Header="Логин" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+
+                                <!-- ========== СМЕНА ПАРОЛЯ ========== -->
+                                <Button Content="Изменить пароль" Command="{Binding ToggleChangePassword}"
+                                        Style="{StaticResource NoirDialogButtonStyle}"
+                                        Foreground="#2B5B84" BorderBrush="#2B5B84"
+                                        FontSize="13" HorizontalAlignment="Left"
+                                        Padding="14,6" Margin="0 6 0 0"/>
+
+                                <StackPanel Visibility="{Binding IsChangePasswordVisible, Converter={StaticResource BoolToVisibilityConverter}}" Spacing="8" Margin="0 0 0 4">
+                                    <Border BorderBrush="#CBB39C" BorderThickness="0 0 0 1" Margin="0 0 0 4"/>
+                                    <PasswordBox Password="{Binding OldPassword, Mode=TwoWay}" Header="Старый пароль" Style="{StaticResource AuthPasswordBoxStyle}"/>
+                                    <PasswordBox Password="{Binding NewPassword, Mode=TwoWay}" Header="Новый пароль" Style="{StaticResource AuthPasswordBoxStyle}"/>
+                                    <PasswordBox Password="{Binding ConfirmPassword, Mode=TwoWay}" Header="Повторите пароль" Style="{StaticResource AuthPasswordBoxStyle}"/>
+                                </StackPanel>
+
+                                <Button HorizontalAlignment="Right" Content="Сохранить" Command="{Binding EditUser}"
+                                        Foreground="#25170C" Height="36" Style="{StaticResource DetectiveSaveButtonStyle}" Margin="0 6 0 0"/>
                             </StackPanel>
-                    </Grid>
+                        </Grid>
                     </ScrollView>
                 </Grid>
 
-                <!-- Реалистичная металлическая скрепка вверху (как на вашей Time Record Card) -->
-                <!-- Мы используем системный символ скрепки, слегка повернутый -->
-                <Viewbox Width="50" Height="100" 
-   HorizontalAlignment="Right" 
-   VerticalAlignment="Top" 
-   Margin="0,-15,10,0">
-                    <!--Отрицательный Margin выносит её наверх-->
+                <!-- Скрепка -->
+                <Viewbox Width="50" Height="100" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-15,10,0">
                     <Path Data="M 20,40 L 20,80 A 15,15 0 0 0 50,80 L 50,30 A 20,20 0 0 0 10,30 L 10,90 A 25,25 0 0 0 60,90 L 60,40"
-Stroke="#5D6D7E" 
-StrokeThickness="4" 
-StrokeStartLineCap="Round" 
-StrokeEndLineCap="Round"
-StrokeLineJoin="Round"
-Width="30" Height="60"
-Stretch="Uniform"
-HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="20,-10,0,0">
+                          Stroke="#5D6D7E" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                          StrokeLineJoin="Round" Width="30" Height="60" Stretch="Uniform"
+                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,-10,0,0">
                         <Path.RenderTransform>
                             <RotateTransform Angle="25"/>
                         </Path.RenderTransform>

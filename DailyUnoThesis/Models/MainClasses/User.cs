@@ -35,4 +35,8 @@ public partial class User
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+    public virtual ICollection<Invitation> InvitationIdToUserNavigations { get; set; } = new List<Invitation>();
+
+    public virtual ICollection<Invitation> InvitationIdFromUserNavigations { get; set; } = new List<Invitation>();
 }

@@ -58,39 +58,27 @@ public sealed partial class TableCalendar : Page
         var stackPanel = sender as StackPanel;
         var mission = stackPanel?.DataContext as Mission;
 
-        if (mission != null)
-        {
-            args.Data.Properties.Add("DraggedItem", mission);
-            args.Data.RequestedOperation = DataPackageOperation.Move;
+        if (mission == null || mission.IsPlanned)
+            return;
 
-            var projectAncestor = FindProjectAncestor(mission);
-            if (projectAncestor?.StartDate != null)
+        args.Data.Properties.Add("DraggedItem", mission);
+        args.Data.RequestedOperation = DataPackageOperation.Move;
+
+        var parent = mission.IdUpMissionNavigation;
+        if (parent?.StartDate != null)
+        {
+            if (parent.StartDate.Value.Date == parent.EndDate?.Date)
             {
-                if (projectAncestor.StartDate.Value.Date == projectAncestor.EndDate?.Date)
-                {
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", true);
-                }
-                else
-                {
-                    args.Data.Properties.Add("DragMinDate", projectAncestor.StartDate.Value.Date);
-                    args.Data.Properties.Add("DragMaxDate", projectAncestor.EndDate.Value.Date);
-                    args.Data.Properties.Add("DragIsDeadlineOnly", false);
-                }
+                args.Data.Properties.Add("DragMaxDate", parent.EndDate.Value.Date);
+                args.Data.Properties.Add("DragIsDeadlineOnly", true);
+            }
+            else
+            {
+                args.Data.Properties.Add("DragMinDate", parent.StartDate.Value.Date);
+                args.Data.Properties.Add("DragMaxDate", parent.EndDate.Value.Date);
+                args.Data.Properties.Add("DragIsDeadlineOnly", false);
             }
         }
-    }
-
-    private static Mission? FindProjectAncestor(Mission mission)
-    {
-        var current = mission;
-        while (current != null)
-        {
-            if (current.IsProject)
-                return current;
-            current = current.IdUpMissionNavigation;
-        }
-        return null;
     }
     //private void FrameViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     //{
