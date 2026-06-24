@@ -432,6 +432,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         }
 
                         await APIHost.GetInstance().EditMission(Mission);
+                        await TaskStateService.GetInstance().LoadAsync();
                         //await System.Threading.Tasks.Task.Delay(400);
                         //FillData();
 
@@ -688,6 +689,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                     await APIHost.GetInstance().EditMission(Task);
 
                 }
+                await TaskStateService.GetInstance().LoadAsync();
                 await FillData();
 
             }
@@ -767,6 +769,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             //Missions = new(Missions);
             await System.Threading.Tasks.Task.Delay(400);
             await APIHost.GetInstance().DeleteMission(mission);
+            await TaskStateService.GetInstance().LoadAsync();
             await System.Threading.Tasks.Task.Delay(300);
             Mission mis = new();
             if (mission.IdUpMission == 0 || mission.IdUpMission == null)

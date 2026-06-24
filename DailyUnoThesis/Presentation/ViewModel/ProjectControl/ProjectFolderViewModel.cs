@@ -481,6 +481,7 @@ public partial class ProjectFolderViewModel : ObservableObject
                     }
 
                     await APIHost.GetInstance().EditMission(Mission);
+                    await TaskStateService.GetInstance().LoadAsync();
                     await CategoryService.Instance.RefreshFromProjectsDatabaseAsync();
                     //await System.Threading.Tasks.Task.Delay(400);
                     //FillData();
@@ -742,6 +743,7 @@ public partial class ProjectFolderViewModel : ObservableObject
                 await APIHost.GetInstance().EditMission(Task);
 
             }
+            await TaskStateService.GetInstance().LoadAsync();
             await FillData();
 
         }
@@ -821,6 +823,7 @@ public partial class ProjectFolderViewModel : ObservableObject
         //Missions = new(Missions);
         await System.Threading.Tasks.Task.Delay(400);
         await APIHost.GetInstance().DeleteMission(mission);
+        await TaskStateService.GetInstance().LoadAsync();
         await System.Threading.Tasks.Task.Delay(300);
         Mission mis = new();
         if (mission.IdUpMission == 0 || mission.IdUpMission == null)

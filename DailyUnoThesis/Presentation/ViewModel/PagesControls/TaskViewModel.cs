@@ -437,6 +437,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         }
 
                         await APIHost.GetInstance().EditMission(Mission);
+                        await _taskState.LoadAsync();
                         await ViewModelStore.GetInstance().FillDataViewModels();
 
                         //await System.Threading.Tasks.Task.Delay(400);
@@ -511,6 +512,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             mission.IsDelete = true;
             await System.Threading.Tasks.Task.Delay(400);
             await APIHost.GetInstance().DeleteMission(mission);
+            await _taskState.LoadAsync();
             await System.Threading.Tasks.Task.Delay(300);
             if (mission.Id == Task.Id)
                 Task = new();

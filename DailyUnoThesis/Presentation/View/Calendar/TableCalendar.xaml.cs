@@ -64,34 +64,7 @@ public sealed partial class TableCalendar : Page
         args.Data.Properties.Add("DraggedItem", mission);
         args.Data.RequestedOperation = DataPackageOperation.Move;
 
-        DateTime? overallMin = null, overallMax = null;
-        var current = mission;
-        while (current != null)
-        {
-            if (current.StartDate != null)
-            {
-                if (current.StartDate.Value.Date == current.EndDate?.Date)
-                {
-                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
-                        overallMax = current.EndDate.Value.Date;
-                }
-                else
-                {
-                    if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
-                        overallMin = current.StartDate.Value.Date;
-                    if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
-                        overallMax = current.EndDate.Value.Date;
-                }
-            }
-            current = current.IdUpMissionNavigation;
-        }
-
-        if (overallMax != null)
-        {
-            args.Data.Properties.Add("DragMaxDate", overallMax.Value);
-            if (overallMin != null)
-                args.Data.Properties.Add("DragMinDate", overallMin.Value);
-        }
+        DeadlineHelper.AddDeadlineProperties(args.Data.Properties, mission);
     }
     //private void FrameViewSelectionChanged(object sender, SelectionChangedEventArgs e)
     //{

@@ -351,6 +351,8 @@ public partial class MonthCalendarViewModel : ObservableObject
     /// </summary>
     private static bool IsPlannedMission(Mission mission)       //запланирована ли миссия
     {
+        if (mission.IsComplete == true)
+            return true;
         if (mission.StartDate != null && mission.EndDate != null&& mission.StartDate!= DateTime.MinValue&& mission.EndDate!= DateTime.MinValue)  //назначили дедлайн
         {
             if (mission.StartDate.Value.Date == mission.EndDate.Value.Date)  //можно ли выполнить задачу за 1 день
