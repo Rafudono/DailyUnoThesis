@@ -209,6 +209,13 @@ public partial class PageNavigation : Base
         }
     }
 
+    private MainPage Page;
+
+    internal void SetControl(MainPage mainPage)
+    {
+        Page = mainPage;
+    }
+
     private bool isIcon = true;
     public bool IsIcon
     {
@@ -385,13 +392,100 @@ public partial class PageNavigation : Base
         {
             return logOutCommand ?? new RelayCommand(async () =>
             {
-                await APIHost.GetInstance().Logout();
-                await ConnectionToHub.Instance.Disconnect();
-                var services = App.Services;
-                if (services != null)
+                var buttonStack = new StackPanel { Spacing = 10, Margin = new Thickness(0, 20, 0, 0) };
+
+                var dialog = new ContentDialog()
                 {
-                    //var navigator = services.GetRequiredService<INavigator>();
-                    await _navigator.NavigateBackAsync(this);
+                    Title = "ВЫХОД ИЗ АККАУНТА",
+                    // Основной текст + кнопки помещаем в Content
+                    Content = new StackPanel
+                    {
+                        Children = {
+                new TextBlock {
+                    Text = "Вы хотите выйти из аакаунта?",
+                    TextWrapping = TextWrapping.Wrap,
+                    FontFamily = new FontFamily("Segoe Print"),
+                    TextAlignment = TextAlignment.Center,
+
+                },
+                buttonStack
+            }
+                    },
+                    XamlRoot = Page.XamlRoot
+                };
+
+                // Свой результат для отслеживания выбора
+                ContentDialogResult customResult = ContentDialogResult.None;
+
+                // Кнопка 1: ЗАМЕНИТЬ
+                var btnReplace = new Button
+                {
+                    Content = "Да",
+                    Style = (Style)Application.Current.Resources["NoirDialogButtonStyle"], // Используем стиль из Варианта 1
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
+                btnReplace.Click += (s, e) => { customResult = ContentDialogResult.Primary; dialog.Hide(); };
+
+          
+
+                // Кнопка 3: ОТМЕНА
+                var btnCancel = new Button
+                {
+                    Content = "ОТМЕНА",
+                    Style = (Style)Application.Current.Resources["NoirDialogButtonStyle"],
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    //Opacity = 0.6 // Сделаем чуть бледнее
+                };
+                btnCancel.Click += (s, e) => { customResult = ContentDialogResult.None; dialog.Hide(); };
+
+                buttonStack.Children.Add(btnReplace);
+                buttonStack.Children.Add(btnCancel);
+
+
+                /* ContentDialogResult result =*/
+                await dialog.ShowAsync();
+
+                //if (result == ContentDialogResult.Primary)
+                //{
+                //    // Логика замены старого шаблона
+                //    System.Diagnostics.Debug.WriteLine("Выбрано: Заменить");
+                //}
+                //else if (result == ContentDialogResult.Secondary)
+                //{
+                //    // Логика создания нового шаблона
+                //    System.Diagnostics.Debug.WriteLine("Выбрано: Создать новый");
+                //    SelectedTimer.Id = 0;
+                //}
+                //else
+                //{
+                //    // Нажата кнопка "Отмена" или диалог закрыт клавишей Esc
+                //    System.Diagnostics.Debug.WriteLine("Выбрано: Отмена");
+                //    return;
+                //}
+
+                // ПРОВЕРЯЕМ ВАШУ ПЕРЕМЕННУЮ customResult
+                if (customResult == ContentDialogResult.Primary)
+                {
+                    // Логика замены старого шаблона
+                    System.Diagnostics.Debug.WriteLine("Выбрано: Выход");
+                    // Ваш код здесь...
+
+
+                    await APIHost.GetInstance().Logout();
+                    await ConnectionToHub.Instance.Disconnect();
+                    var services = App.Services;
+                    if (services != null)
+                    {
+
+                        //var navigator = services.GetRequiredService<INavigator>();
+                        await _navigator.NavigateBackAsync(this);
+                    }
+                }
+                else
+                {
+                    // Нажата кнопка "Отмена" или диалог закрыт клавишей Esc
+                    System.Diagnostics.Debug.WriteLine("Выбрано: Отмена");
+                    return;
                 }
             });
         }

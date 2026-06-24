@@ -11,9 +11,18 @@ public class LevelVisibilityAndICanConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         if (value == null) return null;
+       
         if (value is Mission mis)
         {
-            if (mis.Id == 0 || (mis.UserId != AuthorizedUser.GetInstance().AuthUser.Id))
+            if (parameter is string id)
+            {
+                if (id == "id")
+                {
+                    if (mis.Id != 0 || (mis.UserId != AuthorizedUser.GetInstance().AuthUser.Id))
+                        return Visibility.Collapsed;
+                }
+            }
+            if (mis.LevelUp == 0 || (mis.Id != 0 && mis.UserId != AuthorizedUser.GetInstance().AuthUser.Id))
                 return Visibility.Collapsed;
         }
         return Visibility.Visible;

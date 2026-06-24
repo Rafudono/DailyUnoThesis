@@ -22,6 +22,8 @@ public sealed partial class MainPage : Page
         if (args.NewValue is PageNavigation viewModel)
         {
             ViewModelStore.GetInstance().Main = viewModel;
+            viewModel.SetControl(this);
+
         }
     }
 
