@@ -157,16 +157,9 @@
                     Command="{Binding Login}"
                     Margin="0,8,0,0"/>
             <StackPanel>
-            
-      
-                <Button Content="Забыли пароль?" 
-                        Style="{StaticResource LinkTextButtonStyle}"
-                        FontFamily="Segoe Print"
-                        FontSize="13"/>
-                <Button Content="Регистрация"  Command="{Binding OpenRegistrationPage}"
-                        Style="{StaticResource TextButtonStyle}"
-                        FontFamily="Segoe Print"
-                        FontSize="13"/>
+
+                <Button Content="Регистрация"  Command="{Binding OpenRegistrationPage}" Style="{StaticResource TextButtonStyle}"
+                        FontFamily="Segoe Print" FontSize="13"/>
             </StackPanel>
 
         </StackPanel>

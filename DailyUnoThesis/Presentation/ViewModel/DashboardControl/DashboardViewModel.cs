@@ -51,6 +51,9 @@ public partial class DashboardViewModel: ObservableObject
     private ObservableCollection<Invitation> invitations = new();
 
     [ObservableProperty]
+    private bool _hasInvitations;
+
+    [ObservableProperty]
     private byte[]? userImage;
 
     [ObservableProperty]
@@ -128,6 +131,7 @@ public partial class DashboardViewModel: ObservableObject
             foreach (var inv in User.InvitationIdToUserNavigations)
                 Invitations.Add(inv);
         }
+        HasInvitations = Invitations.Count > 0;
     }
 
     public void ClosePersonalAccountPanel()
@@ -152,6 +156,7 @@ public partial class DashboardViewModel: ObservableObject
                 await Task.Delay(400);
                 await ConnectionToHub.Instance.AcceptInvitation(invitation.Id);
                 Invitations.Remove(invitation);
+                HasInvitations = Invitations.Count > 0;
             });
         }
     }
@@ -168,6 +173,7 @@ public partial class DashboardViewModel: ObservableObject
                 await Task.Delay(400);
                 await ConnectionToHub.Instance.DeclineInvitation(invitation.Id);
                 Invitations.Remove(invitation);
+                HasInvitations = Invitations.Count > 0;
             });
         }
     }
