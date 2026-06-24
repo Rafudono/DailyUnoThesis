@@ -71,6 +71,12 @@ public partial class DashboardViewModel: ObservableObject
     [ObservableProperty]
     private string confirmPassword = string.Empty;
 
+    [ObservableProperty]
+    private string saveSuccessMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool isSaveSuccess;
+
 // Списки для списков задач и проектов
 [ObservableProperty]
     public ObservableCollection<DashboardMissionDto> activeMissions = new();
@@ -204,15 +210,34 @@ public partial class DashboardViewModel: ObservableObject
         {
             return editUser ?? new RelayCommand(async () =>
             {
+                SaveSuccessMessage = string.Empty;
+                IsSaveSuccess = false;
+
+                if (IsChangePasswordVisible && !string.IsNullOrEmpty(NewPassword))
+                {
+                    if (string.IsNullOrEmpty(OldPassword))
+                    {
+                        SaveSuccessMessage = "Введите старый пароль";
+                        return;
+                    }
+                    if (NewPassword != ConfirmPassword)
+                    {
+                        SaveSuccessMessage = "Новые пароли не совпадают";
+                        return;
+                    }
+                }
+
                 try
                 {
                     var updated = await APIHost.GetInstance().EditUser(User, OldPassword,
-                        !string.IsNullOrEmpty(NewPassword) ? NewPassword : null);
+                        !string.IsNullOrEmpty(NewPassword) ? NewPassword : null,
+                        !string.IsNullOrEmpty(NewPassword) ? ConfirmPassword : null);
 
                     AuthorizedUser.GetInstance().AuthUser = updated;
                     User = updated;
 
-                    IsVisiblePersonalAccount = false;
+                    SaveSuccessMessage = "Успешно сохранено";
+                    IsSaveSuccess = true;
                     IsChangePasswordVisible = false;
                     OldPassword = string.Empty;
                     NewPassword = string.Empty;
@@ -220,11 +245,12 @@ public partial class DashboardViewModel: ObservableObject
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // неверный пароль — пока ничего не делаем, позже можно показать ошибку в UI
+                    SaveSuccessMessage = "Неверный пароль";
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Ошибка сохранения профиля: {ex.Message}");
+                    SaveSuccessMessage = "Ошибка сохранения";
                 }
             }
             );

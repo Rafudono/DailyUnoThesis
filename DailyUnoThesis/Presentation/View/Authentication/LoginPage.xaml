@@ -132,7 +132,7 @@
                        TextAlignment="Center"
                        Margin="0,0,0,8"/>
 
-            <TextBox PlaceholderText="Имя пользователя"
+            <TextBox PlaceholderText="Логин/почта"
                      x:Name="LoginUsername"
                      FontFamily="Segoe Print"
                      Style="{StaticResource TextBoxWithPlaceholderStyle}"
