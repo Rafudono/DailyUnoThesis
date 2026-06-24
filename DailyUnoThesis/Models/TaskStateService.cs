@@ -93,6 +93,11 @@ public class TaskStateService
         {
             UnsubscribeMission(existing);
             SubscribeMission(task);
+
+            task.IdUpMissionNavigation = existing.IdUpMissionNavigation;
+            task.InverseIdUpMissionNavigation = existing.InverseIdUpMissionNavigation;
+            task.TaskCompletionTimes ??= existing.TaskCompletionTimes;
+
             Tasks[index] = task;
             RaiseTasksChanged(TaskStateChangeType.Updated, task);
         }

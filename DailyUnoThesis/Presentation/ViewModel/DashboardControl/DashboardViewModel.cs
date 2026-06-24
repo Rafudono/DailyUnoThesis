@@ -51,6 +51,9 @@ public partial class DashboardViewModel: ObservableObject
     private ObservableCollection<Invitation> invitations = new();
 
     [ObservableProperty]
+    private bool _hasInvitations;
+
+    [ObservableProperty]
     private byte[]? userImage;
 
     [ObservableProperty]
@@ -67,6 +70,12 @@ public partial class DashboardViewModel: ObservableObject
 
     [ObservableProperty]
     private string confirmPassword = string.Empty;
+
+    [ObservableProperty]
+    private string saveSuccessMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool isSaveSuccess;
 
 // Списки для списков задач и проектов
 [ObservableProperty]
@@ -128,6 +137,7 @@ public partial class DashboardViewModel: ObservableObject
             foreach (var inv in User.InvitationIdToUserNavigations)
                 Invitations.Add(inv);
         }
+        HasInvitations = Invitations.Count > 0;
     }
 
     public void ClosePersonalAccountPanel()
@@ -152,6 +162,7 @@ public partial class DashboardViewModel: ObservableObject
                 await Task.Delay(400);
                 await ConnectionToHub.Instance.AcceptInvitation(invitation.Id);
                 Invitations.Remove(invitation);
+                HasInvitations = Invitations.Count > 0;
             });
         }
     }
@@ -168,6 +179,7 @@ public partial class DashboardViewModel: ObservableObject
                 await Task.Delay(400);
                 await ConnectionToHub.Instance.DeclineInvitation(invitation.Id);
                 Invitations.Remove(invitation);
+                HasInvitations = Invitations.Count > 0;
             });
         }
     }
@@ -198,15 +210,34 @@ public partial class DashboardViewModel: ObservableObject
         {
             return editUser ?? new RelayCommand(async () =>
             {
+                SaveSuccessMessage = string.Empty;
+                IsSaveSuccess = false;
+
+                if (IsChangePasswordVisible && !string.IsNullOrEmpty(NewPassword))
+                {
+                    if (string.IsNullOrEmpty(OldPassword))
+                    {
+                        SaveSuccessMessage = "Введите старый пароль";
+                        return;
+                    }
+                    if (NewPassword != ConfirmPassword)
+                    {
+                        SaveSuccessMessage = "Новые пароли не совпадают";
+                        return;
+                    }
+                }
+
                 try
                 {
                     var updated = await APIHost.GetInstance().EditUser(User, OldPassword,
-                        !string.IsNullOrEmpty(NewPassword) ? NewPassword : null);
+                        !string.IsNullOrEmpty(NewPassword) ? NewPassword : null,
+                        !string.IsNullOrEmpty(NewPassword) ? ConfirmPassword : null);
 
                     AuthorizedUser.GetInstance().AuthUser = updated;
                     User = updated;
 
-                    IsVisiblePersonalAccount = false;
+                    SaveSuccessMessage = "Успешно сохранено";
+                    IsSaveSuccess = true;
                     IsChangePasswordVisible = false;
                     OldPassword = string.Empty;
                     NewPassword = string.Empty;
@@ -214,11 +245,12 @@ public partial class DashboardViewModel: ObservableObject
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // неверный пароль — пока ничего не делаем, позже можно показать ошибку в UI
+                    SaveSuccessMessage = "Неверный пароль";
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Ошибка сохранения профиля: {ex.Message}");
+                    SaveSuccessMessage = "Ошибка сохранения";
                 }
             }
             );

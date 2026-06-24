@@ -180,7 +180,6 @@
 
 
 
-    <ScrollViewer IsTabStop="True">
         <Grid utu:SafeArea.Insets="VisibleBounds">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -212,6 +211,7 @@
                     <Button  Content="Добавить запись" Click="OpenNewTaskFrame_Click" HorizontalAlignment="Right"  VerticalAlignment="Top"  Margin="10" Background="{StaticResource DividerLightBrush}" CornerRadius="0" Padding="3" helperstyle:ButtonHelper.IconGlyph="&#xE710;" Style="{StaticResource StampWithIconButtonStyle}" FontSize="15" Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}" />
 
                     <Grid Grid.Row="1">
+                    <ScrollViewer>
                     <TreeView x:Name="InboxTree" IsHitTestVisible="True"
                    ItemsSource="{Binding InboxTreeMissions}"
                    SelectionMode="Single"
@@ -235,8 +235,9 @@
                                 </DataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
+                    </ScrollViewer>
 
-                        <Border x:Name="NewTaskFrameHost"
+                    <Border x:Name="NewTaskFrameHost"
                  Visibility="Collapsed"
                  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                  BorderBrush="{StaticResource DividerLightBrush}"
@@ -251,5 +252,4 @@
                 </Grid>
             </Grid>
         </Grid>
-    </ScrollViewer>
 </Page>

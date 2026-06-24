@@ -143,6 +143,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.CalendarControls
         }
         private static bool IsPlannedMission(Mission mission)
         {
+            if (mission.IsComplete == true)
+                return true;
             if (mission.StartDate != null && mission.EndDate != null && mission.StartDate != DateTime.MinValue && mission.EndDate != DateTime.MinValue)
             {
                 if (mission.StartDate.Value.Date == mission.EndDate.Value.Date)

@@ -690,7 +690,7 @@ namespace DailyUnoThesis.Models;
 
     #region Put
 
-    public async Task<User> EditUser(User user, string oldPassword, string? newPassword = null)
+    public async Task<User> EditUser(User user, string oldPassword, string? newPassword = null, string? newPasswordConfirm = null)
     {
         var dto = new
         {
@@ -701,8 +701,9 @@ namespace DailyUnoThesis.Models;
             patronymic = user.Patronymic,
             email = user.Email,
             login = user.Login,
-            oldPassword,
-            newPassword
+            oldPassword = string.IsNullOrEmpty(newPassword) ? null : oldPassword,
+            newPassword,
+            newPasswordConfirm = string.IsNullOrEmpty(newPassword) ? null : newPasswordConfirm
         };
         var arg = JsonSerializer.Serialize(dto, options);
         var resp = await client.PutAsync("Users", new StringContent(arg, Encoding.UTF8, "application/json"));

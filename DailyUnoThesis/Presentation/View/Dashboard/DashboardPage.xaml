@@ -37,6 +37,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
 
         <Style x:Key="AuthPasswordBoxStyle" TargetType="PasswordBox">
             <Setter Property="FontFamily" Value="Segoe Print"/>
@@ -508,7 +509,7 @@ Margin="20,-15,0,0">
                                 </Grid>
 
                                 <TextBox Text="{Binding User.Email, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnlyData}" Header="Почта" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
-                                <TextBox Text="{Binding User.Login, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnlyData}" Header="Логин" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
+                                <TextBox Text="{Binding User.NickName, Mode=TwoWay}" Header="Никнейм" Style="{StaticResource NotebookTextBoxStyle}" FontSize="14"/>
 
                                 <!-- ========== СМЕНА ПАРОЛЯ ========== -->
                                 <Button Content="Изменить пароль" Command="{Binding ToggleChangePassword}"
@@ -524,8 +525,15 @@ Margin="20,-15,0,0">
                                     <PasswordBox Password="{Binding ConfirmPassword, Mode=TwoWay}" Header="Повторите пароль" Style="{StaticResource AuthPasswordBoxStyle}"/>
                                 </StackPanel>
 
-                                <Button HorizontalAlignment="Right" Content="Сохранить" Command="{Binding EditUser}"
-                                        Foreground="#25170C" Height="36" Style="{StaticResource DetectiveSaveButtonStyle}" Margin="0 6 0 0"/>
+                                <StackPanel HorizontalAlignment="Right" Margin="0 6 0 0">
+                                    <TextBlock Text="{Binding SaveSuccessMessage}"
+                                               FontFamily="Segoe Print" FontSize="14"
+                                               Foreground="{Binding IsSaveSuccess, Converter={StaticResource BoolToStatusColorConverter}}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,6"/>
+                                    <Button Content="Сохранить" Command="{Binding EditUser}"
+                                            Foreground="#25170C" Height="36" Style="{StaticResource DetectiveSaveButtonStyle}"/>
+                                </StackPanel>
                             </StackPanel>
                         </Grid>
                     </ScrollView>

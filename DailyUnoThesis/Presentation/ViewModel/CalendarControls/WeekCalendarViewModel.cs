@@ -229,39 +229,49 @@ public partial class WeekCalendarViewModel : ObservableObject
 
     public async void DropAtTimeSlot(DateTime targetDay, double hour, object draggedItem)
     {
-        var startTime = targetDay.Date.AddHours(hour);
-        var duration = TimeSpan.FromHours(1);
-        var endTime = startTime.Add(duration);
+        try
+        {
+            var startTime = targetDay.Date.AddHours(hour);
+            var duration = TimeSpan.FromHours(1);
+            var endTime = startTime.Add(duration);
 
-        if (draggedItem is TaskCompletionTime session)
-        {
-            session.StartExecution = startTime;
-            session.EndExecution = endTime;
-            var mission = session.IdMissionNavigation;
-            UpdateMissionDatesFromSessions(mission);
-            await _taskState.UpdateAsync(mission);
-        }
-        else if (draggedItem is Mission mission)
-        {
-            var newSession = new TaskCompletionTime
+            if (draggedItem is TaskCompletionTime session)
             {
-                IdMission = mission.Id,
-                StartExecution = startTime,
-                EndExecution = endTime,
-                IdMissionNavigation = mission
-            };
-          
-            mission.TaskCompletionTimes ??= new List<TaskCompletionTime>(); 
-            mission.TaskCompletionTimes.Add(newSession);
-            UpdateMissionDatesFromSessions(mission);
-            await _taskState.UpdateAsync(mission);
-        }
+                session.StartExecution = startTime;
+                session.EndExecution = endTime;
+                var mission = session.IdMissionNavigation;
+                if (mission != null)
+                {
+                    UpdateMissionDatesFromSessions(mission);
+                    await _taskState.UpdateAsync(mission);
+                }
+            }
+            else if (draggedItem is Mission mission)
+            {
+                var newSession = new TaskCompletionTime
+                {
+                    IdMission = mission.Id,
+                    StartExecution = startTime,
+                    EndExecution = endTime,
+                    IdMissionNavigation = mission
+                };
 
-        LoadWeekData();
+                mission.TaskCompletionTimes ??= new List<TaskCompletionTime>();
+                mission.TaskCompletionTimes.Add(newSession);
+                UpdateMissionDatesFromSessions(mission);
+                await _taskState.UpdateAsync(mission);
+            }
+
+            LoadWeekData();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DropAtTimeSlot] {ex}");
+        }
     }
     private Mission UpdateMissionDatesFromSessions(Mission mission)
     {
-        if (mission.TaskCompletionTimes == null || !mission.TaskCompletionTimes.Any())
+        if (mission == null || mission.TaskCompletionTimes == null || !mission.TaskCompletionTimes.Any())
         {
             mission.StartDate = null;
             mission.EndDate = null;

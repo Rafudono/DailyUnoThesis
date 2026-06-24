@@ -1,8 +1,11 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DailyUnoThesis.Styles.Dictionary">
+    xmlns:local="using:DailyUnoThesis.Styles.Dictionary"
+    xmlns:con="using:DailyUnoThesis.Models.Conventers">
 
+    <con:BoolToBorderBrushConverter x:Key="BoolToBorderBrushConverter"/>
+    <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <Style x:Key="RedTextButtonStyle" TargetType="Button" BasedOn="{StaticResource TextButtonStyle}">
         <!-- По умолчанию текст красный -->
@@ -905,9 +908,17 @@ VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         <Border x:Name="MainBorder" Background="#FAF6F0" BorderBrush="#CBB39C" BorderThickness="1" 
                             CornerRadius="2" Padding="16,10" MinWidth="240" MinHeight="65" HorizontalAlignment="Right">
                             <Grid ColumnDefinitions="Auto, *">
-                                <Border Grid.Column="0" Width="36" Height="42" Background="#DCC8B3" CornerRadius="1" BorderBrush="#CBB39C" BorderThickness="1" VerticalAlignment="Center">
-                                    <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#FAF6F0"/>
-                                </Border>
+                                <Grid Grid.Column="0" Width="36" Height="42" VerticalAlignment="Center">
+                                    <Border Width="36" Height="42" Background="#DCC8B3" CornerRadius="1" BorderBrush="{Binding HasInvitations, Converter={StaticResource BoolToBorderBrushConverter}}" BorderThickness="2">
+                                        <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#FAF6F0"/>
+                                    </Border>
+                                    <Ellipse Width="10" Height="10"
+                                             Fill="#A33131"
+                                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                             Margin="0,0,-2,-2"
+                                             Visibility="{Binding HasInvitations, Converter={StaticResource BoolToVisibilityConverter}}"
+                                             IsHitTestVisible="False"/>
+                                </Grid>
                                 <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding User.NickName, FallbackValue='Детектив zxc'}" FontSize="13" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
                                     <TextBlock Text="ДОСТУП: ОПЕРАТИВНЫЙ" FontSize="8" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold"/>

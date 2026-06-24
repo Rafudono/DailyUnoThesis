@@ -40,6 +40,7 @@ public sealed partial class MonthCalendarView : Page
         if (session != null)
         {
             e.Data.Properties.Add("DraggedItem", session);
+            DeadlineHelper.AddDeadlineProperties(e.Data.Properties, session.IdMissionNavigation);
             e.Data.RequestedOperation = DataPackageOperation.Move;
             return;
         }
@@ -48,6 +49,7 @@ public sealed partial class MonthCalendarView : Page
         if (mission != null)
         {
             e.Data.Properties.Add("DraggedItem", mission);
+            DeadlineHelper.AddDeadlineProperties(e.Data.Properties, mission);
             e.Data.RequestedOperation = DataPackageOperation.Move;
         }
     }
@@ -87,7 +89,7 @@ public sealed partial class MonthCalendarView : Page
         if (!e.DataView.Properties.TryGetValue("DraggedItem", out object draggedItem)) return;
 
         // Проверяем дедлайн от родительской миссии
-        if (draggedItem is Mission draggedMission && !IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties))
+        if (draggedItem is Mission draggedMission && !DeadlineHelper.IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties))
         {
             if (dayGrid != null)
             {
@@ -336,7 +338,7 @@ public sealed partial class MonthCalendarView : Page
         }
         else if (draggedItem is Mission mission)
         {
-            if (IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties)
+            if (DeadlineHelper.IsDateAllowedByDeadline(targetDay.Date.Date, e.DataView.Properties)
                 && viewModel.CanInsertMissionAt(targetDay, insertIndex, mission))
             {
                 await viewModel.CreateSessionFromMission(targetDay, insertIndex, mission);
@@ -388,34 +390,7 @@ public sealed partial class MonthCalendarView : Page
             args.Data.Properties.Add("SourceIsInbox", isInboxMission);
             args.Data.RequestedOperation = DataPackageOperation.Move;
 
-            DateTime? overallMin = null, overallMax = null;
-            var current = mission;
-            while (current != null)
-            {
-                if (current.StartDate != null)
-                {
-                    if (current.StartDate.Value.Date == current.EndDate?.Date)
-                    {
-                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
-                            overallMax = current.EndDate.Value.Date;
-                    }
-                    else
-                    {
-                        if (overallMin == null || current.StartDate.Value.Date > overallMin.Value)
-                            overallMin = current.StartDate.Value.Date;
-                        if (overallMax == null || current.EndDate.Value.Date < overallMax.Value)
-                            overallMax = current.EndDate.Value.Date;
-                    }
-                }
-                current = current.IdUpMissionNavigation;
-            }
-
-            if (overallMax != null)
-            {
-                args.Data.Properties.Add("DragMaxDate", overallMax.Value);
-                if (overallMin != null)
-                    args.Data.Properties.Add("DragMinDate", overallMin.Value);
-            }
+            DeadlineHelper.AddDeadlineProperties(args.Data.Properties, mission);
         }
     }
 
@@ -461,16 +436,4 @@ public sealed partial class MonthCalendarView : Page
         viewModel.RefreshAllDays();
     }*/
 
-    private static bool IsDateAllowedByDeadline(DateTime targetDate, Windows.ApplicationModel.DataTransfer.DataPackagePropertySetView properties)
-    {
-        if (!properties.TryGetValue("DragMaxDate", out var maxObj) || maxObj is not DateTime max)
-            return true;
-
-        if (targetDate > max) return false;
-
-        if (properties.TryGetValue("DragMinDate", out var minObj) && minObj is DateTime min)
-            return targetDate >= min;
-
-        return true;
-    }
 }
