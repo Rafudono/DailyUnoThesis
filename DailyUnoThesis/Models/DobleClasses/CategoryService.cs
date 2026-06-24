@@ -12,6 +12,18 @@ namespace DailyUnoThesis.Models.DobleClasses
         private static CategoryService _instance;
         public static CategoryService Instance => _instance ??= new CategoryService();
 
+        public ObservableCollection<IconItem> AvailableIcons = new ObservableCollection<IconItem>
+        {
+            new IconItem { Glyph = "\uE8B7", Value = "E8B7" }, // Папка
+            new IconItem { Glyph = "\uE814", Value = "E814" }, // Работа
+            new IconItem { Glyph = "\uE80F", Value = "E80F" }, // Дом
+            new IconItem { Glyph = "\uE734", Value = "E734" }, // Звезда
+            new IconItem { Glyph = "\uE82D", Value = "E82D" }, // Книга
+            new IconItem { Glyph = "\uE787", Value = "E787" }, // Календарь
+            new IconItem { Glyph = "\uE70E", Value = "E70E" }, // Чашка
+            new IconItem { Glyph = "\uE187", Value = "E187" }, // Деньги
+            new IconItem { Glyph = "\uE716", Value = "E716" }  // Люди
+        };
         // Эта коллекция создается ОДИН раз за всё время жизни приложения
         public ObservableCollection<Category> Categories { get; } = new();
         public ObservableCollection<Category> NavCategories { get; } = new();
@@ -51,7 +63,7 @@ namespace DailyUnoThesis.Models.DobleClasses
             ArchivalProjects.Clear();
             AssignmentOfProjects.Clear();
               var dataProj = await APIHost.GetInstance().GetProject();
-            AssignmentOfProjects.AddRange(dataProj);
+            AssignmentOfProjects.AddRange(dataProj.Where(s=>s.IdBigBoss == AuthorizedUser.GetInstance().AuthUser.Id));
             Projects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId == (int)ProgressStateEnum.InProgress));
             ArchivalProjects.AddRange(dataProj.Where(s => (s.IdUpCategory == null || s.IdUpCategory == 0) && s.ProgressstatesId != (int)ProgressStateEnum.InProgress));
 

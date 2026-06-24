@@ -89,7 +89,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     <VisualState.Setters>
 
                         <Setter Target="EmptySpace.Width" Value="0" />
-                        <Setter Target="EmptyGrid.Margin" Value=" 0 50 0 0"/>
+                        <Setter Target="EmptyGrid.Margin" Value=" 0 40 0 0"/>
 
                     </VisualState.Setters>
                 </VisualState>
@@ -104,7 +104,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                         <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
                         <Setter Target="HamburgerBtn.Visibility" Value="Visible" />-->
 
-                        <Setter Target="EmptyGrid.Margin" Value="0 50 0 0"/>
+                        <Setter Target="EmptyGrid.Margin" Value="0 40 0 0"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -149,85 +149,20 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
         <Grid Name="EmptyGrid" Grid.Column="0" Background="{StaticResource DividerLightBrush}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="80"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel VerticalAlignment="Top" Spacing="10" Margin="10">
-                <StackPanel x:Name="FiltersPanel" VerticalAlignment="Top" Spacing="8" Orientation="Horizontal" Margin="10 10 0 10">
-                    <!--<TextBlock Text="папки" />
-                        <ComboBox Width="Auto"
-                              DisplayMemberPath="Title"
-                              SelectedItem="{Binding SelectedFilterCategory}"
-                              ItemsSource="{Binding Categories}"/> -->
-                    <!--как сдлелать визуально прикольный чекбокс для фильтров категорий-->
-                    <!--
-                        <Button Padding="5 0 0 0"  VerticalAlignment="Center" Margin="10,0" Style="{StaticResource OutlinedButtonStyle}">
-                            <ut:ControlExtensions.Icon>
-                                <SymbolIcon Symbol="Calendar" Margin="0" />
-                            </ut:ControlExtensions.Icon>
-                            <StackPanel Orientation="Horizontal" Margin="0" Padding="0">
-                                -->
-                    <!--<VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="VisibleButton">
-                                        <VisualState x:Name="Removing">
-                                            <VisualState.StateTriggers>
-                                                <StateTrigger IsActive="{Binding AllTasks.FilterDate, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}" />
-                                            </VisualState.StateTriggers>
-                                            <VisualState.Setters>
-                                                <Setter Target="ClearBut.Visibility" Value="Visible"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>-->
-                    <!-- Встроенная иконка календаря -->
-                    <!--<SymbolIcon Symbol="Calendar" />-->
-                    <!--
-                                <TextBox Header="Дедлайн" Margin="0 -5 0 -20" Padding="0"
-                  Text="{Binding AllTasks.FilterDate, Source={StaticResource GlobalStore}, Mode=TwoWay}"  IsReadOnly="True" IsHitTestVisible="False" Background="Transparent"
-                  BorderThickness="0" VerticalAlignment="Center"></TextBox>
-
-                                -->
-                    <!--<Button Visibility="Collapsed" x:Name="ClearBut" Command="{Binding AllTasks.DeleteDateFilter, Source={StaticResource GlobalStore}}" Style="{StaticResource IconButtonStyle}" Margin="0">
-                                    <SymbolIcon Symbol="Clear" />
-                                </Button>-->
-                    <!--
-                            </StackPanel>
-                            <Button.Flyout>
-                                <Flyout Placement="BottomEdgeAlignedRight">
-                                    <StackPanel Spacing="10" Padding="10" Background="White">
-                                        <TextBlock Text="Поиск по дате и времени" FontWeight="Bold" FontSize="16"/>
-
-                                        <TextBlock Text="Дата:" Style="{StaticResource CaptionTextBlockStyle}">
-                                        </TextBlock>
-
-
-                                        <CalendarView SelectionMode="Multiple" SelectedDatesChanged="{x:Bind ViewModel.OnCalendarDatesChanged}"/>
-
-                                        <MenuFlyoutSeparator/>
-
-                                        <CheckBox Content="Учитывать время" x:Name="UseTimeCheck" IsChecked="{Binding UseTimeInFilter, Mode=TwoWay}"/>
-                                        <TimePicker Visibility="{Binding ElementName=UseTimeCheck, Path=IsChecked}" Time="{Binding ViewModel.FilterTime, Mode=TwoWay}"
-                                                    HorizontalAlignment="Stretch"/>
-
-                                        <MenuFlyoutSeparator/>
-
-                                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
-                                            <Button Content="Применить" Command="{Binding AllTasks.ApplyDateFilter, Source={StaticResource GlobalStore}}"
-                                                    HorizontalAlignment="Stretch" />
-                                            <Button Content="Сбросить" Command="{Binding ViewModel.ClearDateFilterCommand}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>-->
+                <VariableSizedWrapGrid x:Name="FiltersPanel" VerticalAlignment="Top"  Orientation="Horizontal" Margin="10 10 0 10">
+                   
 
 
                     <AutoSuggestBox x:Name="MissionSearchBox" PlaceholderText="Поиск задач..."  QueryIcon="Find" Text="{Binding SearchText, Mode=TwoWay}" MaxWidth="400" FontFamily="Segoe Print" Background="Transparent"
-                                        Foreground="{StaticResource InkBlueLightBrush}" FontSize="18" Padding="0" 
+                                        Foreground="{StaticResource InkBlueLightBrush}" FontSize="18" Padding="0" Margin="0 5 10 5"
 ItemsSource="{Binding Suggestions, Mode=OneWay}" 
 TextMemberPath="Title" TextChanged="{x:Bind ViewModel.OnTextChanged}"
 SuggestionChosen="{x:Bind ViewModel.OnSuggestionChosen}" QuerySubmitted="{x:Bind ViewModel.OnQuerySubmitted}"
-VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
+VerticalAlignment="Top" MaxHeight="40" MinWidth="280" >
                         <AutoSuggestBox.ItemContainerStyle>
                             <Style TargetType="InfoBarPanel">
                                 <Setter Property="Background" Value="{StaticResource StickerBrush}"/>
@@ -396,7 +331,7 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300" >
 
 
 
-                </StackPanel>
+                </VariableSizedWrapGrid>
                 <Rectangle Height="10" Fill="Transparent" Stroke="Black" StrokeDashArray="20,20" Stretch="Fill" Opacity="0.5" Margin="0,10" StrokeThickness="2"/>
             </StackPanel>
             <ScrollViewer Grid.Row="1"  Padding="10 5" VerticalAlignment="Top" IsTabStop="True">

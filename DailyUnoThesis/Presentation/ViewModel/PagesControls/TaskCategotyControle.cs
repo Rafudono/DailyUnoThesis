@@ -432,6 +432,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
                         }
 
                         await APIHost.GetInstance().EditMission(Mission);
+                        await ViewModelStore.GetInstance().FillDataViewModels();
+
                         //await System.Threading.Tasks.Task.Delay(400);
                         //FillData();
 

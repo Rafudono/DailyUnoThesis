@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -238,7 +239,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         private ClassCheckad selectedListTimeBreak;
 
         //[ObservableProperty]
-        public ObservableCollection<Mission> Missions => ViewModelStore.GetInstance().AllTasks.Missions;
+
+        [ObservableProperty]
+        public ObservableCollection<Mission> missions = new();
+        //public ObservableCollection<Mission> Missions => ViewModelStore.GetInstance().AllTasks.Missions;
 
         [ObservableProperty]
         private Mission selectedMission;
@@ -1431,6 +1435,19 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
             //missions = await APIHost.GetInstance().GetMissions();
             MissionsTimers = await APIHost.GetInstance().GetMyFocusTimer();
             //await UpdateLists(missions);
+            FillingDuringUpdate();
+        }
+
+        public async Task FillingDuringUpdate()
+        {
+            List<Mission> missions = new List<Mission>();
+            missions = await APIHost.GetInstance().GetMyMissionsForTimers();
+            Missions.Clear();
+            Missions.AddRange(missions);
+            //GetCategories();
+            //await UpdateLists(mission, missions);
+
+
         }
 
         //private async Task UpdateLists(List<Mission> missions)

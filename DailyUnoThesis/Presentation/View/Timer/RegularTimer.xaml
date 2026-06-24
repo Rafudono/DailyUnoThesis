@@ -38,6 +38,8 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:ArrowBackControlEnabledConventer x:Key="ArrowBackControlEnabledConventer"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <con:HeightConventer x:Key="HeightConventer"/>
+        <con:InverseMinimumCountToVisibilityConverter x:Key="InverseMinimumCountToVisibilityConverter"/>
+
 
 
 
@@ -512,7 +514,7 @@ BorderBrush="#2A1D15">
 
                                     <Grid VerticalAlignment="Top">
 
-                                        <TextBlock Text="Пока ничего нет" FontSize="26" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                        <TextBlock Text="Пока ничего нет" FontSize="26" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Missions.Count, Converter={StaticResource InverseMinimumCountToVisibilityConverter}, ConverterParameter=0}"
                                                    TextWrapping="Wrap" FontFamily="Segoe Print" Foreground="{StaticResource InkBlueLightBrush}"/>
 
 

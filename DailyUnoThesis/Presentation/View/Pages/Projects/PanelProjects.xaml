@@ -508,7 +508,7 @@ CommandParameter="{Binding}">
                                                         <DataTemplate x:DataType="mod:Category">
                                                             <TreeViewItem ItemsSource="{Binding InverseIdUpCategoryNavigation}" x:Name="TreeViewItem">
 
-                                                                <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid"  Height="60" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
+                                                                <Grid Background="Transparent"  Width="Auto" MinWidth="30" MaxWidth="700" x:Name="RootGrid" VerticalAlignment="Top"  MinHeight="60" PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited" Tag="{Binding IsPointerOver}">
 
                                                                     <VisualStateManager.VisualStateGroups>
                                                                         <VisualStateGroup x:Name="CommonStates">
@@ -527,7 +527,7 @@ CommandParameter="{Binding}">
                                                                                     <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
                      <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
                                                                                     <Setter Target="Underline.Opacity" Value="1"/>
-                                                                                    <Setter Target="RootGrid.Height" Value="63"/>
+                                                                                    <!--<Setter Target="RootGrid.Height" Value="63"/>-->
                                                                                     <Setter Target="ChevronPath.Opacity" Value="1"/>
                                                                                     <Setter Target="ChevronPath.Visibility" Value="Visible"/>
 
@@ -547,13 +547,13 @@ CommandParameter="{Binding}">
                                                                                     <!--<Setter Target="HoverBackground.Opacity" Value="0.5"/>-->
                                                                                     <!--<Setter Target="CuttingBorder.Opacity" Value="1"/>
 <Setter Target="CuttingBorder.Margin" Value="3 3 0 0"/>-->
-                                                                                    <Setter Target="RootGrid.Height" Value="63"/>
+                                                                                    <!--<Setter Target="RootGrid.Height" Value="63"/>-->
                                                                                 </VisualState.Setters>
                                                                             </VisualState>
                                                                         </VisualStateGroup>
                                                                     </VisualStateManager.VisualStateGroups>
 
-                                                                    <Grid.ContextFlyout>
+                                                                    <Grid.ContextFlyout >
                                                                         <MenuFlyout>
                                                                             <MenuFlyoutItem Text="Редактировать" Background="#ecf1ff" FontFamily="Segoe Print"
 Command="{Binding PanelProject.OpenPanelEditCategory,Source={StaticResource GlobalStore}}" 
@@ -630,6 +630,8 @@ CommandParameter="{Binding}">
                                                                                 <Run Text="СТАТУС:"/>
                                                                                 <Run Text="{Binding Progressstates.Title}"/>
                                                                             </TextBlock>
+                                                                            <TextBlock Margin="0 -5 0 0"  Text="СОВМЕСТНЫЙ" Foreground="#3D2B1F" FontFamily="Segoe Print" Visibility="{Binding Users.Count, Converter={StaticResource MinimumCountToVisibilityConverter}, ConverterParameter=0}"
+                                                                                       FontSize="11"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
                                                                             <Grid Width="205" Height="15" HorizontalAlignment="Left">
                                                                                 <Rectangle Height="5" HorizontalAlignment="Left" Background="Transparent" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="1" />
                                                                                 <Grid HorizontalAlignment="Left" Width="200">
@@ -644,7 +646,7 @@ CommandParameter="{Binding}">
                                                                         </StackPanel>
 
                                                                         
-                                                                        <Border x:Name="Underline" Opacity="0" Margin="-25 -20 -25 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
+                                                                        <Border x:Name="Underline" Opacity="0" Margin="-5 -20 -25 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
                                                                     </Grid>
                                                                     <Grid Background="Transparent" IsHitTestVisible="False" Margin="-25 -2 0 0" Height="20" Width="20" HorizontalAlignment="Left" Visibility="{Binding InverseIdUpCategoryNavigation.Count, Converter={StaticResource CountToVisibilityConverter}}">
                                                                         <!--<TextBlock FontSize="15" Text="&#xE76C;" Margin="0 0 0 0" Background="Transparent" Height="30" Width="30" VerticalAlignment="Bottom" IsHitTestVisible="False"/>-->
@@ -840,7 +842,7 @@ uen:Region.Navigator="Visibility">
                Content="{Binding CurPageCategory}" />-->
 
 
-            <Button x:Name="HamburgerBtn" Content="&#xE71D;" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" CornerRadius="0" Padding="3" Margin="10 5 0 0"
+            <Button x:Name="HamburgerBtn" Content="&#xE71D;" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" CornerRadius="0" Padding="3" Margin="30 15"
         HorizontalAlignment="Left" VerticalAlignment="Top"  Style="{StaticResource StampButtonStyle}" FontSize="25" 
   Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}">
                 <!--<SymbolIcon Symbol="GlobalNavigationButton" />-->
@@ -859,9 +861,8 @@ uen:Region.Navigator="Visibility">
                 <Grid Background="Gray" Opacity="0.6"  Tapped="{x:Bind ViewModel.CloseCategoryPanel}"/>
                 <!--Tapped="{Binding CloseAndOpenAddCategoryPanel}"-->
                 <ContentControl Style="{StaticResource StickerContainerStyle}" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center">
-                    <Border CornerRadius="20" Height="300" Width="600" Background="Transparent">
+               MaxHeight="300" MaxWidth="600">
+                    <Border CornerRadius="20"  Background="Transparent">
                         <Grid>
                             <StackPanel>
                                 <TextBlock Text="Создание проекта" HorizontalAlignment="Center"  FontSize="25" Margin="0 20 0 0" FontFamily="Segoe Print" FontWeight="Medium"/>

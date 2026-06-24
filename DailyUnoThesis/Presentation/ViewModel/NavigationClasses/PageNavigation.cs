@@ -355,7 +355,7 @@ public partial class PageNavigation : Base
             {
                 IsMenuTimer = false;
                 IsPause = true;
-                ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = false;
+                ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = false;
                 ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
                 ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
 

@@ -46,6 +46,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
     //[ObservableProperty]
     //private ObservableCollection<Category> categories;
     public ObservableCollection<Category> Categories => CategoryService.Instance.NavCategories;
+    public ObservableCollection<IconItem> AvailableIcons => CategoryService.Instance.AvailableIcons;
+    [ObservableProperty]
+    public IconItem selectedAvailableIcons = new();
     //public List<Category> Categories
     //{
     //    get => categories;
@@ -133,7 +136,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         private double splitViewCompactPaneLength;
         [ObservableProperty]
         private bool isSplitViewPaneOpen = false;
-        [ObservableProperty]
+    [ObservableProperty]
+    private bool isError = false;
+
+    [ObservableProperty]
         private bool isVisibleCat;
 
     [ObservableProperty]
@@ -525,6 +531,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
                 if (category != null)
                 {
                     Category = new() {IdUpCategory = category.Id, IsProgect = false };
+                    SelectedAvailableIcons = new();
                     //Category.IdUpCategory = category.Id;
                     IsVisibleCat = IsVisibleCat ? false : true;
                 }
@@ -548,6 +555,9 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
                 if (category != null)
                 {
                     Category = category;
+                    SelectedAvailableIcons = AvailableIcons.FirstOrDefault(s => s.Value == category.Icon);
+                    if (SelectedAvailableIcons == null)
+                        SelectedAvailableIcons = new();
                     //Category.IdUpCategory = category.Id;
                     IsVisibleCat = true;
                 }
@@ -879,40 +889,47 @@ namespace DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
         }
 
 
-        ////public async Task GetListCategotyPage()
-        ////{
+    ////public async Task GetListCategotyPage()
+    ////{
 
-        //      this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        //    {
-        //        CurPageCategory = TaskListPageCategory;
-        //        TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
-        //        //await TaskListPageComplete.GetCompletePage();
-        //    });
+    //      this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+    //    {
+    //        CurPageCategory = TaskListPageCategory;
+    //        TaskListPageCategory.GetIdCategory(SelectedCategory.Id);
+    //        //await TaskListPageComplete.GetCompletePage();
+    //    });
 
-        ////}
+    ////}
 
-        public async Task CreateCategory()
+    public async Task CreateCategory()
+    {
+        if (!string.IsNullOrEmpty(Category.Title))
         {
-        //Category category = new Category() { Title = CategoryTitle };
-        Category.IsProgect = false;
-        if (Category.Id != 0)
-        {
-            await APIHost.GetInstance().EditCategory(Category);
+            IsError = false;
+            //Category category = new Category() { Title = CategoryTitle };
+            Category.IsProgect = false;
+            Category.Icon = SelectedAvailableIcons.Value;
+            if (Category.Id != 0)
+            {
+                await APIHost.GetInstance().EditCategory(Category);
 
+            }
+            else
+                await APIHost.GetInstance().CreateCategory(Category);
+            //await GetCaterogy();
+            await CategoryService.Instance.RefreshFromDatabaseAsync();
+            IsVisibleCat = false;
+            Category = new();
+            SelectedAvailableIcons = new();
+            //Categories = new(Categories);
+            //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //    {
+            //        TaskPages.CloseCatBannerClass();
+            //    });
         }
         else
-            await APIHost.GetInstance().CreateCategory(Category);
-        //await GetCaterogy();
-        await CategoryService.Instance.RefreshFromDatabaseAsync();
-        IsVisibleCat = false;
-        Category = new();
-            //Categories = new(Categories);
-        //await this.dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        //    {
-        //        TaskPages.CloseCatBannerClass();
-        //    });
-
-        }
+            IsError = true;
+    }
 
     public async Task GetCaterogy()
     {

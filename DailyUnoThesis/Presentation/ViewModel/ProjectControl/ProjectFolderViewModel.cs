@@ -675,11 +675,13 @@ public partial class ProjectFolderViewModel : ObservableObject
 
         if (category.Id == СurrentCategory.Id)
             return;
-        //ProjectParticipants.Clear();
-        //ProjectParticipants.AddRange(category.Users);// нормально надо получать
+        
         СurrentCategory = category;
         //Categories = new();
         Categories = await APIHost.GetInstance().GetFiltersSubCategories(category.Id);
+        var participants = await APIHost.GetInstance().GetParticipants(category.Id);
+        ProjectParticipants.Clear();
+        ProjectParticipants.AddRange(participants);// нормально надо получать
         GetCategories();
         await FillData();
 

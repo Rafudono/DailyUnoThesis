@@ -34,6 +34,15 @@
         <con:VisibilityButtonToText x:Key="VisibilityButtonToText"/>
         <con:BoolToCompletedConverter x:Key="BoolToCompletedConverter"/>
         <con:DateTextToDateConverter x:Key="DateTextToDateConverter"/>
+        <con:LevelVisibilityAndICanConverter x:Key="LevelVisibilityAndICanConverter"/>
+        <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <con:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <con:InverseLevelVisibilityAndICanConverter x:Key="InverseLevelVisibilityAndICanConverter"/>
+        <con:LevelComboBoxVisibilityAndICanConverter x:Key="LevelComboBoxVisibilityAndICanConverter"/>
+
+
+
+
 
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -156,7 +165,7 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
 
 
 
-                                    <Button Style="{StaticResource StampToggleButtonStyle}" Height="40" Margin="5 0">
+                                    <Button Style="{StaticResource StampToggleButtonStyle}" Height="40" Margin="5 0" IsHitTestVisible="{Binding IsICan}">
                                     <!--<ut:ControlExtensions.Icon>
                                                 <SymbolIcon Symbol="Calendar" Margin="0" />
                                             </ut:ControlExtensions.Icon>-->
@@ -169,11 +178,15 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
             HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 
 
-                                        <Button  Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"  Margin="0 -5 -16 0" FontWeight="Black"
+                                            <Button Content="&#xE106;" Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"
+x:Name="ClearBut" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}" HorizontalContentAlignment="Right"
+     Style="{StaticResource IconButtonForCrossStyle}"  CommandParameter="{Binding ElementName=CalendarView}" Margin="0 0 -10 0"  Height="23" Width="23" FontWeight="Bold" Foreground="#00224d" FontSize="18" FontFamily="Segoe MDL2 Assets" Tag="White">
+                                            </Button>
+                                            <!--<Button  Visibility="{Binding DetailedTask.TaskDateSettings, Source={StaticResource GlobalStore},  Converter={StaticResource VisibilityButtonToText}}"  Margin="0 -5 -16 0" FontWeight="Black"
               x:Name="ClearBut" Command="{Binding DetailedTask.DeleteDateSettings, Source={StaticResource GlobalStore}}" Width="30"
           Style="{StaticResource IconButtonStyle}" CommandParameter="{Binding ElementName=CalendarView}">
                                             <SymbolIcon Symbol="Clear" />
-                                        </Button>
+                                        </Button>-->
 
                                     </StackPanel>
 
@@ -204,7 +217,7 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
                                                 </StackPanel>
 
 
-                                                <ScrollView Padding="10 20" MaxHeight="700" >
+                                                <ScrollView Padding="10 20" MaxHeight="400" >
                                                     <StackPanel Background="Transparent">
 
                                                         <!--<Button Content="Сегодня">
@@ -265,11 +278,7 @@ CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskComm
 Stroke="Black" 
 StrokeDashArray="4,2" 
 Stretch="Fill" Opacity="0.5" Margin="0,10"/>
-                                                        <Border HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#00224d" Padding="0,0,0,2" Margin="0 0 0 15">
-                                                            <TextBlock  FontFamily="Segoe Print"  Text="Другие настройки" FontWeight="ExtraBlack" FontSize="20"/>
-                                                        </Border>
-                                                        <Button Visibility="{Binding ElementName=UseRepeatCheck, Path=IsChecked}" Content="Повтор"
-HorizontalAlignment="Stretch"/>
+                                                      
 
                                                         <MenuFlyoutSeparator/>
 
@@ -286,21 +295,23 @@ HorizontalAlignment="Stretch"/>
 
                             <Border BorderThickness="2"  Grid.Row="4"  BorderBrush="#ecf1ff">
                                 <Grid>
-                                    
-                               
 
-                                <Button Grid.Row="2" Content="&#xE710;" Margin="5 0 0 0" FontSize="30" FontWeight="Black" HorizontalAlignment="Left" Padding="0" CornerRadius="0" Style="{StaticResource StampButtonStyle}" Command="{Binding NewTask}"
+
+
+                                    <Button Grid.Row="2" Content="&#xE710;" Margin="5 0 0 0" FontSize="30" FontWeight="Black"
+                                        HorizontalAlignment="Left" Padding="0" CornerRadius="0" Style="{StaticResource StampButtonStyle}" Command="{Binding NewTask}"
+                                        
           Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}"/>
                                 <Button Grid.Row="2" FontSize="25" Content="&#xE74D;" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontWeight="Black" FontFamily="Segoe MDL2 Assets" Background="Transparent"  BorderBrush="Transparent"
-           Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}"
-          Visibility="{Binding Task.Id, Converter={StaticResource LevelVisibilityConverter}}" CommandParameter="{Binding Task}"
+           Foreground="{ThemeResource ClueRedBrush}"  Style="{StaticResource RedTextSmallButtonStyle}" 
+          Visibility="{Binding Task, Converter={StaticResource LevelVisibilityAndICanConverter}}" CommandParameter="{Binding Task}"
           Command="{Binding DataContext.DeleteTask, ElementName=DetailPage}">
                                     <!--<ut:ControlExtensions.Icon>
           <SymbolIcon Symbol="Delete"/>
       </ut:ControlExtensions.Icon>-->
 
                                 </Button>
-                                <Button Grid.Row="2" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Center" Content="Сохранить" Command="{Binding CreateAndEditTask}" />
+                                    <Button Grid.Row="2" Style="{StaticResource DetectiveSaveButtonStyle}" HorizontalAlignment="Center" Content="Сохранить" Command="{Binding CreateAndEditTask}" Visibility="{Binding IsICan, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                                 </Grid>
                             </Border>
@@ -338,7 +349,7 @@ HorizontalAlignment="Stretch"/>
                                         <CheckBox HorizontalAlignment="Left" Margin="0 0 0 0" Tag="&#xE73E;" Style="{StaticResource NoirCheckBoxStyle}"
                                                   CommandParameter="{Binding Task}" Command="{Binding DataContext.CompleteTaskCommand, ElementName=DetailPage}" IsChecked="{Binding Task.IsComplete, Mode=TwoWay}" />-->
 
-                                        <TextBox Margin="0 0 0 0" Text="{Binding Task.Title, Mode=TwoWay}" MinWidth="150" Grid.Column="1" Header="Название" MinHeight="30" FontSize="18" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
+                                    <TextBox IsEnabled="{Binding IsICan}" IsHitTestVisible="{Binding IsICan}" Margin="0 0 0 0" Text="{Binding Task.Title, Mode=TwoWay}" MinWidth="150" Grid.Column="1" Header="Название" MinHeight="30" FontSize="18" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"/>
                                     <!--</Grid>-->
 
                                     <!-- Статус (Штамп) -->
@@ -364,7 +375,7 @@ HorizontalAlignment="Stretch"/>
                                        FontFamily="Segoe Print" 
                                        Foreground="#00224d" 
                                        LineHeight="24"/>-->
-                                    <TextBox Text="{Binding Task.Description, Mode=TwoWay}" MinWidth="150" Header="Описание" MinHeight="50" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"
+                                    <TextBox IsEnabled="{Binding IsICan}" IsHitTestVisible="{Binding IsICan}" Text="{Binding Task.Description, Mode=TwoWay}" MinWidth="150" Header="Описание" MinHeight="50" TextWrapping="Wrap" Style="{StaticResource NotebookTextBoxStyle}"
                                              FontSize="15" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
                                  
@@ -372,7 +383,7 @@ HorizontalAlignment="Stretch"/>
 
                                         <Grid>
                                         <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource InkBlueLightBrush}" HorizontalAlignment="Left"
-                                                Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelTextBoxVisibilityConverter}, ConverterParameter={Binding SelectedCategory.Id}}">
+                                                Visibility="{Binding Task, Converter={StaticResource InverseLevelVisibilityAndICanConverter}, ConverterParameter={Binding SelectedCategory.Id}}">
                                             <StackPanel Orientation="Horizontal" Scale="15">
 
                                                 <FontIcon Glyph="&#xED25;" Margin="0 0 10 0"/>
@@ -384,13 +395,13 @@ HorizontalAlignment="Stretch"/>
                                         </Border>
 
                                         <ComboBox FontSize="20" Height="40"
-                  DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xED25;"
+                  DisplayMemberPath="Title" Style="{StaticResource DetectiveComboBoxStyle}" Tag="&#xED25;" 
                   SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                   ItemsSource="{Binding Categories, Mode=TwoWay}"
-                  Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelComboBoxVisibilityConverter}}" />
+                  Visibility="{Binding Task, Converter={StaticResource LevelComboBoxVisibilityAndICanConverter}}" />
                                         </Grid>
 
-                                        <ListView Margin="0 10 0 0" Background="Transparent"
+                                    <ListView Margin="0 10 0 0" Background="Transparent" IsHitTestVisible="{Binding IsICan}"
              ItemsSource="{Binding Subtasks, Mode=TwoWay}" MinHeight="0"
              Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}">
 
@@ -430,9 +441,9 @@ HorizontalAlignment="Stretch"/>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
-                                    <Button Content="добавить подзадачу" Style="{StaticResource TextsIconButtonStyle}" Foreground="{StaticResource InkBlueLightBrush}" Margin="-5 -10  0 0" Tag="{StaticResource AccentBlueLightBrush}"
+                                    <Button  Content="добавить подзадачу" Style="{StaticResource TextsIconButtonStyle}" Foreground="{StaticResource InkBlueLightBrush}" Margin="-5 -10  0 0" Tag="{StaticResource AccentBlueLightBrush}"
             Command="{Binding CreateSubtask}"
-            Visibility="{Binding Task.LevelUp, Converter={StaticResource LevelVisibilityConverter}}" />
+            Visibility="{Binding Task, Converter={StaticResource LevelVisibilityAndICanConverter}}" />
 
 
 

@@ -31,7 +31,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
 
         [ObservableProperty]
         //private List<Mission> missions;
-        public ObservableCollection<Mission> missions;
+        public ObservableCollection<Mission> missions = new();
 
         [ObservableProperty]
         private Mission selectedMission;
@@ -314,8 +314,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.TimerPagesControle
         public async Task FillData()
         {
             List<Mission> missions = new List<Mission>();
-            missions = await APIHost.GetInstance().GetMissions();
-            Missions = new();
+            missions = await APIHost.GetInstance().GetMyMissionsForTimers();
+            Missions.Clear();
             Missions.AddRange(missions);
             //GetCategories();
             //await UpdateLists(mission, missions);

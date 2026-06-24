@@ -13,8 +13,10 @@
         <Setter Property="BorderBrush" Value="#A3B1C6"/>
         <Setter Property="Padding" Value="0,0,0,0"/>
         <Setter Property="PlaceholderForeground" Value="#A3B1C6"/>
-        
-        
+        <Setter Property="CornerRadius" Value="3"/>
+
+
+
 
         <!-- Убираем стандартные синие рамки при фокусе (WinUI/Uno) -->
     </Style>

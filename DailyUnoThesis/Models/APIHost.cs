@@ -211,6 +211,26 @@ namespace DailyUnoThesis.Models;
 
         return new ObservableCollection<UserDto>();
     }
+
+    
+    public async Task<ObservableCollection<UserDto>> GetParticipants(int id)
+    {
+        
+        var res = await client.GetAsync($"Users/GetParticipants?idProgect={id}&idUser={AuthorizedUser.GetInstance().AuthUser.Id}");
+
+        if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show(Error);
+        }
+        else
+        {
+            var result = await res.Content.ReadFromJsonAsync<ObservableCollection<UserDto>>(options);
+            return result ?? new ObservableCollection<UserDto>();
+        }
+
+        return new ObservableCollection<UserDto>();
+    }
     #endregion
 
     #region Missions
@@ -251,6 +271,21 @@ namespace DailyUnoThesis.Models;
         return Missions;
     }
 
+    public async Task<List<Mission>> GetMyMissionsForTimers()
+    {
+        var resp = await client.GetAsync($"Missions/GetMyMissionsForTimers?id={AuthorizedUser.GetInstance().AuthUser.Id}");
+        if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string Error = await resp.Content.ReadAsStringAsync();
+            ContentDialog contentDialog = new ContentDialog()
+            {
+                Content = $"не удалось получить список заданий \t  {Error} "
+            };
+        }
+        else
+            Missions = await resp.Content.ReadFromJsonAsync<List<Mission>>(options);
+        return Missions;
+    }
 
     // получение списка заданий на сегодня (тоже не забыть указывать пользователя)
     public async Task<List<Mission>> GetTodayList()

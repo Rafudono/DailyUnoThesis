@@ -11,3 +11,9 @@ public class NavItem
     public Symbol Icon { get; set; }
     public Type Page { get; set; }
 }
+
+public class IconItem
+{
+    public string Glyph { get; set; } // Для отображения (например, "\uE814")
+    public string Value { get; set; } // Для сохранения в БД (например, "E814")
+}

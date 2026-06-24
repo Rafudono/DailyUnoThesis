@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using DailyUnoThesis.Models.DobleClasses;
 using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
+using DailyUnoThesis.Presentation.View.Timer;
+using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
+using DailyUnoThesis.Presentation.ViewModel.DashboardControl;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
 using DailyUnoThesis.Presentation.ViewModel.PagesControls;
 using DailyUnoThesis.Presentation.ViewModel.ProjectControl;
 using DailyUnoThesis.Presentation.ViewModel.TimerPagesControle;
-using DailyUnoThesis.Presentation.ViewModel.CalendarControls;
-using DailyUnoThesis.Presentation.ViewModel.DashboardControl;
 
 namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 {
@@ -243,8 +244,10 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
 
         public async Task FillDataViewModels()
         {
-            await AllTasks.FillingDuringUpdate();
-            await Category.FillingDuringUpdate();
+            if (AllTasks != null)
+                await AllTasks.FillingDuringUpdate();
+            if (Category != null)
+                await Category.FillingDuringUpdate();
             if(TodayTasks != null)
                 await TodayTasks.FillingDuringUpdate();
             if (CompleteTasks != null)
@@ -253,6 +256,14 @@ namespace DailyUnoThesis.Presentation.ViewModel.HelperClasses
                         await OverdueTasks.FillingDuringUpdate();
             if (ProjectFolder != null)
                 await ProjectFolder.FillingDuringUpdate();
+            if (PanelDashboard != null)
+                await PanelDashboard.LoadDashboardDataAsync();
+
+            if (RegularTimer != null)
+                await RegularTimer.FillData();
+            if (PomodoroTime != null)
+                await PomodoroTime.FillingDuringUpdate();
+
 
         }
         #endregion

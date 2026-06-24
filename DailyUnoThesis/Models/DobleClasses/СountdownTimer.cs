@@ -14,23 +14,30 @@ namespace DailyUnoThesis.Models.DobleClasses
     {
         private bool breakTimer = false;
         private bool isRound = true;
+        private int repetitions;
+        private int currentRepetitions;
+        private int repetitionsRound;
+        private int currentRepetitionsRound;
+        private int repetitionsInRound;
+        private int currentRepetitionsInRound;
+
         private bool isEnd { get; set; } = false;
         public bool IsEnd { get => isEnd; set { isEnd = value; Signal(); } }
         public bool BreakTimer { get => breakTimer; set { breakTimer = value; Signal(); } }
-        
+
         //public DispatcherTimer BreakTimer { get; set; }
 
         // расчёт в томатах
-        public int Repetitions { get; set; }
-        public int CurrentRepetitions { get; set; }
+        public int Repetitions { get => repetitions; set { repetitions = value; Signal(); } }
+        public int CurrentRepetitions { get => currentRepetitions; set { currentRepetitions = value; Signal(); } }
 
         //расчёт в раундах
-        public int RepetitionsRound { get; set; }
-        public int CurrentRepetitionsRound { get; set; }
+        public int RepetitionsRound { get => repetitionsRound; set { repetitionsRound = value; Signal(); } }
+        public int CurrentRepetitionsRound { get => currentRepetitionsRound; set { currentRepetitionsRound = value; Signal(); } }
 
         //томаты в раунде(до большого перерыва)
-        public int RepetitionsInRound { get; set; }
-        public int CurrentRepetitionsInRound { get; set; }
+        public int RepetitionsInRound { get => repetitionsInRound; set { repetitionsInRound = value; Signal(); } }
+        public int CurrentRepetitionsInRound { get => currentRepetitionsInRound; set { currentRepetitionsInRound = value; Signal(); } }
 
 
         public TimeSpan BreakTime { get; set; }

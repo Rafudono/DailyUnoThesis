@@ -11,6 +11,7 @@ using DailyUnoThesis.Models.MainClasses;
 using DailyUnoThesis.Presentation.View.Pages;
 using DailyUnoThesis.Presentation.ViewModel.HelperClasses;
 using DailyUnoThesis.Presentation.ViewModel.NavigationClasses;
+using Windows.System;
 using Windows.UI.Core;
 
 namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
@@ -27,6 +28,13 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         [ObservableProperty]
         private Category selectedCategory;
+
+        
+        partial void OnSelectedCategoryChanged(Category value)
+        {
+            IsICanDoSomething();
+            
+        }
 
         [ObservableProperty]
         private Category mainSelectedCategory;
@@ -51,6 +59,8 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         [ObservableProperty]
         private bool isProject;
+        [ObservableProperty]
+        private bool isICan;
 
 
 
@@ -239,12 +249,34 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
         //        ChangeCategory();
         //    }
         //}
-        partial void OnTaskChanged(Mission value)
+        partial  void OnTaskChanged(Mission value)
         {
+            
             FindId();
             ChangeCategory();
+            IsICanDoSomething();
+            IsICanDoSomething();
+
         }
-        private async Task ChangeCategory()
+
+        private void IsICanDoSomething()
+        {
+            if (IsProject)
+            {
+                if (Task != null && SelectedCategory != null)
+                {
+                    if ((Task.UserId == AuthorizedUser.GetInstance().AuthUser.Id || Task.UserId == 0) && SelectedCategory.IdBigBoss == AuthorizedUser.GetInstance().AuthUser.Id)
+                    {
+                        IsICan = true;
+                    }
+                    else
+                        IsICan = false;
+                }
+            }
+            else
+                IsICan = true;
+        }
+        private void ChangeCategory()
         {
             if (SelectedCategory == null)
             {
@@ -254,16 +286,35 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             {
                 if (Categories != null)
                 {
-                    if (Task.Category != null)
+                    if (Task.CategoryId != null && Task.CategoryId != 0)
                     {
+
+                        if (Task.UserId == AuthorizedUser.GetInstance().AuthUser.Id || Task.UserId == 0)
+                        {
+                            SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.CategoryId);
+                        }
+                        else
+                        {
+                            SelectedCategory.Title = MainSelectedCategory.Title;
+
+                        }
+                        
                         //int index = Categories.FindIndex(s => s.Id == Task.Category.Id);
-                        SelectedCategory = Categories.FirstOrDefault(s => s.Id == Task.Category.Id); /*Categories[index];*/
+                         /*Categories[index];*/
                     }
                     else
                     {
                         if (IsProject)
                         {
-                            SelectedCategory = MainSelectedCategory;
+                            if (MainSelectedCategory.IdBigBoss == AuthorizedUser.GetInstance().AuthUser.Id)
+                            {
+                                SelectedCategory = MainSelectedCategory;
+                            }
+                            else
+                            {
+                                SelectedCategory = Categories[0];
+
+                            }
                         }
                         else
                         SelectedCategory = Categories[0];
@@ -272,7 +323,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
             }
 
         }
-        private void FindId()
+        private  void FindId()
         {
             if (Task != null)
             {
@@ -373,7 +424,7 @@ namespace DailyUnoThesis.Presentation.ViewModel.PagesControls
 
         public async Task GetMainProject(Category category)
         {
-            SelectedCategory = category;
+            //SelectedCategory = category;
             MainSelectedCategory = category;
 
 

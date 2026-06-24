@@ -30,6 +30,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <con:HexToGlyphConverter x:Key="HexToGlyphConverter"/>
 
 
         <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Red" />
@@ -371,7 +372,8 @@ Margin="0,0,1,0"/>
 
                                                         <Grid IsHitTestVisible="False" Margin="0,3,25,2" HorizontalAlignment="Left" Background="Transparent">
                                                             <StackPanel Orientation="Horizontal" >
-                                                                <SymbolIcon Symbol="SolidStar" x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="-2 -2 7 0"/>
+                                                                <FontIcon  x:Name="Icon" Glyph="{Binding Icon, Converter={StaticResource HexToGlyphConverter}}" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="-2 -2 7 0"/>
+                                                                <!--<SymbolIcon Symbol="SolidStar" x:Name="Icon" Foreground="{Binding Foreground, ElementName=ContentPresenter}" Margin="-2 -2 7 0"/>-->
                                                                 <TextBlock x:Name="ContentPresenter" Margin="0 -5 0 0"  Text="{Binding Title}" Foreground="#3D2B1F" FontFamily="Segoe Print"  FontSize="20"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="SemiBold"/>
                                                             </StackPanel>
                                                             <Border x:Name="Underline" Opacity="0" Margin="0 -20 0 0"  BorderThickness="0 0 0 2" BorderBrush="{StaticResource ClueRedLightBrush}" VerticalAlignment="Bottom" Background="Transparent" />
@@ -580,19 +582,52 @@ uen:Region.Navigator="Visibility" />
             <Grid Background="Gray" Opacity="0.6"  Tapped="{x:Bind ViewModel.CloseCategoryPanel}"/>
             <!--Tapped="{Binding CloseAndOpenAddCategoryPanel}"-->
             <ContentControl Style="{StaticResource StickerContainerStyle}" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center">
-                <Border CornerRadius="20" MaxHeight="300" MaxWidth="600" Background="Transparent">
+                MaxHeight="500" MaxWidth="600">
+                <Border CornerRadius="20" Background="Transparent">
                     <Grid>
-                        <TextBox Header="Название категории" Style="{StaticResource NotebookTextBoxStyle}"
+                        <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Создание категории" VerticalAlignment="Top" HorizontalAlignment="Center"  FontSize="25" Margin="0 20 10 0" FontFamily="Segoe Print" FontWeight="Medium"/>
+
+                        
+                            <TextBox Header="Название категории" Style="{StaticResource NotebookTextBoxStyle}"
                              Text="{Binding Category.Title, Mode=TwoWay}" MinWidth="150" MinHeight="30"  Height="75" Margin="20"
-                             FontSize="18" /> <!--Width="400" Height="40"-->
+                             FontSize="18" />
+                            <TextBlock Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}}" Text="Заполните название категории" HorizontalAlignment="Left" Foreground="{StaticResource ClueRedLightBrush}" FontSize="13"  FontFamily="Segoe Print" FontWeight="Medium"/>
+
+                            <!--Width="400" Height="40"-->
+                            <StackPanel Spacing="8" Margin="20,10,20,10">
+                                <TextBlock Text="Выберите иконку:" FontFamily="Segoe Print" FontSize="13" Foreground="#5C4D3F" FontWeight="Bold"/>
+
+                                <!-- Горизонтальная сетка для выбора иконок -->
+                                <GridView x:Name="IconSelectorGridView" ItemsSource="{Binding AvailableIcons}" SelectedItem="{Binding SelectedAvailableIcons, Mode=TwoWay}"
+              SelectionMode="Single" 
+              SelectedValuePath="Value"
+              HorizontalAlignment="Left"
+              Padding="0">
+                                    <GridView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VariableSizedWrapGrid Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </GridView.ItemsPanel>
+
+                                    <GridView.ItemTemplate>
+                                        <DataTemplate>
+                                            <!-- Иконка внутри маленького круглого штампа -->
+                                            <Border Width="36" Height="36" Background="#FAF6F0" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="18">
+                                                <FontIcon Glyph="{Binding Glyph}" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#5C4D3F" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </GridView.ItemTemplate>
+                                </GridView>
+                            </StackPanel>
+                        
                         <Button Content="Сохранить"
                             Margin="20"  Style="{StaticResource DetectiveSaveButtonStyle}"
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Right"
                             Height="45"
                             Command="{Binding CreateCat}" />
+                        </StackPanel>
                     </Grid>
                 </Border>
             </ContentControl>
