@@ -913,7 +913,7 @@ VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                         <FontIcon Glyph="&#xE77B;" FontSize="18" Foreground="#FAF6F0"/>
                                     </Border>
                                     <Ellipse Width="10" Height="10"
-                                             Fill="{StaticResource ClueRedDarkLightBrush}"
+                                             Fill="#A33131"
                                              HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                              Margin="0,0,-2,-2"
                                              Visibility="{Binding HasInvitations, Converter={StaticResource BoolToVisibilityConverter}}"
