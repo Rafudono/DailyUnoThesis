@@ -47,6 +47,12 @@ public sealed partial class TableCalendar : Page
         if (_viewModel != null)
             await _viewModel.LoadDataFromApi();
     }
+    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        if (_viewModel != null)
+            await _viewModel.LoadDataFromApi();
+    }
     private void NewTaskFrame_Loaded(object sender, RoutedEventArgs e)
     {
         var frame = sender as Frame;

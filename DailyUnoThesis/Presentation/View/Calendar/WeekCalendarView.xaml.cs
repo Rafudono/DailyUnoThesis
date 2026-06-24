@@ -694,7 +694,8 @@ public sealed partial class WeekCalendarView : Page
         {
             if (e.DataView.Properties.TryGetValue("DraggedItem", out var item) && item is Mission mission)
             {
-                if (!DeadlineHelper.IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties))
+                if (!DeadlineHelper.IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties)
+                    || !DeadlineHelper.IsAllowedByDeadlineTime(targetDate.Date.AddSeconds(1), e.DataView.Properties))
                 {
                     e.AcceptedOperation = DataPackageOperation.None;
                     e.DragUIOverride.IsCaptionVisible = false;
@@ -716,7 +717,8 @@ public sealed partial class WeekCalendarView : Page
         }
         else
         {
-            if (!DeadlineHelper.IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties))
+            if (!DeadlineHelper.IsDateAllowedByDeadline(targetDate.Date, e.DataView.Properties)
+                || !DeadlineHelper.IsAllowedByDeadlineTime(targetDate.Date.AddSeconds(1), e.DataView.Properties))
             {
                 e.AcceptedOperation = DataPackageOperation.None;
                 e.DragUIOverride.IsCaptionVisible = false;
