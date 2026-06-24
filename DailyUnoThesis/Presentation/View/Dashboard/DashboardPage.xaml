@@ -52,26 +52,105 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     </Page.Resources>
 
     <Grid x:Name="RootLayout">
-        <ScrollViewer Padding="30,24,30,30" VerticalScrollBarVisibility="Auto">
-            <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="1.8*, 1.2*" RowSpacing="24" ColumnSpacing="24">
 
-                <!-- ==================================================================================== -->
-                <!-- 1. ШАПКА СТРАНИЦЫ: Название сводки и Удостоверение -->
-                <!-- ==================================================================================== -->
-                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Spacing="4">
-                    <TextBlock Text="ОПЕРАТИВНАЯ СВОДКА ДНЯ" FontSize="11" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold" CharacterSpacing="150"/>
-                    <TextBlock Text="Главный экран" FontSize="28" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
-                    <!-- Ваш фирменный текстовый разделитель из скриншотов -->
-                    <TextBlock Text="== = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =" 
-                        FontFamily="Consolas" FontSize="10" Foreground="#CBB39C" Opacity="0.8" Margin="0,5,0,0"/>
-                </StackPanel>
-                <!-- Личная карточка сотрудника (в стиле вашей Time Record Card со скрепкой) -->
-                <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,10,0">
-                    <!-- Нижние подложки (имитация стопки) -->
-                    <!-- НИЖНИЙ ЛИСТ (Самый глубокий в стопке) -->
-                    <Button Grid.Row="0" Grid.Column="1"
-        Style="{StaticResource UserIdCardButtonStyle}" 
-        Command="{Binding CloseAndOpenPersonalAccount}"/>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowStates">
+                <!-- Широкий экран (ПК) -->
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="800" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!-- Настройки для широкого экрана по умолчанию -->
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- Узкий экран (Мобильный) -->
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!-- Правила для заголовка (наш прошлый шаг) -->
+                        <Setter Target="UserCardGrid.(Grid.Row)" Value="1"/>
+                        <Setter Target="UserCardGrid.(Grid.Column)" Value="0"/>
+                        <Setter Target="UserCardGrid.HorizontalAlignment" Value="Left"/>
+                        <Setter Target="UserCardGrid.Margin" Value="0,15,0,0"/>
+                        <Setter Target="SeparatorLine.Text" Value="== = = = = = = = = = = = = = = = = = = = = = = = = = = = ="/>
+
+                        <!-- ======================================================= -->
+                        <!-- НОВЫЕ ПРАВИЛА ДЛЯ АДАПТИВНОСТИ СПИСКОВ (МОБИЛЬНЫЙ ВИД) -->
+                        <!-- ======================================================= -->
+
+                        <!-- 1. Активируем 3-ю строку главной сетки для проектов -->
+                        <Setter Target="MainGridRow3.Height" Value="Auto"/>
+
+                        <!-- 2. Настройки для Колонки ЗАДАЧ (TasksColumn) -->
+                        <!-- Растягиваем на все колонки, чтобы занять всю ширину экрана телефона -->
+                        <Setter Target="TasksColumn.(Grid.ColumnSpan)" Value="3"/>
+                        <!-- Уменьшаем гигантский верхний отступ (на ПК было 80, на телефоне делаем 25) -->
+                        <Setter Target="TasksColumn.Margin" Value="0,80,0,10"/>
+
+                        <!-- 3. Настройки для Колонки ПРОЕКТОВ (ProjectsColumn) -->
+                        <!-- Перекидываем проекты в 3-ю строку (под задачи) -->
+                        <Setter Target="ProjectsColumn.(Grid.Row)" Value="3"/>
+                        <!-- Переносим в 0-ю колонку -->
+                        <Setter Target="ProjectsColumn.(Grid.Column)" Value="0"/>
+                        <!-- Растягиваем на всю ширину экрана -->
+                        <Setter Target="ProjectsColumn.(Grid.ColumnSpan)" Value="3"/>
+                        <!-- Уменьшаем отступы, чтобы не было пустых дыр между блоками -->
+                        <Setter Target="ProjectsColumn.Margin" Value="0,15,0,20"/>
+
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <ScrollViewer Padding="30,24,30,30" VerticalScrollBarVisibility="Auto">
+            <Grid ColumnDefinitions="1.8*, 1.2*" RowSpacing="24" ColumnSpacing="24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Строка 0: Заголовок -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Строка 1: Статистика (Бланк) -->
+                    <RowDefinition x:Name="MainGridRow2" Height="*"/>
+                    <!-- Строка 2: Задачи (на ПК тут же и Проекты) -->
+                    <RowDefinition x:Name="MainGridRow3" Height="0"/>
+                    <!-- Строка 3: Проекты (только для мобильных) -->
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="HeaderGrid" Grid.Row="0" Grid.ColumnSpan="2">
+                    <!-- По умолчанию (для ПК): две колонки. Карточка справа, текст слева -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="HeaderCol0" Width="*"/>
+                        <ColumnDefinition x:Name="HeaderCol1" Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition x:Name="HeaderRow0" Height="Auto"/>
+                        <RowDefinition x:Name="HeaderRow1" Height="Auto"/>
+                        <!-- Для мобильного переноса -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Текстовый заголовок -->
+                    <StackPanel x:Name="HeaderTextStack" Grid.Row="0" Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="ОПЕРАТИВНАЯ СВОДКА ДНЯ" FontSize="11" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold" CharacterSpacing="150"/>
+                        <TextBlock Text="Главный экран" FontSize="28" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
+                        <!-- Фирменный разделитель -->
+                        <TextBlock x:Name="SeparatorLine" Text="== = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =" 
+                   FontFamily="Consolas" FontSize="10" Foreground="#CBB39C" Opacity="0.8" Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Карточка пользователя -->
+                    <Grid x:Name="UserCardGrid" 
+          Grid.Row="0" Grid.Column="1" 
+          HorizontalAlignment="Right" 
+          VerticalAlignment="Center" 
+          Margin="0,10,0,0">
+
+                        <Button Style="{StaticResource UserIdCardButtonStyle}" 
+                Command="{Binding CloseAndOpenPersonalAccount}"/>
+                    </Grid>
                 </Grid>
 
                 <!-- ==================================================================================== -->
@@ -87,49 +166,62 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
                     <StackPanel>
 
 
-                        <Grid ColumnDefinitions="*, Auto, *, Auto, *, Auto, *, Auto">
-                        <!-- 1. На сегодня -->
-                        <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="4">
-                            <TextBlock Text="СРОЧНО" FontSize="9" FontFamily="Consolas" Foreground="#A33131" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding TasksTodayCount}" FontSize="24" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
-                            <TextBlock Text="задач на сегодня" FontSize="9" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                        <!--<Grid ColumnDefinitions="*, Auto, *, Auto, *, Auto, *, Auto">-->
+                        <VariableSizedWrapGrid Orientation="Horizontal"  VerticalAlignment="Top" HorizontalAlignment="Center" >
 
-                        <!-- Тонкий разделитель, как на вашем экране аналитики -->
-                        <Border Grid.Column="1" Width="1" Background="#CBB39C" Margin="10,5" Height="40" Opacity="0.7"/>
+                            <!-- 1. На сегодня -->
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="4" Margin="10" BorderThickness="1 0 1 0" BorderBrush="#CBB39C" MinWidth="100" Width="360">
+                                <TextBlock Text="СРОЧНО" FontSize="13" FontFamily="Consolas" Foreground="#A33131" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding TasksTodayCount}" FontSize="26" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
+                                <TextBlock Text="задач на сегодня" FontSize="13" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
+                                <Border  Height="1" Background="#5C4D3F"  Opacity="0.7"  Margin="50 5"/>
 
-                        <!-- 2. В работе -->
-                        <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="4">
-                            <TextBlock Text="В РАБОТЕ" FontSize="9" FontFamily="Consolas" Foreground="#2B5B84" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding ActiveTasksCount}" FontSize="24" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
-                            <TextBlock Text="активных дел" FontSize="9" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                            </StackPanel>
 
-                        <Border Grid.Column="3" Width="1" Background="#CBB39C" Margin="10,5" Height="40" Opacity="0.7"/>
+                            <!-- Тонкий разделитель, как на вашем экране аналитики -->
+                            <!--<Border Grid.Column="1" Width="1" Background="#CBB39C" Margin="10,5"  Height="40" Opacity="0.7"/>-->
 
-                        <!-- 3. Раскрыто -->
-                        <StackPanel Grid.Column="4" HorizontalAlignment="Center" Spacing="4">
-                            <TextBlock Text="ЗАВЕРШЕНО" FontSize="9" FontFamily="Consolas" Foreground="DarkGreen" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding CompletedTasksCount}" FontSize="24" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
-                            <TextBlock Text="за неделю" FontSize="9" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                            <!-- 2. В работе -->
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="4" Margin="10" BorderThickness="1 0 1 0" BorderBrush="#CBB39C" MinWidth="100" Width="360">
+                                <TextBlock Text="В РАБОТЕ" FontSize="13" FontFamily="Consolas" Foreground="#2B5B84" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ActiveTasksCount}" FontSize="26" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
+                                <TextBlock Text="активных дел" FontSize="13" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
+                                <Border  Height="1" Background="#5C4D3F"  Opacity="0.7"  Margin="50 5"/>
 
-                        <Border Grid.Column="5" Width="1" Background="#CBB39C" Margin="10,5" Height="40" Opacity="0.7"/>
+                            </StackPanel>
 
-                        <!-- 4. Время фокуса -->
-                        <StackPanel Grid.Column="6" HorizontalAlignment="Center" Spacing="4">
-                            <TextBlock Text="ВРЕМЯ РАБОТЫ" FontSize="9" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding FocusTimeText}" FontSize="24" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
-                            <TextBlock Text="записано за сегодня" FontSize="9" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                            <!--<Border Grid.Column="3" Width="1" Background="#CBB39C" Margin="10,5" Height="40" Opacity="0.7"/>-->
 
-                        <!-- Внутрь Бланка статистики (ниже блока с 4 показателями) -->
+                            <!-- 3. Раскрыто -->
+                            <StackPanel Grid.Column="4" HorizontalAlignment="Center" Spacing="4" Margin="10" BorderThickness="1 0 1 0" BorderBrush="#CBB39C" MinWidth="100" Width="360">
+                                <TextBlock Text="ЗАВЕРШЕНО" FontSize="13" FontFamily="Consolas" Foreground="DarkGreen" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding CompletedTasksCount}" FontSize="26" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
+                                <TextBlock Text="за неделю" FontSize="13" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
+                                <Border  Height="1" Background="#5C4D3F"  Opacity="0.7"  Margin="50 5"/>
 
-                    </Grid>
+                            </StackPanel>
+
+                            <!--<Border Grid.Column="5" Width="1" Background="#CBB39C" Margin="10,5" Height="40" Opacity="0.7"/>-->
+
+                            <!-- 4. Время фокуса -->
+                            <StackPanel Grid.Column="6" HorizontalAlignment="Center" Spacing="4" Margin="10" BorderThickness="1 0 1 0" BorderBrush="#CBB39C" MinWidth="100" Width="360">
+                                <TextBlock Text="ВРЕМЯ РАБОТЫ" FontSize="13" FontFamily="Consolas" Foreground="#5C4D3F" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding FocusTimeText}" FontSize="26" FontFamily="Consolas" FontWeight="Bold" Foreground="#25170C" HorizontalAlignment="Center"/>
+                                <TextBlock Text="записано за сегодня" FontSize="13" FontFamily="Segoe Print" Foreground="#5C4D3F" HorizontalAlignment="Center"/>
+                                <Border  Height="1" Background="#5C4D3F"  Opacity="0.7"  Margin="50 5"/>
+
+                            </StackPanel>
+
+                            <!-- Внутрь Бланка статистики (ниже блока с 4 показателями) -->
+
+                        </VariableSizedWrapGrid>
                         <!--<Polyline Grid.Row="1" Grid.ColumnSpan="7" 
           Points="0,20 50,5 100,25 150,10 200,30 250,5 300,20" 
           Stroke="#9A7B56" StrokeThickness="2" 
           Margin="0,10,0,0" Opacity="0.5" HorizontalAlignment="Stretch"/>-->
+
+
+                       
                     </StackPanel>
                 </Border>
                 <!-- Желтый стикер с заметкой (точно такой же, как на вашем экране аналитики) -->
@@ -180,84 +272,84 @@ Margin="20,-15,0,0">
                     </Viewbox>
                 </Grid>
 
-                <!-- ==================================================================================== -->
-                <!-- 3. ЛЕВАЯ КОЛОНКА: Задачи к исполнению (Оперативный журнал) -->
-                <!-- ==================================================================================== -->
-                <StackPanel Grid.Row="2" Grid.Column="0" Spacing="16" Margin="0 60 0 10">
-                    <Grid>
-                        <TextBlock Text="АКТИВНЫЕ ЗАДАЧИ НА СЕГОДНЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
-                        <Button VerticalAlignment="Top" Style="{StaticResource TextsButtonStyle}"  
+                    <!-- ==================================================================================== -->
+                    <!-- 3. ЛЕВАЯ КОЛОНКА: Задачи к исполнению (Оперативный журнал) -->
+                    <!-- ==================================================================================== -->
+                <StackPanel x:Name="TasksColumn"  Spacing="16" Grid.Row="2" Grid.Column="0" Margin="0 80 0 10">
+                        <Grid >
+                            <TextBlock Text="АКТИВНЫЕ ЗАДАЧИ НА СЕГОДНЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
+                            <Button VerticalAlignment="Top" Style="{StaticResource TextsButtonStyle}"  
           Tag="#3D2B1F" Content="ОТКРЫТЬ ЖУРНАЛ ДЕЛ ➔" FontSize="13" FontFamily="Consolas" Padding="5" Background="Transparent"
-                                BorderThickness="0" Foreground="#9A7B56" FontWeight="Bold" HorizontalAlignment="Right"
+                                BorderThickness="0" Foreground="#9A7B56" FontWeight="Bold" HorizontalAlignment="Right" Margin="0 20 0 -20"
                                 Command="{Binding OpenTodayList}"/>
-                    </Grid>
+                        </Grid>
 
-                    <!-- Список задач, стилизованный под ваши списки (Изображение 1) -->
-                    <ListView ItemsSource="{Binding ActiveMissions, Mode=TwoWay}" SelectionMode="None" Padding="0" Background="Transparent">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <!--  Внешний контейнер с отступом сверху, чтобы кнопке хватало места  -->
-                                <Grid Margin="0,3,3,10">
-                                    <Border Background="#A3B1C6" Opacity="0.4" CornerRadius="2" Margin="2,2,-2,-2">
-                                        <Border.RenderTransform>
-                                            <SkewTransform AngleX="0.3" AngleY="0.3"/>
-                                        </Border.RenderTransform>
-                                    </Border>
-                                    <!--  Мягкая тень под листком (в стиле Uno/WinUI)  -->
-                                    <!--  Сама записка  -->
-                                    <Border Background="#FFFDF9" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="1" Padding="16,16,16,12">
-                                        <Grid ColumnDefinitions="Auto, *, Auto">
-                                            <!--  Тонкая цветная линия-индикатор слева  -->
-                                            <Border Grid.Column="0" Width="3" Height="36" Background="{StaticResource ClueRedDarkLightBrush}" CornerRadius="1" Margin="0,0,14,0" VerticalAlignment="Center"/>
-                                            <!--  Текст задачи (Segoe Print)  -->
-                                            <StackPanel Grid.Column="1" Spacing="2">
-                                                <TextBlock Text="{Binding Title, FallbackValue='Проверить возвращение данных в архив'}" FontSize="15" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
-                                                <StackPanel Orientation="Horizontal" Spacing="12">
-                                                    <TextBlock Text="{Binding ProjectName, FallbackValue='# типаДиплом'}" FontSize="9" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold"/>
-                                                    <TextBlock Text="{Binding DueDateText, FallbackValue='Срок: 18:00'}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                            <!--  Кнопка действия (Секундомер)  -->
-                                            
-                                        </Grid>
-                                    </Border>
-                                    <!--  КАНЦЕЛЯРСКАЯ КНОПКА-ГВОЗДИК (PIN)  -->
-                                    <!--  Расположена сверху по центру, немного выходит за верхнюю грань листка  -->
-                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-3,0,0" Width="20" Height="20">
-                                        <!-- Мягкая круглая тень под кнопкой -->
-                                        <Ellipse Width="17" Height="17" Fill="#A3B1C6" Opacity="0.5"  Margin="3,3,0,0"/>
-
-                                        <!-- Сама шляпка кнопки (приглушенно-красная или латунная под ваш стиль) -->
-                                        <Ellipse Width="15" Height="15" Fill="#A33131"/>
-
-                                        <!-- Крошечный блик сверху-слева для объема -->
-                                        <Ellipse Width="4" Height="6" Fill="#FFFFFF" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0">
-                                            <Ellipse.RenderTransform>
-                                                <!--  Едва заметный наклон листка для естественности  -->
-                                                <RotateTransform Angle="-3"/>
-                                            </Ellipse.RenderTransform>
-                                        </Ellipse>
-                                    </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackPanel>
-
-                <!-- ==================================================================================== -->
-                <!-- 4. ПРАВАЯ КОЛОНКА: Архив проектов (Папка-скоросшиватель) и Желтый Стикер -->
-                <!-- ==================================================================================== -->
-                <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="*, Auto" RowSpacing="24" Margin="0 60 0 10">
-
-                    <!-- Блок Проектов (Папка с делами) -->
-                    <StackPanel Grid.Row="0" Spacing="16">
-                        <TextBlock Text="ПРИОРИТЕТНЫЕ РАССЛЕДОВАНИЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
-
-                        <ListView ItemsSource="{Binding ActiveProjects, Mode=TwoWay}" SelectedItem="{Binding SelectedProjest, Mode=TwoWay}" SelectionMode="Extended" Padding="0" Background="Transparent">
+                        <!-- Список задач, стилизованный под ваши списки (Изображение 1) -->
+                        <ListView ItemsSource="{Binding ActiveMissions, Mode=TwoWay}" SelectionMode="None" Padding="0" Background="Transparent">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <!-- Карточка проекта (Тяжелый документ) -->
-                                    <Border Background="#FAF6F0" 
+                                    <!--  Внешний контейнер с отступом сверху, чтобы кнопке хватало места  -->
+                                    <Grid Margin="0,3,3,10">
+                                        <Border Background="#A3B1C6" Opacity="0.4" CornerRadius="2" Margin="2,2,-2,-2">
+                                            <Border.RenderTransform>
+                                                <SkewTransform AngleX="0.3" AngleY="0.3"/>
+                                            </Border.RenderTransform>
+                                        </Border>
+                                        <!--  Мягкая тень под листком (в стиле Uno/WinUI)  -->
+                                        <!--  Сама записка  -->
+                                        <Border Background="#FFFDF9" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="1" Padding="16,16,16,12">
+                                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                                <!--  Тонкая цветная линия-индикатор слева  -->
+                                                <Border Grid.Column="0" Width="3" Height="36" Background="{StaticResource ClueRedDarkLightBrush}" CornerRadius="1" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                                <!--  Текст задачи (Segoe Print)  -->
+                                                <StackPanel Grid.Column="1" Spacing="2">
+                                                    <TextBlock Text="{Binding Title, FallbackValue='Проверить возвращение данных в архив'}" FontSize="15" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="12">
+                                                        <TextBlock Text="{Binding ProjectName, FallbackValue='# типаДиплом'}" FontSize="9" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding DueDateText, FallbackValue='Срок: 18:00'}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <!--  Кнопка действия (Секундомер)  -->
+
+                                            </Grid>
+                                        </Border>
+                                        <!--  КАНЦЕЛЯРСКАЯ КНОПКА-ГВОЗДИК (PIN)  -->
+                                        <!--  Расположена сверху по центру, немного выходит за верхнюю грань листка  -->
+                                        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-3,0,0" Width="20" Height="20">
+                                            <!-- Мягкая круглая тень под кнопкой -->
+                                            <Ellipse Width="17" Height="17" Fill="#A3B1C6" Opacity="0.5"  Margin="3,3,0,0"/>
+
+                                            <!-- Сама шляпка кнопки (приглушенно-красная или латунная под ваш стиль) -->
+                                            <Ellipse Width="15" Height="15" Fill="#A33131"/>
+
+                                            <!-- Крошечный блик сверху-слева для объема -->
+                                            <Ellipse Width="4" Height="6" Fill="#FFFFFF" Opacity="0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0">
+                                                <Ellipse.RenderTransform>
+                                                    <!--  Едва заметный наклон листка для естественности  -->
+                                                    <RotateTransform Angle="-3"/>
+                                                </Ellipse.RenderTransform>
+                                            </Ellipse>
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+
+                    <!-- ==================================================================================== -->
+                    <!-- 4. ПРАВАЯ КОЛОНКА: Архив проектов (Папка-скоросшиватель) и Желтый Стикер -->
+                    <!-- ==================================================================================== -->
+                <Grid x:Name="ProjectsColumn" RowDefinitions="*, Auto" RowSpacing="24" Margin="0 80 0 10" Grid.Row="2" Grid.Column="2">
+
+                        <!-- Блок Проектов (Папка с делами) -->
+                        <StackPanel Grid.Row="0" Spacing="16" >
+                            <TextBlock Text="ПРИОРИТЕТНЫЕ РАССЛЕДОВАНИЯ" FontSize="13" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F"/>
+
+                            <ListView ItemsSource="{Binding ActiveProjects, Mode=TwoWay}" SelectedItem="{Binding SelectedProjest, Mode=TwoWay}" SelectionMode="Extended" Padding="0" Background="Transparent">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- Карточка проекта (Тяжелый документ) -->
+                                        <Border Background="#FAF6F0" 
                     BorderBrush="#CBB39C" 
                     BorderThickness="1" 
                     CornerRadius="2" 
@@ -265,48 +357,48 @@ Margin="20,-15,0,0">
                     Margin="0,0,0,12"
                     RelativePanel.AlignLeftWithPanel="True">
 
-                                        <Grid>
-                                            <!-- ТОЛСТЫЙ АРХИВНЫЙ КОРЕШОК СЛЕВА -->
-                                            <!-- Он визуально "пришивает" документ к левому краю -->
-                                            <Border Background="#3D2B1F" Width="6" HorizontalAlignment="Left" Margin="-20,-15,0,-15"/>
+                                            <Grid>
+                                                <!-- ТОЛСТЫЙ АРХИВНЫЙ КОРЕШОК СЛЕВА -->
+                                                <!-- Он визуально "пришивает" документ к левому краю -->
+                                                <Border Background="#3D2B1F" Width="6" HorizontalAlignment="Left" Margin="-20,-15,0,-15"/>
 
-                                            <!-- МЕТАЛЛИЧЕСКИЙ ЛЮВЕРС (КОЛЬЦО ДЛЯ СШИВАНИЯ) -->
-                                            <!-- Маленькая латунная заклепка с отверстием в верхнем левом углу листа -->
-                                            <Grid Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-6,-7,0,0">
-                                                <!-- Внешнее металлическое кольцо -->
-                                                <Ellipse Stroke="#9F8B78" StrokeThickness="2" Fill="#FAF6F0"/>
-                                                <!-- Темный центр (отверстие в бумаге) -->
-                                                <Ellipse Width="4" Height="4" Fill="#3D2B1F"/>
-                                            </Grid>
-
-                                            <!-- Содержимое документа -->
-                                            <StackPanel Margin="10,0,0,0" Spacing="8">
-                                                <Grid>
-                                                    <StackPanel Spacing="1">
-                                                        <TextBlock Text="CASE-FILE №002" FontSize="8" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold"/>
-                                                        <TextBlock Text="{Binding Title, FallbackValue='Тестовый проект типаДиплом'}" FontSize="14" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C" TextTrimming="CharacterEllipsis" Margin="0,0,35,0"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text="{Binding ProgressText, FallbackValue='65%'}" FontSize="12" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                                                <!-- МЕТАЛЛИЧЕСКИЙ ЛЮВЕРС (КОЛЬЦО ДЛЯ СШИВАНИЯ) -->
+                                                <!-- Маленькая латунная заклепка с отверстием в верхнем левом углу листа -->
+                                                <Grid Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-6,-7,0,0">
+                                                    <!-- Внешнее металлическое кольцо -->
+                                                    <Ellipse Stroke="#9F8B78" StrokeThickness="2" Fill="#FAF6F0"/>
+                                                    <!-- Темный центр (отверстие в бумаге) -->
+                                                    <Ellipse Width="4" Height="4" Fill="#3D2B1F"/>
                                                 </Grid>
 
-                                                <!-- Наш фирменный тонкий прогресс-бар -->
-                                                <ProgressBar Value="{Binding ProgressValue, FallbackValue=65}" 
+                                                <!-- Содержимое документа -->
+                                                <StackPanel Margin="10,0,0,0" Spacing="8">
+                                                    <Grid>
+                                                        <StackPanel Spacing="1">
+                                                            <TextBlock Text="CASE-FILE №002" FontSize="8" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold"/>
+                                                            <TextBlock Text="{Binding Title, FallbackValue='Тестовый проект типаДиплом'}" FontSize="14" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C" TextTrimming="CharacterEllipsis" Margin="0,0,35,0"/>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding ProgressText, FallbackValue='65%'}" FontSize="12" FontFamily="Consolas" FontWeight="Bold" Foreground="#3D2B1F" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                                                    </Grid>
+
+                                                    <!-- Наш фирменный тонкий прогресс-бар -->
+                                                    <ProgressBar Value="{Binding ProgressValue, FallbackValue=65}" 
                                      Height="6" MinHeight="6" 
                                      Background="#EAD8C3" Foreground="#9A7B56" 
                                      CornerRadius="3"/>
 
-                                                <TextBlock Text="{Binding StatusText, FallbackValue='4 из 6 задач выполнено'}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </StackPanel>
+                                                    <TextBlock Text="{Binding StatusText, FallbackValue='4 из 6 задач выполнено'}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
 
 
 
-                </Grid>
+                    </Grid>
 
             </Grid>
         </ScrollViewer>

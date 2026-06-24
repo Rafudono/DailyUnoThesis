@@ -405,6 +405,12 @@ Content="Таймеры">
 
 
 
+                            <Button Grid.Row="1" HorizontalAlignment="Left" 
+                    Style="{StaticResource ExitKeyFobButtonStyle}" Tag="{Binding IsPaneOpen, ElementName=RootSplitView}"
+                    Command="{Binding LogOutCommand}"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,20" Content="Выйти из аккаунта"
+                    ToolTipService.ToolTip="Выйти из аккаунта"/>
                     </Grid>
 
 

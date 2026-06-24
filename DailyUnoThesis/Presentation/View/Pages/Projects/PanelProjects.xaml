@@ -983,18 +983,21 @@ VerticalAlignment="Top" MaxHeight="40" MinWidth="300">
                                     <!--  Мягкая тень под листком (в стиле Uno/WinUI)  -->
                                     <!--  Сама записка  -->
                                     <Border Background="#FFFDF9" BorderBrush="#CBB39C" BorderThickness="1" CornerRadius="1" Padding="16,16,16,12">
-                                        <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Grid ColumnDefinitions="Auto">
                                             <!--  Тонкая цветная линия-индикатор слева  -->
-                                            <Border Grid.Column="0" Width="3" Height="36" Background="{StaticResource ClueRedDarkLightBrush}" CornerRadius="1" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                            <!--<Border Grid.Column="0" Width="3" Height="36" Background="{StaticResource ClueRedDarkLightBrush}" CornerRadius="1" Margin="0,0,14,0" VerticalAlignment="Center"/>-->
                                             <!--  Текст задачи (Segoe Print)  -->
                                             <StackPanel Grid.Column="1" Spacing="2">
-                                                <TextBlock Text="{Binding SelectedProjectParticipants.NickName}" FontSize="15" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
-                                                <TextBlock  FontSize="9" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold" MinHeight="0">
+                                                <TextBlock Text="Никнейм" FontSize="12" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C" Margin="0 -5" MinHeight="0"/>
+                                                <Border BorderBrush="{StaticResource ClueRedDarkLightBrush}" BorderThickness="0 0 0 1" HorizontalAlignment="Left" MinWidth="100" MinHeight="0">
+                                                    <TextBlock Text="{Binding SelectedProjectParticipants.NickName}" MinHeight="0" FontSize="15" FontFamily="Segoe Print" FontWeight="Bold" Foreground="#25170C"/>
+                                                </Border>
+                                                <TextBlock  FontSize="13" FontFamily="Consolas" Foreground="#9F8B78" FontWeight="Bold" MinHeight="0">
                                                     <Run Text="{Binding SelectedProjectParticipants.FirstName}"/>
                                                     <Run Text="{Binding SelectedProjectParticipants.LastName}"/>
                                                     <Run Text="{Binding SelectedProjectParticipants.Patronymic}"/>
                                                 </TextBlock>
-                                                <TextBlock Text="{Binding SelectedProjectParticipants.Email}" FontSize="9" FontFamily="Consolas" Foreground="#718096"/>
+                                                <TextBlock Text="{Binding SelectedProjectParticipants.Email}" FontSize="13" FontFamily="Consolas" Foreground="#718096"/>
                                             </StackPanel>
                                             <!--  Кнопка действия (Секундомер)  -->
 

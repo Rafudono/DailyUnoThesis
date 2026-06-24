@@ -932,4 +932,129 @@ VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
             </Setter.Value>
         </Setter>
     </Style>
+
+
+    <!--кнопка выхода-->
+    <Style x:Key="ExitKeyFobButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <!-- Внешний невидимый контейнер шириной 250px -->
+                    <Grid x:Name="RootGrid" Background="Transparent" Width="75"  >
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+
+                                <!-- ОБЫЧНОЕ СОСТОЯНИЕ (Ярлык спрятан, слит с фоном панели) -->
+                                <VisualState x:Name="Normal">
+                                    <VisualState.Setters>
+                                        <Setter Target="FolderTag.Background" Value="#EAD8C3" />
+                                        <!-- Тот же беж, что и у панели -->
+                                        <Setter Target="FolderTag.Margin" Value="0,0,15,0" />
+                                        <!-- Справа зазор 15px -->
+                                        <Setter Target="FolderTag.BorderBrush" Value="#CBB39C" />
+                                        <!-- Мягкая рамка -->
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <!-- НАВЕДЕНИЕ (Ярлык выдвигается вправо и становится светлым как бумага) -->
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="FolderTag.Background" Value="#FAF6F0" />
+                                        <!-- Цвет бумаги -->
+                                        <Setter Target="FolderTag.Margin" Value="0,0,7,0" />
+                                        <!-- Выдвигаемся на 10px вправо -->
+                                        <Setter Target="FolderTag.BorderBrush" Value="#9F8B78" />
+                                        <!-- Более четкая рамка -->
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <!-- НАЖАТИЕ (Слегка утапливается обратно) -->
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="FolderTag.Background" Value="#DCC8B3" />
+                                        <Setter Target="FolderTag.Margin" Value="0,0,10,0" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                
+                               
+
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="MenuOpenStatesGrid">
+                                <VisualState x:Name="MenuOpenWidth">
+                                    <VisualState.StateTriggers>
+                                        <StateTrigger IsActive="{TemplateBinding Tag}" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Width" Value="250" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
+
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <!-- ТЕЛО ЯРЛЫКА -->
+                        <!-- CornerRadius="0,6,6,0" скругляет только внешние правые углы -->
+                        <!-- Толщина рамки "0,1,1,1" — левая сторона открыта, как будто ярлык выходит из папки -->
+                        <Border x:Name="FolderTag" BorderBrush="Gray" BorderThickness="2" CornerRadius="0,6,6,0">
+                            
+                    
+                        <Border  
+                            Background="#EAD8C3" 
+                            BorderBrush="#CBB39C" 
+                            BorderThickness="0,1,1,1"
+                            CornerRadius="0,6,6,0" 
+                            Height="40" 
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="55" />
+                                    <!-- Иконка выровнена по компактному режиму -->
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Правильная иконка выхода (Segoe MDL2 Assets - SignOut) -->
+                                    <Path Data="M 14,3 L 4,3 L 4,21 L 14,21 M 9,12 L 20,12 M 16,8 L 20,12 L 16,16" 
+      Stroke="#5C4D3F" 
+      StrokeThickness="1.8" 
+      StrokeStartLineCap="Round" 
+      StrokeEndLineCap="Round" 
+      StrokeLineJoin="Round"
+      Width="24" Height="24"
+      Stretch="Uniform"
+      HorizontalAlignment="Center" 
+      VerticalAlignment="Center"
+      IsHitTestVisible="False"/>
+
+                                    <!-- Текст "Закрыть дело" (Segoe Print) -->
+                                <ContentPresenter x:Name="ContentPresenter"
+                                              Grid.Column="1"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              VerticalAlignment="Center"
+                                              Margin="10,0,0,0" 
+                                              Foreground="#5C4D3F"
+                                              FontFamily="Segoe Print"
+                                              FontWeight="Bold"
+                                              FontSize="13"
+                                              Visibility="{Binding IsPaneOpen, ElementName=RootSplitView, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            </Grid>
+                        </Border>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    
 </ResourceDictionary>
