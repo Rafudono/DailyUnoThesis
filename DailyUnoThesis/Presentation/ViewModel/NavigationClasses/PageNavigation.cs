@@ -32,15 +32,15 @@ public partial class PageNavigation : Base
 
     private string? name;
 
-    private static PageNavigation instance;
-    public static PageNavigation GetInstance()
-    {
-        if (instance == null)
-        {
-            instance = new PageNavigation();              
-        }
-        return instance;
-    }
+    //private static PageNavigation instance;
+    //public static PageNavigation GetInstance()
+    //{
+    //    if (instance == null)
+    //    {
+    //        instance = new PageNavigation();              
+    //    }
+    //    return instance;
+    //}
     public PageNavigation Navigation;
     private TaskPages TaskPages;
     //public Pomodoro PomodoroPage;
@@ -60,6 +60,7 @@ public partial class PageNavigation : Base
     //Меню подробностей задач
     public SelectedAndNewTask SelectedAndNewTask;
     public TaskViewModel SelectedViewModel;
+    private readonly INavigator _navigator;
 
     public void GetPageCategory(TaskListPageCategory pageCategory)
     {
@@ -160,7 +161,7 @@ public partial class PageNavigation : Base
         ViewModelStore.GetInstance().RegularTimer.CountupTimer.IsPaused = false;
         //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.IsPaused = false;
             //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.Timer.Start();
-            ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
+            //ViewModelStore.GetInstance().RegularTimer.CountupTimer.Timer.Start();
         //ViewModelStore.GetInstance().PomodoroTime.CountdownTimer.PauseTimer();
         ViewModelStore.GetInstance().RegularTimer.CountupTimer.PauseTimer();
     }
@@ -389,8 +390,8 @@ public partial class PageNavigation : Base
                 var services = App.Services;
                 if (services != null)
                 {
-                    var navigator = services.GetRequiredService<INavigator>();
-                    await navigator.NavigateRouteAsync(services, "Login");
+                    //var navigator = services.GetRequiredService<INavigator>();
+                    await _navigator.NavigateBackAsync(this);
                 }
             });
         }
@@ -429,9 +430,9 @@ public partial class PageNavigation : Base
 
     }
 
-    public PageNavigation()
+    public PageNavigation(INavigator navigator)
     {
-        instance = this;
+        _navigator = navigator;
     }
     public string? Title { get; }
 

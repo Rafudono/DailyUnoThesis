@@ -102,7 +102,9 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
 
                         <!--<Setter Target="RootSplitView.IsPaneOpen" Value="False" />-->
                         <Setter Target="RootSplitView.OpenPaneLength" Value="300" />
+                        <Setter Target="RootSplitView.IsPaneOpen" Value="False" />
                         <Setter Target="RootSplitView.DisplayMode" Value="Overlay" />
+                        <Setter Target="EmptySpase.Visibility" Value="Visible" />
                         <Setter Target="HamburgerBtn.Visibility" Value="Visible" />
                     </VisualState.Setters>
                 </VisualState>
@@ -137,7 +139,7 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
             
         </Grid>-->
 
-        <SplitView x:Name="RootSplitView" OpenPaneLength="300"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
+        <SplitView  x:Name="RootSplitView" OpenPaneLength="300"  DisplayMode="Inline"  IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}" Margin="0 0 0 0"
                    CompactPaneLength="0" CornerRadius="0,8,8,0" >
             <SplitView.Pane MaxWidth="300">
                 <Border  BorderThickness="0,0,1,0" BorderBrush="{StaticResource DarkGrayBrown}" Padding="0 0 1 0">
@@ -167,11 +169,11 @@ Margin="0,0,1,0"/>
               VerticalScrollMode="Enabled">
 
                             <StackPanel Spacing="10">
-                                    <StackPanel Height="40">
+                                    <StackPanel Height="50" x:Name="EmptySpase" Visibility="Collapsed">
                                         
                                     </StackPanel>
 
-                                    <utu:TabBar x:Name="StaticTabBar" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}" Width="220" Margin="10 0 0 0"
+                                    <utu:TabBar x:Name="StaticTabBar" SelectedIndex="{Binding NamderMainPanel, Mode=TwoWay}" HorizontalAlignment="Left" SelectionChanged="{x:Bind ViewModel.SelectedAndVisible}" Width="220" Margin="10 10 0 0"
                                         uen:Region.Attached="True" Orientation="Vertical" Background="Transparent" MinHeight="150" ItemContainerStyle="{StaticResource DetectiveTabBarItemStyle}">
 
                                         <utu:TabBarItem Content="Все задания"  uen:Region.Name="TaskList" utu:TabBarItemExtensions.OnClickBehaviorsTarget="{Binding ElementName=TaskContentGrid}"  Tag="Bookmarks" />
@@ -561,7 +563,7 @@ uen:Region.Navigator="Visibility" />
                Content="{Binding CurPageCategory}" />-->
        
 
-        <Button x:Name="HamburgerBtn" Content="&#xE71D;" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" CornerRadius="0" Padding="3" Margin="10"
+        <Button x:Name="HamburgerBtn" Content="&#xE71D;" Command="{Binding CloseMenuCommand}" Visibility="Collapsed" CornerRadius="0" Padding="3" Margin="30 20"
         HorizontalAlignment="Left" VerticalAlignment="Top"  Style="{StaticResource StampButtonStyle}" FontSize="25" 
   Tag="{StaticResource AccentBlueLightBrush}" Foreground="{StaticResource InkBlueLightBrush}">
             <!--<SymbolIcon Symbol="GlobalNavigationButton" />-->
@@ -580,7 +582,7 @@ uen:Region.Navigator="Visibility" />
             <ContentControl Style="{StaticResource StickerContainerStyle}" 
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center">
-                <Border CornerRadius="20" Height="300" Width="600" Background="Transparent">
+                <Border CornerRadius="20" MaxHeight="300" MaxWidth="600" Background="Transparent">
                     <Grid>
                         <TextBox Header="Название категории" Style="{StaticResource NotebookTextBoxStyle}"
                              Text="{Binding Category.Title, Mode=TwoWay}" MinWidth="150" MinHeight="30"  Height="75" Margin="20"

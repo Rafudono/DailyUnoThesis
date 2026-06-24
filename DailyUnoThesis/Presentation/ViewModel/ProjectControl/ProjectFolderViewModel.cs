@@ -34,6 +34,9 @@ public partial class ProjectFolderViewModel : ObservableObject
     private bool isFilter = false;
     [ObservableProperty]
     private bool isSearchFilter = false;
+
+    [ObservableProperty]
+    private ObservableCollection<UserDto> projectParticipants = new();
     //[ObservableProperty]
     //private bool isVisibleNewProjectMember = false;
 
@@ -672,6 +675,8 @@ public partial class ProjectFolderViewModel : ObservableObject
 
         if (category.Id == СurrentCategory.Id)
             return;
+        //ProjectParticipants.Clear();
+        //ProjectParticipants.AddRange(category.Users);// нормально надо получать
         СurrentCategory = category;
         //Categories = new();
         Categories = await APIHost.GetInstance().GetFiltersSubCategories(category.Id);
