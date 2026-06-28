@@ -39,6 +39,8 @@ xmlns:core="using:Microsoft.Xaml.Interactions.Core"
         <con:BoolToAngleConverter x:Key="BoolToAngleConverter"/>
         <con:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <con:LevelTextBoxVisibilityConverter x:Key="LevelTextBoxVisibilityConverter"/>
+        <con:InverseMinimumCountToVisibilityConverter x:Key="InverseMinimumCountToVisibilityConverter"/>
+
 
 
 
@@ -630,8 +632,9 @@ CommandParameter="{Binding}">
                                                                                 <Run Text="СТАТУС:"/>
                                                                                 <Run Text="{Binding Progressstates.Title}"/>
                                                                             </TextBlock>
-                                                                            <TextBlock Margin="0 -5 0 0"  Text="СОВМЕСТНЫЙ" Foreground="#3D2B1F" FontFamily="Segoe Print" Visibility="{Binding Users.Count, Converter={StaticResource MinimumCountToVisibilityConverter}, ConverterParameter=0}"
-                                                                                       FontSize="11"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>
+
+                                                                            <!--<TextBlock Margin="0 -5 0 0"  Text="СОВМЕСТНЫЙ" Foreground="#3D2B1F" FontFamily="Segoe Print" Visibility="{Binding Users.Count, Converter={StaticResource InverseMinimumCountToVisibilityConverter}, ConverterParameter=0}"
+                                                                                       FontSize="11"  HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Thin"/>-->
                                                                             <Grid Width="205" Height="15" HorizontalAlignment="Left">
                                                                                 <Rectangle Height="5" HorizontalAlignment="Left" Background="Transparent" Fill="Transparent" Stroke="Black" Stretch="Fill" Opacity="0.3" Margin="0,0" Width="200" StrokeThickness="1" />
                                                                                 <Grid HorizontalAlignment="Left" Width="200">

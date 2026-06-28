@@ -161,6 +161,7 @@ public partial class DashboardViewModel: ObservableObject
                 invitation.IsDelete = true;
                 await Task.Delay(400);
                 await ConnectionToHub.Instance.AcceptInvitation(invitation.Id);
+                await ViewModelStore.GetInstance().FillDataViewModels();
                 Invitations.Remove(invitation);
                 HasInvitations = Invitations.Count > 0;
             });
